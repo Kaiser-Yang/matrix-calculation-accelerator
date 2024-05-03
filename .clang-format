@@ -1,0 +1,23 @@
+---
+Language: Cpp
+BasedOnStyle: Google
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: false
+AlignConsecutiveMacros: true
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortFunctionsOnASingleLine: All
+AllowShortBlocksOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
+AlwaysBreakAfterReturnType: None
+AlwaysBreakTemplateDeclarations: true
+BreakBeforeTernaryOperators: false
+BinPackArguments: false
+BinPackParameters: false
+ColumnLimit: 100
+DerivePointerAlignment: false
+IndentWidth: 4
+MaxEmptyLinesToKeep: 1
+PointerAlignment: Right
+SortIncludes: true
