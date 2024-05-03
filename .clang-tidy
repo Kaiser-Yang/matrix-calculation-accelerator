@@ -1,0 +1,36 @@
+Checks: >
+    -*,
+    cppcoreguidelines-no-malloc, modernize-deprecated-headers,
+    modernize-loop-convert, modernize-make-shared, modernize-pass-by-value, modernize-make-unique,
+    modernize-raw-string-literal, modernize-redundant-void-arg, modernize-replace-auto-ptr,
+    modernize-replace-random-shuffle, modernize-return-braced-init-list, modernize-shrink-to-fit,
+    modernize-unary-static-assert, modernize-use-bool-literals, modernize-use-default-member-init,
+    modernize-use-emplace, modernize-use-equals-default, modernize-use-equals-delete,
+    modernize-use-noexcept, modernize-use-nullptr, modernize-use-override,
+    modernize-use-transparent-functors, modernize-use-using,
+    performance-faster-string-find, performance-for-range-copy,
+    performance-implicit-conversion-in-loop, performance-inefficient-algorithm,
+    performance-inefficient-string-concatenation, performance-trivially-destructible,
+    performance-inefficient-vector-operation, performance-move-const-arg,
+    performance-move-constructor-init, performance-noexcept-move-constructor,
+    performance-no-automatic-move, performance-unnecessary-copy-initialization,
+    performance-type-promotion-in-math-fn, performance-unnecessary-value-param
+
+WarningsAsErrors: >
+    cppcoreguidelines-no-malloc, modernize-deprecated-headers,
+    modernize-loop-convert, modernize-make-shared, modernize-pass-by-value, modernize-make-unique,
+    modernize-raw-string-literal, modernize-redundant-void-arg, modernize-replace-auto-ptr,
+    modernize-replace-random-shuffle, modernize-return-braced-init-list, modernize-shrink-to-fit,
+    modernize-unary-static-assert, modernize-use-bool-literals, modernize-use-default-member-init,
+    modernize-use-emplace, modernize-use-equals-default, modernize-use-equals-delete,
+    modernize-use-noexcept, modernize-use-nullptr, modernize-use-override,
+    modernize-use-transparent-functors, modernize-use-using,
+    performance-faster-string-find, performance-for-range-copy,
+    performance-implicit-conversion-in-loop, performance-inefficient-algorithm,
+    performance-inefficient-string-concatenation, performance-trivially-destructible,
+    performance-inefficient-vector-operation, performance-move-const-arg,
+    performance-move-constructor-init, performance-noexcept-move-constructor,
+    performance-no-automatic-move, performance-unnecessary-copy-initialization,
+    performance-type-promotion-in-math-fn, performance-unnecessary-value-param
+
+HeaderFilterRegex: '^(src\/.*|include\/.*)$'
