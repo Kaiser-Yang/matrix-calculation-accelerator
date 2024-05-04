@@ -1,118 +1,333 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
+#include <cassert>
 #include <cstring>
 #include <memory>
+#include <type_traits>
+#include <vector>
 
-template <class ELEMENT_TYPE>
+namespace mca {
+struct Shape {
+    size_t rows    = 0;
+    size_t columns = 0;
+
+    Shape() = default;
+    Shape(size_t rows, size_t columns) : rows(rows), columns(columns) {}
+    bool operator==(const Shape &other) const {
+        return rows == other.rows && columns == other.columns;
+    }
+    bool operator!=(const Shape &other) const { return !(*this == other); }
+
+    size_t size() const { return rows * columns; }
+};
+
+template <class ELEMENT_TYPE = double>
 class Matrix {
-   public:
-    struct Shape {
-        int rows, columns;
-    };
-
+public:
     Matrix() = default;
 
-    Matrix(const Shape &shape, const ELEMENT_TYPE &default_value) {
+    Matrix(const std::vector<std::vector<ELEMENT_TYPE>> &init) {
+        shape.rows = init.size();
+        if (init.size() != 0) {
+            shape.columns = init[0].size();
+            data          = std::shared_ptr<ELEMENT_TYPE[]>(new ELEMENT_TYPE[shape.size()]);
+            for (size_t i = 0; i < shape.rows; i++) {
+                for (size_t j = 0; j < shape.columns; j++) { get(i, j) = init[i][j]; }
+            }
+            //             TODO: update with multi thread
+            //             *this         = init;
+        }
+    }
+
+    Matrix(const Shape &shape, const ELEMENT_TYPE &defaultValue) {
         this->shape = shape;
-        if (shape.rows * shape.columns != 0) {
-            data = new ELEMENT_TYPE[shape.rows * shape.columns];
-            std::fill(data, data + shape.rows * shape.columns, default_value);
-        } else {
-            data = nullptr;
+        if (shape.size() != 0) {
+            data = std::shared_ptr<ELEMENT_TYPE[]>(new ELEMENT_TYPE[shape.size()]);
+            std::fill(data.get(), data.get() + shape.size(), defaultValue);
+            // TODO: update with multi thread
+            //             fill(defaultValue);
         }
     }
 
-    Matrix(const Matrix &other) : data(other.data) {}
-
-    Matrix(Matrix &&other) noexcept : data(std::move(other.data)) {}
-
-    Matrix &operator=(const Matrix &other) {
-        shape = other.shape;
-        if (shape.rows * shape.columns != 0) {
-            data = new ELEMENT_TYPE[shape.rows * shape.columns];
-            memcpy(data, other.data, shape.rows * shape.columns * sizeof(ELEMENT_TYPE));
-        } else {
-            data = nullptr;
-        }
+    template <class T>
+    Matrix(const Matrix<T> &other) {
+        *this = other;
     }
 
+    // only those which have the same ELEMENT_TYPE can use move constructor
+    Matrix(Matrix &&other) noexcept
+        : data(std::move(other.data)), shape(std::move(other.getShape())) {}
+
+    // only those which have the same ELEMENT_TYPE can use move assignment
     Matrix &operator=(Matrix &&other) noexcept {
         shape = std::move(other.shape);
         data  = std::move(other.data);
+        return *this;
     }
 
-    friend bool operator==(const Matrix &a, const Matrix &b);
-    friend bool operator!=(const Matrix &a, const Matrix &b);
-    friend bool operator<(const Matrix &a, const Matrix &b);
-    friend bool operator<=(const Matrix &a, const Matrix &b);
-    friend bool operator>(const Matrix &a, const Matrix &b);
-    friend bool operator>=(const Matrix &a, const Matrix &b);
-
-    friend Matrix operator+(const Matrix &a, const Matrix &b);
-    friend Matrix operator-(const Matrix &a, const Matrix &b);
-    friend Matrix operator*(const Matrix &a, const Matrix &b);
-
-    template <class Number>
-    friend Matrix operator*(const Matrix &a, const Number &number);
-    template <class Number>
-    friend Matrix operator*(const Number &number, const Matrix &a);
-    template <class Number>
-    friend Matrix operator/(const Matrix &a, const Number &number);
-    template <class Number>
-    friend Matrix operator/(const Number &number, const Matrix &a);
-
-    friend void operator+=(Matrix &a, const Matrix &b);
-    friend void operator-=(Matrix &a, const Matrix &b);
-    friend void operator*=(Matrix &a, const Matrix &b);
-    friend void operator/=(Matrix &a, const Matrix &b);
-
-    template <class Number>
-    friend void operator*=(Matrix &a, const Number &number);
-    template <class Number>
-    friend void operator*=(const Number &number, Matrix &a);
-    template <class Number>
-    friend void operator/=(Matrix &a, const Number &number);
-    template <class Number>
-    friend void operator/=(const Number &number, Matrix &a);
-
-    template <class Number>
-    friend void pow(Number &&number, const Matrix &matrix, Matrix &output);
-
-    template <class Number>
-    friend void pow(const Matrix &matrix, Number &&number, Matrix &output);
-
-    ELEMENT_TYPE &get(int i, int j) {
+    ELEMENT_TYPE &get(size_t i, size_t j) {
         assert(i < shape.rows && j < shape.columns);
         return data[i * shape.columns + j];
     }
 
-    const Shape &getShape() { return shape; }
+    ELEMENT_TYPE *dataPtr() { return data.get(); }
+    const ELEMENT_TYPE *dataPtr() const { return data.get(); }
 
-   private:
-    bool equal(const Matrix &a, const Matrix &b);
-    bool less(const Matrix &a, const Matrix &b);
-    bool lessEqual(const Matrix &a, const Matrix &b);
-    bool greater(const Matrix &a, const Matrix &b);
-    bool greaterEqual(const Matrix &a, const Matrix &b);
-    bool notEqual(const Matrix &a, const Matrix &b);
+    const ELEMENT_TYPE &get(size_t i, size_t j) const {
+        assert(i < shape.rows && j < shape.columns);
+        return data[i * shape.columns + j];
+    }
 
-    void add(const Matrix &a, const Matrix &b, Matrix &output);
-    void substract(const Matrix &a, const Matrix &b, Matrix &output);
-    void multiply(const Matrix &a, const Matrix &b, Matrix &output);
+    const size_t rows() { return shape.rows; }
+    const size_t columns() { return shape.columns; }
 
-    template <class Number>
-    void multiply(const Number &number, const Matrix &a, Matrix &output);
-    template <class Number>
-    void multiply(const Matrix &a, const Number &number, Matrix &output);
+    Shape getShape() const { return shape; }
 
-    template <class Number>
-    void divide(const Matrix &a, const Number &number, Matrix &output);
-    template <class Number>
-    void divide(const Number &number, const Matrix &a, Matrix &output);
+    void reshape(const Shape &shape) {
+        assert(this->shape.size() == shape.size());
+        this->shape = shape;
+    }
 
-    std::shared_ptr<ELEMENT_TYPE> data;
+    void fill(const ELEMENT_TYPE &value);
+
+    template <class T>
+    Matrix<ELEMENT_TYPE> &operator=(const Matrix<T> &other);
+
+    template <class T>
+    Matrix<ELEMENT_TYPE> &operator=(const std::vector<std::vector<T>> &init);
+
+private:
+    std::shared_ptr<ELEMENT_TYPE[]> data;
     Shape shape;
+
+    template <class T1, class T2>
+    friend bool operator==(const Matrix<T1> &a, const Matrix<T2> &b);
+    template <class T1, class T2>
+    friend bool operator!=(const Matrix<T1> &a, const Matrix<T2> &b);
+    template <class T1, class T2>
+    friend bool operator<(const Matrix<T1> &a, const Matrix<T2> &b);
+    template <class T1, class T2>
+    friend bool operator<=(const Matrix<T1> &a, const Matrix<T2> &b);
+    template <class T1, class T2>
+    friend bool operator>(const Matrix<T1> &a, const Matrix<T2> &b);
+    template <class T1, class T2>
+    friend bool operator>=(const Matrix<T1> &a, const Matrix<T2> &b);
+
+    template <class T1, class T2>
+    friend Matrix<std::common_type_t<T1, T2>> operator+(const Matrix<T1> &a, const Matrix<T2> &b);
+    template <class T1, class T2>
+    friend Matrix<std::common_type_t<T1, T2>> operator-(const Matrix<T1> &a, const Matrix<T2> &b);
+    template <class T1, class T2>
+    friend Matrix<std::common_type_t<T1, T2>> operator*(const Matrix<T1> &a, const Matrix<T2> &b);
+
+    template <class T, class Number>
+    friend Matrix<std::common_type_t<T, Number>> operator+(const Matrix<T> &a,
+                                                           const Number &number);
+    template <class Number, class T>
+    friend Matrix<std::common_type_t<T, Number>> operator+(const Number &number,
+                                                           const Matrix<T> &a);
+    template <class T, class Number>
+    friend Matrix<std::common_type_t<T, Number>> operator-(const Matrix<T> &a,
+                                                           const Number &number);
+    template <class Number, class T>
+    friend Matrix<std::common_type_t<T, Number>> operator-(const Number &number,
+                                                           const Matrix<T> &a);
+    template <class T, class Number>
+    friend Matrix<std::common_type_t<T, Number>> operator*(const Matrix<T> &a,
+                                                           const Number &number);
+    template <class Number, class T>
+    friend Matrix<std::common_type_t<T, Number>> operator*(const Number &number,
+                                                           const Matrix<T> &a);
+    template <class T, class Number>
+    friend Matrix<std::common_type_t<T, Number>> operator/(const Matrix<T> &a,
+                                                           const Number &number);
+    template <class Number, class T>
+    friend Matrix<std::common_type_t<T, Number>> operator/(const Number &number,
+                                                           const Matrix<T> &a);
+
+    template <class T>
+    friend Matrix<T> operator-(Matrix<T> &a);
+
+    template <class T1, class T2>
+    friend void operator+=(Matrix<T1> &a, const Matrix<T2> &b);
+    template <class T1, class T2>
+    friend void operator-=(Matrix<T1> &a, const Matrix<T2> &b);
+    template <class T1, class T2>
+    friend void operator*=(Matrix<T1> &a, const Matrix<T2> &b);
+    template <class T1, class T2>
+    friend void operator/=(Matrix<T1> &a, const Matrix<T2> &b);
+
+    template <class T, class Number>
+    friend void operator+=(Matrix<T> &a, const Number &number);
+    template <class Number, class T>
+    friend void operator+=(const Number &number, Matrix<T> &a);
+    template <class T, class Number>
+    friend void operator-=(Matrix<T> &a, const Number &number);
+    template <class Number, class T>
+    friend void operator-=(const Number &number, Matrix<T> &a);
+    template <class T, class Number>
+    friend void operator*=(Matrix<T> &a, const Number &number);
+    template <class Number, class T>
+    friend void operator*=(const Number &number, Matrix<T> &a);
+    template <class T, class Number>
+    friend void operator/=(Matrix<T> &a, const Number &number);
+    template <class Number, class T>
+    friend void operator/=(const Number &number, Matrix<T> &a);
+
+    template <class Number, class T>
+    friend void pow(Number &&number, const Matrix<T> &a);
+    template <class T, class Number>
+    friend void pow(const Matrix<T> &a, Number &&number);
+
+    template <class T>
+    friend Matrix<T> transpose(const Matrix<T> &a);
+    template <class T>
+    friend void transpose(const Matrix<T> &a, Matrix<T> &output);
+
+    template <class T1, class T2>
+    friend bool equalSingleThread(const Matrix<T1> &a,
+                                  const Matrix<T2> &b,
+                                  const size_t &sx,
+                                  const size_t &sy,
+                                  const Shape &shape);
+    template <class T1, class T2>
+    friend bool lessSingleThread(const Matrix<T1> &a,
+                                 const Matrix<T2> &b,
+                                 const size_t &sx,
+                                 const size_t &sy,
+                                 const Shape &shape);
+    template <class T1, class T2>
+    friend bool lessEqualSingleThread(const Matrix<T1> &a,
+                                      const Matrix<T2> &b,
+                                      const size_t &sx,
+                                      const size_t &sy,
+                                      const Shape &shape);
+    template <class T1, class T2>
+    friend bool greateSingleThreadr(const Matrix<T1> &a,
+                                    const Matrix<T2> &b,
+                                    const size_t &sx,
+                                    const size_t &sy,
+                                    const Shape &shape);
+    template <class T1, class T2>
+    friend bool greaterEquaSingleThreadl(const Matrix<T1> &a,
+                                         const Matrix<T2> &b,
+                                         const size_t &sx,
+                                         const size_t &sy,
+                                         const Shape &shape);
+    template <class T1, class T2>
+    friend bool notEquaSingleThreadl(const Matrix<T1> &a,
+                                     const Matrix<T2> &b,
+                                     const size_t &sx,
+                                     const size_t &sy,
+                                     const Shape &shape);
+
+    template <class T1, class T2, class O>
+    friend void addSingleThread(const Matrix<T1> &a,
+                                const Matrix<T2> &b,
+                                Matrix<O> &output,
+                                const size_t &sx,
+                                const size_t &sy,
+                                const Shape &shape);
+    template <class T1, class T2, class O>
+    friend void substractSingleThread(const Matrix<T1> &a,
+                                      const Matrix<T2> &b,
+                                      Matrix<O> &output,
+                                      const size_t &sx,
+                                      const size_t &sy,
+                                      const Shape &shape);
+    template <class T1, class T2, class O>
+    friend void multiplySingleThread(const Matrix<T1> &a,
+                                     const Matrix<T2> &b,
+                                     Matrix<O> &output,
+                                     const size_t &sx,
+                                     const size_t &sy,
+                                     const Shape &shape);
+
+    template <class Number, class T, class O>
+    friend void addSingleThread(const Number &number,
+                                const Matrix<T> &a,
+                                Matrix<O> &output,
+                                const size_t &sx,
+                                const size_t &sy,
+                                const Shape &shape);
+    template <class Number, class T, class O>
+    friend void substractSingleThread(const Number &number,
+                                      const Matrix<T> &a,
+                                      Matrix<O> &output,
+                                      const size_t &sx,
+                                      const size_t &sy,
+                                      const Shape &shape);
+    template <class T, class Number, class O>
+    friend void substractSingleThread(const Matrix<T> &a,
+                                      const Number &number,
+                                      Matrix<O> &output,
+                                      const size_t &sx,
+                                      const size_t &sy,
+                                      const Shape &shape);
+    template <class Number, class T, class O>
+    friend void multiplySingleThread(const Number &number,
+                                     const Matrix<T> &a,
+                                     Matrix<O> &output,
+                                     const size_t &sx,
+                                     const size_t &sy,
+                                     const Shape &shape);
+    template <class T, class Number, class O>
+    friend void divideSingleThread(const Matrix<T> &a,
+                                   const Number &number,
+                                   Matrix<O> &output,
+                                   const size_t &sx,
+                                   const size_t &sy,
+                                   const Shape &shape);
+    template <class Number, class T, class O>
+    friend void divideSingleThread(const Number &number,
+                                   const Matrix<T> &a,
+                                   Matrix<O> &output,
+                                   const size_t &sx,
+                                   const size_t &sy,
+                                   const Shape &shape);
+
+    template <class Number, class T, class O>
+    friend void powSingleThread(Number &&number,
+                                const Matrix<T> &a,
+                                Matrix<O> &output,
+                                const size_t &sx,
+                                const size_t &sy,
+                                const Shape &shape);
+    template <class T, class Number, class O>
+    friend void powSingleThread(const Matrix<T> &a,
+                                Number &&number,
+                                Matrix<O> &output,
+                                const size_t &sx,
+                                const size_t &sy,
+                                const Shape &shape);
+
+    template <class T>
+    friend void transpose(const Matrix<T> &a,
+                          Matrix<T> &output,
+                          const size_t &sx,
+                          const size_t &sy,
+                          const Shape &shape);
 };
+
+// TODO
+template <class ELEMENT_TYPE>
+void Matrix<ELEMENT_TYPE>::fill(const ELEMENT_TYPE &value) {}
+
+// TODO
+template <class ELEMENT_TYPE>
+template <class T>
+Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(const Matrix<T> &other) {
+    return *this;
+}
+
+// TODO
+template <class ELEMENT_TYPE>
+template <class T>
+Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(const std::vector<std::vector<T>> &init) {
+    return *this;
+}
+
+}  // namespace mca
 
 #endif

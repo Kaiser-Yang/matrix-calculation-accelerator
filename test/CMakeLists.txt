@@ -26,6 +26,12 @@ target_link_libraries(
     ${PROJECT_NAME}_unit_test
     GTest::gtest_main
     mca)
+message("${CMAKE_CURRENT_LIST_DIR}")
+target_include_directories(
+    ${PROJECT_NAME}_unit_test
+    PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/src/include
+    ${CMAKE_CURRENT_LIST_DIR}/../src/include)
 gtest_discover_tests(${PROJECT_NAME}_unit_test)
 
 find_program(CLANG_TIDY_EXE NAMES clang-tidy)
