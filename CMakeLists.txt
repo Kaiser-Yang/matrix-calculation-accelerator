@@ -22,8 +22,19 @@ else()
     add_library(mca STATIC ${MCA_SOURCE})
 endif()
 
+target_include_directories(mca INTERFACE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(mca PRIVATE ${PROJECT_SOURCE_DIR}/src/include)
+
+if (CMAKE_EXPORT_COMPILE_COMMANDS)
+    add_custom_command(
+        TARGET mca
+        PRE_BUILD
+        COMMAND
+        ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/compile_commands.json ${CMAKE_SOURCE_DIR})
+endif()
+
 find_program(CLANG_TIDY_EXE NAMES clang-tidy)
-if (NOT CLANG_TIDY_EXE STREQUAL "CLANG_TIDY_EXE-NOTFOUND")
+if (CLANG_TIDY_EXE)
     set_target_properties(mca PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY_EXE}")
 endif()
 

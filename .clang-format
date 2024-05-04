@@ -18,6 +18,7 @@ BinPackParameters: false
 ColumnLimit: 100
 DerivePointerAlignment: false
 IndentWidth: 4
+AccessModifierOffset: -4
 MaxEmptyLinesToKeep: 1
 PointerAlignment: Right
 SortIncludes: true
