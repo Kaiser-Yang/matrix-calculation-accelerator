@@ -9,7 +9,6 @@ if (WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 endif()
 
-
 include(FetchContent)
 FetchContent_Declare(
   googletest
@@ -27,9 +26,15 @@ target_link_libraries(
     ${PROJECT_NAME}_unit_test
     GTest::gtest_main
     mca)
+message("${CMAKE_CURRENT_LIST_DIR}")
+target_include_directories(
+    ${PROJECT_NAME}_unit_test
+    PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/src/include
+    ${CMAKE_CURRENT_LIST_DIR}/../src/include)
 gtest_discover_tests(${PROJECT_NAME}_unit_test)
 
 find_program(CLANG_TIDY_EXE NAMES clang-tidy)
-if (NOT CLANG_TIDY_EXE STREQUAL "CLANG_TIDY_EXE-NOTFOUND")
+if (CLANG_TIDY_EXE)
     set_target_properties(${PROJECT_NAME}_unit_test PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY_EXE}")
 endif()
