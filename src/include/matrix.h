@@ -304,11 +304,11 @@ private:
                                 const Shape &shape);
 
     template <class T>
-    friend void transpose(const Matrix<T> &a,
-                          Matrix<T> &output,
-                          const size_t &sx,
-                          const size_t &sy,
-                          const Shape &shape);
+    friend void transposeSingleThread(const Matrix<T> &a,
+                                      Matrix<T> &output,
+                                      const size_t &sx,
+                                      const size_t &sy,
+                                      const Shape &shape);
 };
 
 // TODO
