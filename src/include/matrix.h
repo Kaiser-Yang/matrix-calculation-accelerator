@@ -29,10 +29,11 @@ public:
 
     Matrix(const std::vector<std::vector<ELEMENT_TYPE>> &init) {
         shape.rows = init.size();
-        if (init.size() != 0) {
-            shape.columns = init[0].size();
-            data          = std::shared_ptr<ELEMENT_TYPE[]>(new ELEMENT_TYPE[shape.size()]);
+        if (init.size() != 0) { shape.columns = init[0].size(); }
+        if (shape.size() != 0) {
+            data = std::make_unique<ELEMENT_TYPE[]>(shape.size());
             for (size_t i = 0; i < shape.rows; i++) {
+                assert(init[i].size() == shape.columns);
                 for (size_t j = 0; j < shape.columns; j++) { get(i, j) = init[i][j]; }
             }
             //             TODO: update with multi thread
@@ -43,7 +44,7 @@ public:
     Matrix(const Shape &shape, const ELEMENT_TYPE &defaultValue) {
         this->shape = shape;
         if (shape.size() != 0) {
-            data = std::shared_ptr<ELEMENT_TYPE[]>(new ELEMENT_TYPE[shape.size()]);
+            data = std::make_unique<ELEMENT_TYPE[]>(shape.size());
             std::fill(data.get(), data.get() + shape.size(), defaultValue);
             // TODO: update with multi thread
             //             fill(defaultValue);
@@ -79,8 +80,8 @@ public:
         return data[i * shape.columns + j];
     }
 
-    const size_t rows() { return shape.rows; }
-    const size_t columns() { return shape.columns; }
+    size_t rows() const { return shape.rows; }
+    size_t columns() const { return shape.columns; }
 
     Shape getShape() const { return shape; }
 
@@ -98,7 +99,7 @@ public:
     Matrix<ELEMENT_TYPE> &operator=(const std::vector<std::vector<T>> &init);
 
 private:
-    std::shared_ptr<ELEMENT_TYPE[]> data;
+    std::unique_ptr<ELEMENT_TYPE[]> data;
     Shape shape;
 
     template <class T1, class T2>
