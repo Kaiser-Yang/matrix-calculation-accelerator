@@ -10,13 +10,14 @@ namespace mca {
 namespace test {
 class TestSinglThreadCalculation : public testing::Test {
 protected:
-    Matrix<> one, negOne, output, a, b;
+    Matrix<> one, negOne, output, a, b, c;
 
     void SetUp() override {
         one    = Matrix<>({3, 3}, 1);
         negOne = Matrix<>({3, 3}, -1);
         a      = Matrix<>({{0, 0, 0}, {1, 1, 1}, {2, 2, 2}});
         b      = Matrix<>({{1, 0, 0}, {0, 1, 0}, {0, 0, 1}});
+        c      = Matrix<>({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
     }
 
     void TearDown() override {}
@@ -80,21 +81,83 @@ TEST_F(TestSinglThreadCalculation, multiplyNumberSubMatrix) {}
 TEST_F(TestSinglThreadCalculation, divideNumberWholeMatrix) {}
 // TODO
 TEST_F(TestSinglThreadCalculation, divideNumberSubMatrix) {}
-// TODO
-TEST_F(TestSinglThreadCalculation, addWholeMatrix) {}
-// TODO
-TEST_F(TestSinglThreadCalculation, addSubMatrix) {}
-// TODO
-TEST_F(TestSinglThreadCalculation, sustractWholeMatrix) {}
-// TODO
-TEST_F(TestSinglThreadCalculation, sustractSubMatrix) {}
-// TODO
-TEST_F(TestSinglThreadCalculation, multiplyWholeMatrix) {}
-// TODO
-TEST_F(TestSinglThreadCalculation, multiplySubMatrix) {}
-// TODO
-TEST_F(TestSinglThreadCalculation, transposeWholeMatrix) {}
-// TODO
-TEST_F(TestSinglThreadCalculation, transposeSubMatrix) {}
+
+TEST_F(TestSinglThreadCalculation, addWholeMatrix) {
+    output = Matrix<>({3, 3}, 0);
+    addSingleThread(a, b, output, 0, 0, a.getShape());
+    Matrix<> result({{1, 0, 0}, {1, 2, 1}, {2, 2, 3}});
+    ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
+
+    addSingleThread(b, a, output, 0, 0, b.getShape());
+    ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
+}
+
+TEST_F(TestSinglThreadCalculation, addSubMatrix) {
+    output = Matrix<>({3, 3}, -1);
+    addSingleThread(a, b, output, 1, 1, {2, 2});
+    Matrix<> result({{-1, -1, -1}, {-1, 2, 1}, {-1, 2, 3}});
+    ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
+
+    addSingleThread(b, a, output, 1, 1, {2, 2});
+    ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
+}
+
+TEST_F(TestSinglThreadCalculation, sustractWholeMatrix) {
+    output = Matrix<>({3, 3}, 0);
+    substractSingleThread(a, b, output, 0, 0, a.getShape());
+    Matrix<> result({{-1, 0, 0}, {1, 0, 1}, {2, 2, 1}});
+    ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
+
+    substractSingleThread(b, a, output, 0, 0, b.getShape());
+    result = Matrix<>({{1, 0, 0}, {-1, 0, -1}, {-2, -2, -1}});
+    ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
+}
+
+TEST_F(TestSinglThreadCalculation, sustractSubMatrix) {
+    output = Matrix<>({3, 3}, -1);
+    substractSingleThread(a, b, output, 1, 1, {2, 2});
+    Matrix<> result({{-1, -1, -1}, {-1, 0, 1}, {-1, 2, 1}});
+    ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
+
+    substractSingleThread(b, a, output, 1, 1, {2, 2});
+    result = Matrix<>({{-1, -1, -1}, {-1, 0, -1}, {-1, -2, -1}});
+    ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
+}
+
+TEST_F(TestSinglThreadCalculation, multiplyWholeMatrix) {
+    output = Matrix<>({3, 3}, 0);
+    multiplySingleThread(a, one, output, 0, 0, a.getShape());
+    Matrix<> result({{0, 0, 0}, {3, 3, 3}, {6, 6, 6}});
+    ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
+
+    multiplySingleThread(one, a, output, 0, 0, one.getShape());
+    result = Matrix<>({3, 3}, 3);
+    ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
+}
+
+TEST_F(TestSinglThreadCalculation, multiplySubMatrix) {
+    output = Matrix<>({3, 3}, -1);
+    multiplySingleThread(a, one, output, 1, 1, {2, 2});
+    Matrix<> result({{-1, -1, -1}, {-1, 3, 3}, {-1, 6, 6}});
+    ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
+
+    multiplySingleThread(one, a, output, 1, 1, {2, 2});
+    result = Matrix<>({{-1, -1, -1}, {-1, 3, 3}, {-1, 3, 3}});
+    ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
+}
+
+TEST_F(TestSinglThreadCalculation, transposeWholeMatrix) {
+    output = Matrix<>({3, 3}, 0);
+    transposeSingleThread(c, output, 0, 0, c.getShape());
+    Matrix<> result({{1, 4, 7}, {2, 5, 8}, {3, 6, 9}});
+    ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
+}
+
+TEST_F(TestSinglThreadCalculation, transposeSubMatrix) {
+    output = Matrix<>({3, 3}, -1);
+    transposeSingleThread(c, output, 1, 1, {2, 2});
+    Matrix<> result({{-1, -1, -1}, {-1, 5, 8}, {-1, 6, 9}});
+    ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
+}
 }  // namespace test
 }  // namespace mca

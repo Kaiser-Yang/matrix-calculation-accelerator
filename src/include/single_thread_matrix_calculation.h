@@ -320,11 +320,11 @@ void divideSingleThread(const Number &number,
 //                        [2, 3],
 //                        [3, 4]]
 template <class T>
-void transpose(const Matrix<T> &a,
-               Matrix<T> &output,
-               const size_t &sx,
-               const size_t &sy,
-               const Shape &shape);
+void transposeSingleThread(const Matrix<T> &a,
+                           Matrix<T> &output,
+                           const size_t &sx,
+                           const size_t &sy,
+                           const Shape &shape);
 
 // Those below are the implementations
 template <class Number, class T, class O>
@@ -617,11 +617,11 @@ void divideSingleThread(const Number &number,
 }
 
 template <class T>
-void transpose(const Matrix<T> &a,
-               Matrix<T> &output,
-               const size_t &sx,
-               const size_t &sy,
-               const Shape &shape) {
+void transposeSingleThread(const Matrix<T> &a,
+                           Matrix<T> &output,
+                           const size_t &sx,
+                           const size_t &sy,
+                           const Shape &shape) {
     assert(a.shape.rows == output.shape.columns);
     assert(a.shape.columns == output.shape.rows);
     assert(sx + shape.rows <= output.shape.rows);
