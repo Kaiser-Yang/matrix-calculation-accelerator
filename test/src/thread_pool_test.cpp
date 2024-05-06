@@ -27,11 +27,14 @@ TEST(TestThreadPool, addTask) {
     size_t taskNum = 10;
     std::vector<std::future<size_t>> resultVector;
     for (size_t i = 0; i < taskNum; i++) {
-        resultVector.emplace_back(tp.addTask([i]() -> size_t { return i; }));
+        resultVector.emplace_back(
+            tp.addTask([](size_t a, size_t b) -> size_t { return a + b; }, (size_t)2, (size_t)3));
     }
     ASSERT_EQ(tp.getTaskNum(), taskNum);
     tp.resize(5);
-    for (size_t i = 0; i < taskNum; i++) { ASSERT_EQ(resultVector[i].get(), i); }
+    for (size_t i = 0; i < taskNum; i++) {
+        ASSERT_EQ(resultVector[i].get(), (size_t)2 + (size_t)3);
+    }
 }
 
 // this test will check if the running task will be executed normally

@@ -8,6 +8,7 @@
 #include <mutex>
 #include <queue>
 #include <thread>
+#include <utility>
 
 namespace mca {
 // the class is not thread-safe
@@ -35,6 +36,9 @@ public:
         return taskQueue.size();
     }
 
+    // add a task to the thread pool
+    // this will return a std::future
+    // you can use the object's get() to get the return value of your task
     template <class Function, class... Args>
     auto addTask(Function &&func, Args &&... args)
         -> std::future<std::invoke_result_t<Function, Args...>>;
@@ -67,7 +71,7 @@ auto ThreadPool::addTask(Function &&func, Args &&... args)
     -> std::future<std::invoke_result_t<Function, Args...>> {
     using ReturnType = std::invoke_result_t<Function, Args...>;
     auto taskPtr     = std::make_shared<std::packaged_task<ReturnType()>>(
-        [func, args...]() { return func(std::forward(args)...); });
+        std::bind(std::forward<Function>(func), std::forward<Args>(args)...));
     std::unique_lock<std::mutex> locker{mu};
     taskQueue.emplace([taskPtr]() { (*taskPtr)(); });
     cv.notify_one();
