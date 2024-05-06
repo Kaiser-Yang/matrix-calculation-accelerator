@@ -2,6 +2,7 @@
 #define SINGLE_THREAD_MATRIX_CALCULATION
 
 #include <cmath>
+#include <type_traits>
 
 #include "matrix.h"
 
@@ -377,14 +378,17 @@ bool lessSingleThread(const Matrix<T1> &a,
     using CommonType = std::common_type_t<T1, T2>;
     for (size_t i = sx; i < sx + shape.rows; i++) {
         for (size_t j = sy; j < sy + shape.columns; j++) {
+            // clang-format off
             if (std::is_floating_point_v<CommonType> &&
                 std::isgreaterequal(static_cast<CommonType>(a.get(i, j)),
                                     static_cast<CommonType>(b.get(i, j)))) {
                 return false;
-            } else if (static_cast<CommonType>(a.get(i, j)) >=
+            } else if (!std::is_floating_point_v<CommonType> &&
+                       static_cast<CommonType>(a.get(i, j)) >=
                        static_cast<CommonType>(b.get(i, j))) {
                 return false;
             }
+            // clang-format on
         }
     }
     return true;
