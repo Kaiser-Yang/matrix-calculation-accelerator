@@ -16,7 +16,6 @@ option(MCA_BUILD_TEST "Whether or not to build unit test" on)
 
 aux_source_directory(src MCA_SOURCE)
 aux_source_directory(src/include MCA_SOURCE)
-aux_source_directory(src/single_thread MCA_SOURCE)
 set(LIBRARY_OUTPUT_PATH lib)
 if (MCA_BUILD_SHARE_LIB)
     add_library(mca SHARED ${MCA_SOURCE})

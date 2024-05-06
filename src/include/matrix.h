@@ -191,37 +191,43 @@ private:
                                   const Matrix<T2> &b,
                                   const size_t &sx,
                                   const size_t &sy,
-                                  const Shape &shape);
+                                  const Shape &shape,
+                                  const double &eps);
     template <class T1, class T2>
     friend bool lessSingleThread(const Matrix<T1> &a,
                                  const Matrix<T2> &b,
                                  const size_t &sx,
                                  const size_t &sy,
-                                 const Shape &shape);
+                                 const Shape &shape,
+                                 const double &eps);
     template <class T1, class T2>
     friend bool lessEqualSingleThread(const Matrix<T1> &a,
                                       const Matrix<T2> &b,
                                       const size_t &sx,
                                       const size_t &sy,
-                                      const Shape &shape);
+                                      const Shape &shape,
+                                      const double &eps);
     template <class T1, class T2>
-    friend bool greateSingleThreadr(const Matrix<T1> &a,
+    friend bool greaterSingleThread(const Matrix<T1> &a,
                                     const Matrix<T2> &b,
                                     const size_t &sx,
                                     const size_t &sy,
-                                    const Shape &shape);
+                                    const Shape &shape,
+                                    const double &eps);
     template <class T1, class T2>
-    friend bool greaterEquaSingleThreadl(const Matrix<T1> &a,
+    friend bool greaterEqualSingleThread(const Matrix<T1> &a,
                                          const Matrix<T2> &b,
                                          const size_t &sx,
                                          const size_t &sy,
-                                         const Shape &shape);
+                                         const Shape &shape,
+                                         const double &eps);
     template <class T1, class T2>
-    friend bool notEquaSingleThreadl(const Matrix<T1> &a,
+    friend bool notEqualSingleThread(const Matrix<T1> &a,
                                      const Matrix<T2> &b,
                                      const size_t &sx,
                                      const size_t &sy,
-                                     const Shape &shape);
+                                     const Shape &shape,
+                                     const double &eps);
 
     template <class T1, class T2, class O>
     friend void addSingleThread(const Matrix<T1> &a,

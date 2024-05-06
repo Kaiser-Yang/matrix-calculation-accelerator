@@ -10,7 +10,7 @@ namespace mca {
 namespace test {
 class TestSinglThreadCalculation : public testing::Test {
 protected:
-    Matrix<> one, negOne, output, a, b, c;
+    Matrix<> one, negOne, output, a, b, c, d;
 
     void SetUp() override {
         one    = Matrix<>({3, 3}, 1);
@@ -18,6 +18,7 @@ protected:
         a      = Matrix<>({{0, 0, 0}, {1, 1, 1}, {2, 2, 2}});
         b      = Matrix<>({{1, 0, 0}, {0, 1, 0}, {0, 0, 1}});
         c      = Matrix<>({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
+        d      = Matrix<>({{0, 0, 0}, {1, 1, 1}, {2, 2, 2}});
     }
 
     void TearDown() override {}
@@ -38,21 +39,49 @@ TEST_F(TestSinglThreadCalculation, powWholeMatrix) {
         }
     }
 }
-// TODO
-TEST_F(TestSinglThreadCalculation, powSubMatrix) {}
 
-// TODO
-TEST_F(TestSinglThreadCalculation, lessWholeMatrix) {}
-// TODO
-TEST_F(TestSinglThreadCalculation, lessSubMatrix) {}
-// TODO
-TEST_F(TestSinglThreadCalculation, equalWholeMatrix) {}
-// TODO
-TEST_F(TestSinglThreadCalculation, equalSubMatrix) {}
-// TODO
-TEST_F(TestSinglThreadCalculation, lessEqualWholeMatrix) {}
-// TODO
-TEST_F(TestSinglThreadCalculation, lessEqualSubMatrix) {}
+TEST_F(TestSinglThreadCalculation, powSubMatrix) {
+    output = Matrix<>({3, 3}, -1);
+    powSingleThread(2, c, output, 0, 1, {2, 2});
+    Matrix<> result({{-1, 4, 8}, {-1, 32, 64}, {-1, -1, -1}});
+    ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
+    output = Matrix<>({3, 3}, -1);
+    powSingleThread(c, 2, output, 0, 1, {2, 2});
+    result = Matrix({{-1, 4, 9}, {-1, 25, 36}, {-1, -1, -1}});
+    ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
+}
+
+TEST_F(TestSinglThreadCalculation, lessWholeMatrix) {
+    ASSERT_TRUE(lessSingleThread(a, c, 0, 0, a.getShape()));
+    ASSERT_FALSE(lessSingleThread(a, b, 0, 0, a.getShape()));
+}
+
+TEST_F(TestSinglThreadCalculation, lessSubMatrix) {
+    ASSERT_TRUE(lessSingleThread(a, c, 1, 0, {2, 3}));
+    ASSERT_FALSE(lessSingleThread(a, b, 1, 0, {2, 2}));
+}
+
+TEST_F(TestSinglThreadCalculation, equalWholeMatrix) {
+    ASSERT_TRUE(equalSingleThread(a, d, 0, 0, a.getShape()));
+    ASSERT_FALSE(equalSingleThread(a, b, 0, 0, a.getShape()));
+}
+TEST_F(TestSinglThreadCalculation, equalSubMatrix) {
+    ASSERT_TRUE(equalSingleThread(a, d, 1, 0, {2, 2}));
+    ASSERT_FALSE(equalSingleThread(a, b, 1, 0, {2, 2}));
+}
+
+TEST_F(TestSinglThreadCalculation, lessEqualWholeMatrix) {
+    ASSERT_TRUE(lessEqualSingleThread(a, c, 0, 0, a.getShape()));
+    ASSERT_TRUE(lessEqualSingleThread(a, d, 0, 0, a.getShape()));
+    ASSERT_FALSE(lessEqualSingleThread(c, b, 0, 0, a.getShape()));
+}
+
+TEST_F(TestSinglThreadCalculation, lessEqualSubMatrix) {
+    ASSERT_TRUE(lessEqualSingleThread(a, c, 0, 0, {2, 3}));
+    ASSERT_TRUE(lessEqualSingleThread(a, d, 0, 0, {2, 3}));
+    ASSERT_FALSE(lessEqualSingleThread(c, a, 0, 0, {2, 3}));
+}
+
 // TODO
 TEST_F(TestSinglThreadCalculation, greaterWholeMatrix) {}
 // TODO

@@ -2,6 +2,7 @@
 #define SINGLE_THREAD_MATRIX_CALCULATION
 
 #include <cmath>
+#include <type_traits>
 
 #include "matrix.h"
 
@@ -59,7 +60,8 @@ bool lessSingleThread(const Matrix<T1> &a,
                       const Matrix<T2> &b,
                       const size_t &sx,
                       const size_t &sy,
-                      const Shape &shape);
+                      const Shape &shape,
+                      const double &eps = 1e-100);
 
 // Check if the elements of the sub-matrix of a are all equal with the sub-matrix of b's
 // This will only check the a[sx:sx+shape.rows][sy:sy+shape+shape.columns] with
@@ -69,7 +71,8 @@ inline bool equalSingleThread(const Matrix<T1> &a,
                               const Matrix<T2> &b,
                               const size_t &sx,
                               const size_t &sy,
-                              const Shape &shape);
+                              const Shape &shape,
+                              const double &eps = 1e-100);
 
 // Check if the elements of the sub-matrix of a are all less than or equal with the sub-matrix of
 // b's This will only check the a[sx:sx+shape.rows][sy:sy+shape+shape.columns] with
@@ -79,37 +82,41 @@ inline bool lessEqualSingleThread(const Matrix<T1> &a,
                                   const Matrix<T2> &b,
                                   const size_t &sx,
                                   const size_t &sy,
-                                  const Shape &shape);
+                                  const Shape &shape,
+                                  const double &eps = 1e-100);
 
 // Check if the elements of the sub-matrix of a are all greater than the sub-matrix of b's
 // This will only check the a[sx:sx+shape.rows][sy:sy+shape+shape.columns] with
 // b[sx:sx+shape.rows][sy:sy+shape+shape.columns]
 template <class T1, class T2>
-inline bool greateSingleThreadr(const Matrix<T1> &a,
+inline bool greaterSingleThread(const Matrix<T1> &a,
                                 const Matrix<T2> &b,
                                 const size_t &sx,
                                 const size_t &sy,
-                                const Shape &shape);
+                                const Shape &shape,
+                                const double &eps = 1e-100);
 
 // Check if the elements of the sub-matrix of a are all greater than or equal with the sub-matrix of
 // b's This will only check the a[sx:sx+shape.rows][sy:sy+shape+shape.columns] with
 // b[sx:sx+shape.rows][sy:sy+shape+shape.columns]
 template <class T1, class T2>
-inline bool greaterEquaSingleThreadl(const Matrix<T1> &a,
+inline bool greaterEqualSingleThread(const Matrix<T1> &a,
                                      const Matrix<T2> &b,
                                      const size_t &sx,
                                      const size_t &sy,
-                                     const Shape &shape);
+                                     const Shape &shape,
+                                     const double &eps = 1e-100);
 
 // Check if any element of the sub-matrix of a is not equal with the sub-matrix of b's
 // This will only check the a[sx:sx+shape.rows][sy:sy+shape+shape.columns] with
 // b[sx:sx+shape.rows][sy:sy+shape+shape.columns]
 template <class T1, class T2>
-bool notEquaSingleThreadl(const Matrix<T1> &a,
+bool notEqualSingleThread(const Matrix<T1> &a,
                           const Matrix<T2> &b,
                           const size_t &sx,
                           const size_t &sy,
-                          const Shape &shape);
+                          const Shape &shape,
+                          const double &eps = 1e-100);
 
 // Calcualte a + b, and store the result in output
 // This will only calculate the a+b[sx:sx+shape.rows][sy:sy+shape+shape.columns]
@@ -370,7 +377,8 @@ bool lessSingleThread(const Matrix<T1> &a,
                       const Matrix<T2> &b,
                       const size_t &sx,
                       const size_t &sy,
-                      const Shape &shape) {
+                      const Shape &shape,
+                      const double &eps) {
     assert(a.shape == b.shape);
     assert(sx + shape.rows <= a.shape.rows);
     assert(sy + shape.columns <= a.shape.columns);
@@ -378,11 +386,12 @@ bool lessSingleThread(const Matrix<T1> &a,
     for (size_t i = sx; i < sx + shape.rows; i++) {
         for (size_t j = sy; j < sy + shape.columns; j++) {
             if (std::is_floating_point_v<CommonType> &&
-                std::isgreaterequal(static_cast<CommonType>(a.get(i, j)),
-                                    static_cast<CommonType>(b.get(i, j)))) {
+                static_cast<CommonType>(a.get(i, j)) - static_cast<CommonType>(b.get(i, j)) >=
+                    -eps) {
                 return false;
-            } else if (static_cast<CommonType>(a.get(i, j)) >=
-                       static_cast<CommonType>(b.get(i, j))) {
+            }
+            if (!std::is_floating_point_v<CommonType> &&
+                static_cast<CommonType>(a.get(i, j)) >= static_cast<CommonType>(b.get(i, j))) {
                 return false;
             }
         }
@@ -395,8 +404,26 @@ inline bool equalSingleThread(const Matrix<T1> &a,
                               const Matrix<T2> &b,
                               const size_t &sx,
                               const size_t &sy,
-                              const Shape &shape) {
-    return !lessSingleThread(a, b, sx, sy, shape) && !lessSingleThread(b, a, sx, sy, shape);
+                              const Shape &shape,
+                              const double &eps) {
+    assert(a.shape == b.shape);
+    assert(sx + shape.rows <= a.shape.rows);
+    assert(sy + shape.columns <= a.shape.columns);
+    using CommonType = std::common_type_t<T1, T2>;
+    for (size_t i = sx; i < sx + shape.rows; i++) {
+        for (size_t j = sy; j < sy + shape.columns; j++) {
+            if (std::is_floating_point_v<CommonType> &&
+                std::fabs(static_cast<CommonType>(a.get(i, j)) -
+                          static_cast<CommonType>(b.get(i, j))) > eps) {
+                return false;
+            }
+            if (!std::is_floating_point_v<CommonType> &&
+                static_cast<CommonType>(a.get(i, j)) != static_cast<CommonType>(b.get(i, j))) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 template <class T1, class T2>
@@ -404,35 +431,108 @@ inline bool lessEqualSingleThread(const Matrix<T1> &a,
                                   const Matrix<T2> &b,
                                   const size_t &sx,
                                   const size_t &sy,
-                                  const Shape &shape) {
-    return lessSingleThread(a, b, sx, sy, shape) || equalSingleThread(a, b, sx, sy, shape);
+                                  const Shape &shape,
+                                  const double &eps) {
+    assert(a.shape == b.shape);
+    assert(sx + shape.rows <= a.shape.rows);
+    assert(sy + shape.columns <= a.shape.columns);
+    using CommonType = std::common_type_t<T1, T2>;
+    for (size_t i = sx; i < sx + shape.rows; i++) {
+        for (size_t j = sy; j < sy + shape.columns; j++) {
+            if (std::is_floating_point_v<CommonType> &&
+                static_cast<CommonType>(a.get(i, j)) - static_cast<CommonType>(b.get(i, j)) > eps) {
+                return false;
+            }
+            if (!std::is_floating_point_v<CommonType> &&
+                static_cast<CommonType>(a.get(i, j)) > static_cast<CommonType>(b.get(i, j))) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 template <class T1, class T2>
-inline bool greateSingleThreadr(const Matrix<T1> &a,
+inline bool greaterSingleThread(const Matrix<T1> &a,
                                 const Matrix<T2> &b,
                                 const size_t &sx,
                                 const size_t &sy,
-                                const Shape &shape) {
-    return !lessEqualSingleThread(a, b, sx, sy, shape);
+                                const Shape &shape,
+                                const double &eps) {
+    assert(a.shape == b.shape);
+    assert(sx + shape.rows <= a.shape.rows);
+    assert(sy + shape.columns <= a.shape.columns);
+    using CommonType = std::common_type_t<T1, T2>;
+    for (size_t i = sx; i < sx + shape.rows; i++) {
+        for (size_t j = sy; j < sy + shape.columns; j++) {
+            if (std::is_floating_point_v<CommonType> &&
+                (static_cast<CommonType>(a.get(i, j)) - static_cast<CommonType>(b.get(i, j)) <
+                     eps ||
+                 fabs(static_cast<CommonType>(a.get(i, j)) -
+                      static_cast<CommonType>(b.get(i, j))) <= eps)) {
+                return false;
+            }
+            if (!std::is_floating_point_v<CommonType> &&
+                static_cast<CommonType>(a.get(i, j)) <= static_cast<CommonType>(b.get(i, j))) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 template <class T1, class T2>
-inline bool greaterEquaSingleThreadl(const Matrix<T1> &a,
+inline bool greaterEqualSingleThread(const Matrix<T1> &a,
                                      const Matrix<T2> &b,
                                      const size_t &sx,
                                      const size_t &sy,
-                                     const Shape &shape) {
-    return greateSingleThreadr(a, b, sx, sy, shape) || equalSingleThread(a, b, sx, sy, shape);
+                                     const Shape &shape,
+                                     const double &eps) {
+    assert(a.shape == b.shape);
+    assert(sx + shape.rows <= a.shape.rows);
+    assert(sy + shape.columns <= a.shape.columns);
+    using CommonType = std::common_type_t<T1, T2>;
+    for (size_t i = sx; i < sx + shape.rows; i++) {
+        for (size_t j = sy; j < sy + shape.columns; j++) {
+            if (std::is_floating_point_v<CommonType> &&
+                static_cast<CommonType>(a.get(i, j)) - static_cast<CommonType>(b.get(i, j)) <
+                    -eps) {
+                return false;
+            }
+            if (!std::is_floating_point_v<CommonType> &&
+                static_cast<CommonType>(a.get(i, j)) < static_cast<CommonType>(b.get(i, j))) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 template <class T1, class T2>
-bool notEquaSingleThreadl(const Matrix<T1> &a,
+bool notEqualSingleThread(const Matrix<T1> &a,
                           const Matrix<T2> &b,
                           const size_t &sx,
                           const size_t &sy,
-                          const Shape &shape) {
-    return !equalSingleThread(a, b, sx, sy, shape);
+                          const Shape &shape,
+                          const double &eps) {
+    assert(a.shape == b.shape);
+    assert(sx + shape.rows <= a.shape.rows);
+    assert(sy + shape.columns <= a.shape.columns);
+    using CommonType = std::common_type_t<T1, T2>;
+    for (size_t i = sx; i < sx + shape.rows; i++) {
+        for (size_t j = sy; j < sy + shape.columns; j++) {
+            if (std::is_floating_point_v<CommonType> &&
+                std::fabs(static_cast<CommonType>(a.get(i, j)) -
+                          static_cast<CommonType>(b.get(i, j))) <= eps) {
+                return false;
+            }
+            if (!std::is_floating_point_v<CommonType> &&
+                static_cast<CommonType>(a.get(i, j)) == static_cast<CommonType>(b.get(i, j))) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 template <class Number, class T, class O>
