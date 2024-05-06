@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.14)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_C_STANDARD_REQUIRED on)
-set(CMAKE_EXPORT_COMPILE_COMMANDS on)
+set(CMAKE_CXX_STANDARD_REQUIRED on)
 set(CMAKE_CXX_EXTENSIONS off)
+set(CMAKE_EXPORT_COMPILE_COMMANDS on)
 
 if (WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
@@ -11,8 +11,9 @@ endif()
 
 include(FetchContent)
 FetchContent_Declare(
-  googletest
-  URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip)
+    googletest
+    URL
+    https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip)
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
@@ -20,18 +21,14 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 include(GoogleTest)
 
-aux_source_directory(src UNIT_TEST_SOURCE)
-add_executable(${PROJECT_NAME}_unit_test ${UNIT_TEST_SOURCE})
+aux_source_directory(src ${PROJECT_NAME}_unit_test_SOURCE)
+add_executable(${PROJECT_NAME}_unit_test ${${PROJECT_NAME}_unit_test_SOURCE})
 target_link_libraries(
     ${PROJECT_NAME}_unit_test
+    PRIVATE
     GTest::gtest_main
     mca)
-message("${CMAKE_CURRENT_LIST_DIR}")
-target_include_directories(
-    ${PROJECT_NAME}_unit_test
-    PRIVATE
-    ${CMAKE_CURRENT_LIST_DIR}/src/include
-    ${CMAKE_CURRENT_LIST_DIR}/../src/include)
+
 gtest_discover_tests(${PROJECT_NAME}_unit_test)
 
 find_program(CLANG_TIDY_EXE NAMES clang-tidy)
