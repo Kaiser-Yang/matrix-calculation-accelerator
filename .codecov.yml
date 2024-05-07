@@ -1,0 +1,13 @@
+comment:
+  layout: "condensed_header, condensed_files, condensed_footer"
+  hide_project_coverage: false # set to false
+codecov:
+  branch: develop
+coverage:
+  status:
+    project:
+      default: false  # disable the default status that measures entire project
+      mca:  # declare a new status context "mca"
+        target: 75%
+        paths: 
+          - "!test/"  # remove all files in "tests/"
