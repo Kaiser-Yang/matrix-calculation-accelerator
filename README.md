@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/Kaiser-Yang/matrix-calculation-accelarator/graph/badge.svg?token=INWEC8613W)](https://codecov.io/gh/Kaiser-Yang/matrix-calculation-accelarator)
+
 # Release Log
 * `v0.0.3`: this version substitutes `multi thread` with `multi-thread`.
 * `v0.0.2`: this version substitutes the `#` with `*`.
