@@ -15,6 +15,7 @@ option(mca_BUILD_SHARE_LIB "Build shared libraries rather than static libraries"
 option(mca_BUILD_TEST "Whether or not to build unit test" on)
 
 aux_source_directory(src mca_SOURCE)
+
 set(LIBRARY_OUTPUT_PATH lib)
 if (mca_BUILD_SHARE_LIB)
     add_library(mca SHARED ${mca_SOURCE})
