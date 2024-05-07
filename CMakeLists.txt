@@ -13,6 +13,11 @@ endif()
 
 option(mca_BUILD_SHARE_LIB "Build shared libraries rather than static libraries" on)
 option(mca_BUILD_TEST "Whether or not to build unit test" on)
+option(mca_GENERATE_COVERAGE "Whether or not to generate codes coverage report" off)
+
+if (mca_GENERATE_COVERAGE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+endif()
 
 aux_source_directory(src mca_SOURCE)
 
