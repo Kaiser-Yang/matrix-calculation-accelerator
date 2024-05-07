@@ -1,23 +1,77 @@
 comment:
-  layout: "condensed_header, condensed_files, condensed_footer"
+  layout: "condensed_header, diff, flags, components, condensed_files, condensed_footer"
   behavior: default
   hide_project_coverage: false # set to false
-  require_changes: false
+  require_changes: false  # if true: only post the comment if coverage changes
   require_base: false        # [true :: must have a base report to post]
   require_head: true         # [true :: must have a head report to post]
+component_management:
+  individual_components:
+    - component_id: src/include/  # this is an identifier that should not be changed
+      name: src/include/  # this is a display name, and can be changed freely
+      paths:
+        - src/include/
+    - component_id: src/*.cpp
+      name: src/*.cpp
+      paths:
+        - src/*.cpp
 codecov:
   branch: develop
 coverage:
   status:
-    project:
-      default: false  # disable the default status that measures entire project
-      mca:  # declare a new status context "mca"
+    patch:
+      default: false
+      mca:
         target: 75%
         threshold: 5%
+        flags:
+          - "unit-test"
         paths: 
           - "src/"
+        branches:
+          - "master"
+          - "develop"
+        if_ci_failed: error
+        informational: false
+        only_pulls: false
       test:
         target: 100%
         threshold: 5%
+        flags:
+          - "test-source"
         paths:
           - "test/"
+        branches:
+          - "master"
+          - "develop"
+        if_ci_failed: error
+        informational: false
+        only_pulls: false
+    project:
+      default: false
+      mca:
+        target: 75%
+        threshold: 5%
+        flags:
+          - "unit-test"
+        paths: 
+          - "src/"
+        branches:
+          - "master"
+          - "develop"
+        if_ci_failed: error
+        informational: false
+        only_pulls: false
+      test:
+        target: 100%
+        threshold: 5%
+        flags:
+          - "test-source"
+        paths:
+          - "test/"
+        branches:
+          - "master"
+          - "develop"
+        if_ci_failed: error
+        informational: false
+        only_pulls: false
