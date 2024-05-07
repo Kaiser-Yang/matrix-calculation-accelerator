@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.14)
 
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    project(unit_test)
+    message(FATAL_ERROR "You can not build this project as a main project")
+endif()
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED on)
 set(CMAKE_CXX_EXTENSIONS off)
@@ -29,7 +34,20 @@ target_link_libraries(
     GTest::gtest_main
     mca)
 
-gtest_discover_tests(${PROJECT_NAME}_unit_test)
+# In windows when using VS, this cannot find the share lib
+# so we just update the working directory
+# if your config type is different with ${CMAKE_BUILD_TYPE}
+# you may need copy the libraries manually
+# or update the environment PATH to find where the shared lib is
+# if you build a static lib, this can be ignored
+if (mca_BUILD_SHARE_LIB AND WIN32 AND (CMAKE_GENERATOR MATCHES "Visual Studio"))
+    gtest_discover_tests(
+        ${PROJECT_NAME}_unit_test
+        WORKING_DIRECTORY
+        ${CMAKE_BINARY_DIR}/${LIBRARY_OUTPUT_PATH}/${CMAKE_BUILD_TYPE})
+else()
+    gtest_discover_tests(${PROJECT_NAME}_unit_test)
+endif()
 
 find_program(CLANG_TIDY_EXE NAMES clang-tidy)
 if (CLANG_TIDY_EXE)
