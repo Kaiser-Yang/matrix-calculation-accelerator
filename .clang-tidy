@@ -33,4 +33,4 @@ WarningsAsErrors: >
     performance-no-automatic-move, performance-unnecessary-copy-initialization,
     performance-type-promotion-in-math-fn, performance-unnecessary-value-param
 
-HeaderFilterRegex: '^(src\/.*|include\/.*)$'
+HeaderFilterRegex: '^(src/include/.*)$'
