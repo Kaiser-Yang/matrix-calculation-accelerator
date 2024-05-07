@@ -1,5 +1,7 @@
 name: generate unit tests coverage
-on: [pull_request]
+on:
+  pull_request:
+    branches: [ "develop", "master" ]
 jobs:
   run:
     runs-on: ubuntu-latest
