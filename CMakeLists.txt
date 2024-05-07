@@ -28,6 +28,13 @@ else()
     add_library(mca STATIC ${mca_SOURCE})
 endif()
 
+find_package(Threads REQUIRED)
+target_link_libraries(mca PUBLIC Threads::Threads)
+# when built as a sub directory, epxort mca_LINK_LIB
+if(NOT CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    set(mca_LINK_LIB ${CMAKE_THREAD_LIBS_INIT} PARENT_SCOPE)
+endif()
+
 target_include_directories(mca PUBLIC ${PROJECT_SOURCE_DIR}/src/include)
 
 find_program(CLANG_TIDY_EXE NAMES clang-tidy)
