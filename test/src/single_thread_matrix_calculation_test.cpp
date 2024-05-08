@@ -82,18 +82,39 @@ TEST_F(TestSinglThreadCalculation, lessEqualSubMatrix) {
     ASSERT_FALSE(lessEqualSingleThread(c, a, 0, 0, {2, 3}));
 }
 
-// TODO
-TEST_F(TestSinglThreadCalculation, greaterWholeMatrix) {}
-// TODO
-TEST_F(TestSinglThreadCalculation, greaterSubMatrix) {}
-// TODO
-TEST_F(TestSinglThreadCalculation, greaterEqualWholeMatrix) {}
-// TODO
-TEST_F(TestSinglThreadCalculation, greaterEqualSubMatrix) {}
-// TODO
-TEST_F(TestSinglThreadCalculation, notEqualWholeMatrix) {}
-// TODO
-TEST_F(TestSinglThreadCalculation, notEqualSubMatrix) {}
+TEST_F(TestSinglThreadCalculation, greaterWholeMatrix) {
+    ASSERT_TRUE(greaterSingleThread(c, a, 0, 0, c.getShape()));
+    ASSERT_FALSE(greaterSingleThread(d, a, 0, 0, d.getShape()));
+    ASSERT_FALSE(greaterSingleThread(d, b, 0, 0, b.getShape()));
+}
+
+TEST_F(TestSinglThreadCalculation, greaterSubMatrix) {
+    ASSERT_TRUE(greaterSingleThread(c, a, 0, 1, {2, 2}));
+    ASSERT_FALSE(greaterSingleThread(a, b, 0, 1, {2, 2}));
+    ASSERT_FALSE(greaterSingleThread(a, d, 0, 1, {2, 2}));
+}
+
+TEST_F(TestSinglThreadCalculation, greaterEqualWholeMatrix) {
+    ASSERT_TRUE(greaterEqualSingleThread(a, d, 0, 0, a.getShape()));
+    ASSERT_TRUE(greaterEqualSingleThread(c, a, 0, 0, c.getShape()));
+    ASSERT_FALSE(greaterEqualSingleThread(b, c, 0, 0, b.getShape()));
+}
+
+TEST_F(TestSinglThreadCalculation, greaterEqualSubMatrix) {
+    ASSERT_TRUE(greaterEqualSingleThread(a, d, 0, 1, {3, 2}));
+    ASSERT_TRUE(greaterEqualSingleThread(c, b, 0, 1, {3, 2}));
+    ASSERT_FALSE(greaterEqualSingleThread(b, c, 0, 1, {3, 2}));
+}
+
+TEST_F(TestSinglThreadCalculation, notEqualWholeMatrix) {
+    ASSERT_TRUE(notEqualSingleThread(a, c, 0, 0, a.getShape()));
+    ASSERT_FALSE(notEqualSingleThread(a, d, 0, 0, a.getShape()));
+}
+
+TEST_F(TestSinglThreadCalculation, notEqualSubMatrix) {
+    ASSERT_TRUE(notEqualSingleThread(a, c, 1, 1, {2, 1}));
+    ASSERT_FALSE(notEqualSingleThread(a, d, 1, 1, {2, 1}));
+}
 // TODO
 TEST_F(TestSinglThreadCalculation, addNumberWholeMatrix) {}
 // TODO
