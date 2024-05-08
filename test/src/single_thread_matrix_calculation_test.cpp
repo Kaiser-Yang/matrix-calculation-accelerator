@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 #include <cmath>
+#include <iostream>
 
 #include "matrix.h"
 
@@ -24,30 +25,33 @@ protected:
     void TearDown() override {}
 };
 
-TEST_F(TestSinglThreadCalculation, powWholeMatrix) {
+TEST_F(TestSinglThreadCalculation, powNumberWholeMatrix) {
     output = Matrix<>({3, 3}, 0);
-    powSingleThread(2, a, output, 0, 0, a.getShape());
-    for (size_t i = 0; i < output.rows(); i++) {
-        for (size_t j = 0; j < output.columns(); j++) {
-            ASSERT_DOUBLE_EQ(std::pow(2.0, i), output.get(i, j));
-        }
-    }
-    powSingleThread(a, 2, output, 0, 0, a.getShape());
-    for (size_t i = 0; i < output.rows(); i++) {
-        for (size_t j = 0; j < output.columns(); j++) {
-            ASSERT_DOUBLE_EQ(std::pow(i, 2.0), output.get(i, j));
-        }
-    }
+    powNumberSingleThread(a, 2, output, 0, 0, a.getShape());
+    Matrix<> result = Matrix<>({{0, 0, 0}, {1, 1, 1}, {4, 4, 4}});
+    std::cout << output.rows() << output.columns() << std::endl;
+    std::cout << result.rows() << result.columns() << std::endl;
+    ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
 }
 
-TEST_F(TestSinglThreadCalculation, powSubMatrix) {
+TEST_F(TestSinglThreadCalculation, powNumberSubMatrix) {
     output = Matrix<>({3, 3}, -1);
-    powSingleThread(2, c, output, 0, 1, {2, 2});
-    Matrix<> result({{-1, 4, 8}, {-1, 32, 64}, {-1, -1, -1}});
+    powNumberSingleThread(c, 2, output, 0, 1, {2, 2});
+    Matrix<> result = Matrix<>({{-1, 4, 9}, {-1, 25, 36}, {-1, -1, -1}});
     ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
+}
+
+TEST_F(TestSinglThreadCalculation, numberPowWholeMatrix) {
+    output = Matrix<>({3, 3}, 0);
+    numberPowSingleThread(2, a, output, 0, 0, a.getShape());
+    Matrix<> result = Matrix<>({{1, 1, 1}, {2, 2, 2}, {4, 4, 4}});
+    ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
+}
+
+TEST_F(TestSinglThreadCalculation, numberPowSubMatrix) {
     output = Matrix<>({3, 3}, -1);
-    powSingleThread(c, 2, output, 0, 1, {2, 2});
-    result = Matrix({{-1, 4, 9}, {-1, 25, 36}, {-1, -1, -1}});
+    numberPowSingleThread(2, c, output, 0, 1, {2, 2});
+    Matrix<> result({{-1, 4, 8}, {-1, 32, 64}, {-1, -1, -1}});
     ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
 }
 
@@ -65,6 +69,7 @@ TEST_F(TestSinglThreadCalculation, equalWholeMatrix) {
     ASSERT_TRUE(equalSingleThread(a, d, 0, 0, a.getShape()));
     ASSERT_FALSE(equalSingleThread(a, b, 0, 0, a.getShape()));
 }
+
 TEST_F(TestSinglThreadCalculation, equalSubMatrix) {
     ASSERT_TRUE(equalSingleThread(a, d, 1, 0, {2, 2}));
     ASSERT_FALSE(equalSingleThread(a, b, 1, 0, {2, 2}));
@@ -133,22 +138,22 @@ TEST_F(TestSinglThreadCalculation, addSubMatrix) {
 
 TEST_F(TestSinglThreadCalculation, sustractWholeMatrix) {
     output = Matrix<>({3, 3}, 0);
-    substractSingleThread(a, b, output, 0, 0, a.getShape());
+    subtractSingleThread(a, b, output, 0, 0, a.getShape());
     Matrix<> result({{-1, 0, 0}, {1, 0, 1}, {2, 2, 1}});
     ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
 
-    substractSingleThread(b, a, output, 0, 0, b.getShape());
+    subtractSingleThread(b, a, output, 0, 0, b.getShape());
     result = Matrix<>({{1, 0, 0}, {-1, 0, -1}, {-2, -2, -1}});
     ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
 }
 
 TEST_F(TestSinglThreadCalculation, sustractSubMatrix) {
     output = Matrix<>({3, 3}, -1);
-    substractSingleThread(a, b, output, 1, 1, {2, 2});
+    subtractSingleThread(a, b, output, 1, 1, {2, 2});
     Matrix<> result({{-1, -1, -1}, {-1, 0, 1}, {-1, 2, 1}});
     ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
 
-    substractSingleThread(b, a, output, 1, 1, {2, 2});
+    subtractSingleThread(b, a, output, 1, 1, {2, 2});
     result = Matrix<>({{-1, -1, -1}, {-1, 0, -1}, {-1, -2, -1}});
     ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
 }

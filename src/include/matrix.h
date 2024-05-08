@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <cstring>
+#include <initializer_list>
 #include <memory>
 #include <type_traits>
 #include <vector>
@@ -13,90 +14,172 @@ struct Shape {
     size_t columns = 0;
 
     Shape() = default;
-    Shape(size_t rows, size_t columns) : rows(rows), columns(columns) {}
-    bool operator==(const Shape &other) const {
-        return rows == other.rows && columns == other.columns;
-    }
-    bool operator!=(const Shape &other) const { return !(*this == other); }
 
-    size_t size() const { return rows * columns; }
+    Shape(size_t rows, size_t columns);
+
+    bool operator==(const Shape &other) const;
+
+    bool operator!=(const Shape &other) const;
+
+    size_t size() const;
 };
 
 template <class ELEMENT_TYPE = double>
 class Matrix {
 public:
+    // Construct an empty matrix
     Matrix() = default;
 
-    Matrix(const std::vector<std::vector<ELEMENT_TYPE>> &init) {
-        shape.rows = init.size();
-        if (init.size() != 0) { shape.columns = init[0].size(); }
-        if (shape.size() != 0) {
-            data = std::make_unique<ELEMENT_TYPE[]>(shape.size());
-            for (size_t i = 0; i < shape.rows; i++) {
-                assert(init[i].size() == shape.columns);
-                for (size_t j = 0; j < shape.columns; j++) { get(i, j) = init[i][j]; }
-            }
-            //             TODO: update with multi thread
-            //             *this         = init;
-        }
-    }
+    // Construct an identity matrix
+    Matrix(const Shape &shape);
 
-    Matrix(const Shape &shape, const ELEMENT_TYPE &defaultValue) {
-        this->shape = shape;
-        if (shape.size() != 0) {
-            data = std::make_unique<ELEMENT_TYPE[]>(shape.size());
-            std::fill(data.get(), data.get() + shape.size(), defaultValue);
-            // TODO: update with multi thread
-            //             fill(defaultValue);
-        }
-    }
+    // Construct a matrix from a initializer_list
+    // You can use this like Matrix<>({{1, 2}, {3, 4}})
+    // NOTE: if you use Matrix({{1, 2}, {3, 4}}) the ELEMENT_TYPE will be int rather than double
+    Matrix(const std::initializer_list<std::initializer_list<ELEMENT_TYPE>> &init);
 
+    // Construct a matrix from a vector
+    Matrix(const std::vector<std::vector<ELEMENT_TYPE>> &init);
+
+    // Construct a matrix with shape and defaultValue
+    Matrix(const Shape &shape, const ELEMENT_TYPE &defaultValue);
+
+    // Construct a diagonal matrix, the diag is the diagonal elements
+    // Matrix<>({1, 2, 3, 4}) will construct a matrix whose shape are 4 * 4,
+    // and diagonal elements are 1, 2, 3, 4 other elements will be ELEMENT_TYPE()
+    // In this case, double() will be 0
+    Matrix(const std::initializer_list<ELEMENT_TYPE> &diag);
+
+    // Copy constructor
+    // If the other matrix's ELEMENT_TYPE is not same with current matrix,
+    // the other matrix's data will use static_cast<> to convert its type the same with current
+    // matrix
     template <class T>
-    Matrix(const Matrix<T> &other) {
-        *this = other;
-    }
+    Matrix(const Matrix<T> &other);
 
-    // only those which have the same ELEMENT_TYPE can use move constructor
-    Matrix(Matrix &&other) noexcept
-        : data(std::move(other.data)), shape(std::move(other.getShape())) {}
+    // Move constructor
+    // NOTE: only those which have the same ELEMENT_TYPE can use move constructor
+    Matrix(Matrix &&other) noexcept;
 
-    // only those which have the same ELEMENT_TYPE can use move assignment
-    Matrix &operator=(Matrix &&other) noexcept {
-        shape = std::move(other.shape);
-        data  = std::move(other.data);
-        return *this;
-    }
+    // Move assignment
+    // NOTE: only those which have the same ELEMENT_TYPE can use move assignment
+    Matrix &operator=(Matrix &&other) noexcept;
 
-    ELEMENT_TYPE &get(size_t i, size_t j) {
-        assert(i < shape.rows && j < shape.columns);
-        return data[i * shape.columns + j];
-    }
-
-    ELEMENT_TYPE *dataPtr() { return data.get(); }
-    const ELEMENT_TYPE *dataPtr() const { return data.get(); }
-
-    const ELEMENT_TYPE &get(size_t i, size_t j) const {
-        assert(i < shape.rows && j < shape.columns);
-        return data[i * shape.columns + j];
-    }
-
-    size_t rows() const { return shape.rows; }
-    size_t columns() const { return shape.columns; }
-
-    Shape getShape() const { return shape; }
-
-    void reshape(const Shape &shape) {
-        assert(this->shape.size() == shape.size());
-        this->shape = shape;
-    }
-
-    void fill(const ELEMENT_TYPE &value);
-
+    // Copy assignment
+    // If the other matrix's ELEMENT_TYPE is not same with current matrix,
+    // the other matrix's data will use static_cast<> to convert its type the same with current
+    // matrix
     template <class T>
     Matrix<ELEMENT_TYPE> &operator=(const Matrix<T> &other);
 
+    // Copy assignment from a initializer_list
+    // You can use this like: matrix = {{1, 2}, {3, 4}}
+    // If the initializer_list's T is not same with current matrix,
+    // the initializer_list's data will use static_cast<> to convert its type the same with current
+    // matrix
+    template <class T>
+    Matrix<ELEMENT_TYPE> &operator=(const std::initializer_list<std::initializer_list<T>> &init);
+
+    // Copy assignment from a vector
+    // If the vector's T is not same with current matrix,
+    // the vector's data will use static_cast<> to convert its type the same with current
+    // matrix
     template <class T>
     Matrix<ELEMENT_TYPE> &operator=(const std::vector<std::vector<T>> &init);
+
+    // get the reference to the element of i-th row, j-th column
+    ELEMENT_TYPE &get(size_t i, size_t j);
+    const ELEMENT_TYPE &get(size_t i, size_t j) const;
+
+    // get the date pointer
+    ELEMENT_TYPE *dataPtr();
+    const ELEMENT_TYPE *dataPtr() const;
+
+    // get the number of rows
+    size_t rows() const;
+
+    // get the number of columns
+    size_t columns() const;
+
+    // get the matrix's shape
+    Shape getShape() const;
+
+    // Reshape the matrix
+    // NOTE: this is only valid, when the new shape has the same elements with the old one
+    void reshape(const Shape &shape);
+
+    // Make all the elements of the matrix be a new value
+    void fill(const ELEMENT_TYPE &value);
+
+    // Calcualte number ^ (*this), and store the result in output
+    // If the output is nullptr, (*this) will be changed
+    // NOTE: (*this) must have the same shape with output
+    //       If O and ELEMENT_TYPE are not same, all the elements will first be casted to
+    //       std::common_type<O, ELEMENT_TYPE>, after calculation they will be casted into O
+    //       by using static_cast
+    // for example: a = [[1, 2, 3],
+    //                   [2, 3, 4]]
+    //              a.numberPow(2, output)
+    //              output: [[2^1, 2^2, 2^3],
+    //                       [2^2, 2^3, 2^4]]
+    //              a.numberPow(2)
+    //              a: [[2^1, 2^2, 2^3],
+    //                  [2^2, 2^3, 2^4]]
+    template <class Number, class O>
+    void numberPow(Number &&number, const Matrix<O> &output = nullptr);
+
+    // Calcualte (*this) ^ number, and store the result in output
+    // If the output is nullptr, (*this) will be changed
+    // NOTE: (*this) must have the same shape with output
+    //       If O and ELEMENT_TYPE are not same, all the elements will first be casted to
+    //       std::common_type<O, ELEMENT_TYPE>, after calculation they will be casted into O
+    //       by using static_cast
+    // for example: a = [[1, 2, 3],
+    //                   [2, 3, 4]]
+    //              a.powNumber(2, output)
+    //              output: [[1^2, 2^2, 3^2],
+    //                       [2^2, 3^2, 4^2]]
+    //              a.numberPow(2)
+    //              a: [[1^2, 2^2, 3^2],
+    //                  [2^2, 3^2, 4^2]]
+    template <class Number, class O>
+    void powNumber(Number &&number, const Matrix<O> &output = nullptr);
+
+    // Calcualte (*this) ^ exponet, and store the result in output
+    // This is different with powNumber or numberPow
+    // This will calculate the matrix exponention
+    // This is only valid when (*this) is a square matrix
+    // NOTE: (*this) must be a square matrix
+    //       (*this) must have the same shape with output
+    //       If O and ELEMENT_TYPE are not same, all the elements will first be casted to
+    //       std::common_type<O, ELEMENT_TYPE>, after calculation they will be casted into O
+    //       by using static_cast
+    // for example: a = [[1, 2],
+    //                   [2, 3]]
+    //              a.pow(2, output)
+    //              output = [[5, 8],
+    //                        [8, 13]]
+    template <class O>
+    void pow(size_t exponent, Matrix<O> &output = nullptr);
+
+    // Transpose (*this), and store the result in output
+    // If the output is nullptr, (*this) will be changed
+    // NOTE: output must have the same shape with the current matrix after tranpositon
+    //       If O and ELEMENT_TYPE are not same, all the elements will first be casted to
+    //       std::common_type<O, ELEMENT_TYPE>, after calculation they will be casted into O
+    //       by using static_cast
+    // for example: a = [[1, 2, 3],
+    //                   [2, 3, 4]]
+    //              a.powNumber(2, output)
+    //              output: [[1, 2],
+    //                       [2, 3],
+    //                       [3, 4]]
+    //              a.numberPow(2)
+    //              a: [[1, 2],
+    //                  [2, 3],
+    //                  [3, 4]]
+    template <class O>
+    void transpose(Matrix<O> &output = nullptr);
 
 private:
     std::unique_ptr<ELEMENT_TYPE[]> data;
@@ -147,9 +230,6 @@ private:
     friend Matrix<std::common_type_t<T, Number>> operator/(const Number &number,
                                                            const Matrix<T> &a);
 
-    template <class T>
-    friend Matrix<T> operator-(Matrix<T> &a);
-
     template <class T1, class T2>
     friend void operator+=(Matrix<T1> &a, const Matrix<T2> &b);
     template <class T1, class T2>
@@ -175,16 +255,6 @@ private:
     friend void operator/=(Matrix<T> &a, const Number &number);
     template <class Number, class T>
     friend void operator/=(const Number &number, Matrix<T> &a);
-
-    template <class Number, class T>
-    friend void pow(Number &&number, const Matrix<T> &a);
-    template <class T, class Number>
-    friend void pow(const Matrix<T> &a, Number &&number);
-
-    template <class T>
-    friend Matrix<T> transpose(const Matrix<T> &a);
-    template <class T>
-    friend void transpose(const Matrix<T> &a, Matrix<T> &output);
 
     template <class T1, class T2>
     friend bool equalSingleThread(const Matrix<T1> &a,
@@ -237,12 +307,12 @@ private:
                                 const size_t &sy,
                                 const Shape &shape);
     template <class T1, class T2, class O>
-    friend void substractSingleThread(const Matrix<T1> &a,
-                                      const Matrix<T2> &b,
-                                      Matrix<O> &output,
-                                      const size_t &sx,
-                                      const size_t &sy,
-                                      const Shape &shape);
+    friend void subtractSingleThread(const Matrix<T1> &a,
+                                     const Matrix<T2> &b,
+                                     Matrix<O> &output,
+                                     const size_t &sx,
+                                     const size_t &sy,
+                                     const Shape &shape);
     template <class T1, class T2, class O>
     friend void multiplySingleThread(const Matrix<T1> &a,
                                      const Matrix<T2> &b,
@@ -259,19 +329,19 @@ private:
                                 const size_t &sy,
                                 const Shape &shape);
     template <class Number, class T, class O>
-    friend void substractSingleThread(const Number &number,
-                                      const Matrix<T> &a,
-                                      Matrix<O> &output,
-                                      const size_t &sx,
-                                      const size_t &sy,
-                                      const Shape &shape);
+    friend void subtractSingleThread(const Number &number,
+                                     const Matrix<T> &a,
+                                     Matrix<O> &output,
+                                     const size_t &sx,
+                                     const size_t &sy,
+                                     const Shape &shape);
     template <class T, class Number, class O>
-    friend void substractSingleThread(const Matrix<T> &a,
-                                      const Number &number,
-                                      Matrix<O> &output,
-                                      const size_t &sx,
-                                      const size_t &sy,
-                                      const Shape &shape);
+    friend void subtractSingleThread(const Matrix<T> &a,
+                                     const Number &number,
+                                     Matrix<O> &output,
+                                     const size_t &sx,
+                                     const size_t &sy,
+                                     const Shape &shape);
     template <class Number, class T, class O>
     friend void multiplySingleThread(const Number &number,
                                      const Matrix<T> &a,
@@ -295,19 +365,19 @@ private:
                                    const Shape &shape);
 
     template <class Number, class T, class O>
-    friend void powSingleThread(Number &&number,
-                                const Matrix<T> &a,
-                                Matrix<O> &output,
-                                const size_t &sx,
-                                const size_t &sy,
-                                const Shape &shape);
+    friend void numberPowSingleThread(Number &&number,
+                                      const Matrix<T> &a,
+                                      Matrix<O> &output,
+                                      const size_t &sx,
+                                      const size_t &sy,
+                                      const Shape &shape);
     template <class T, class Number, class O>
-    friend void powSingleThread(const Matrix<T> &a,
-                                Number &&number,
-                                Matrix<O> &output,
-                                const size_t &sx,
-                                const size_t &sy,
-                                const Shape &shape);
+    friend void powNumberSingleThread(const Matrix<T> &a,
+                                      Number &&number,
+                                      Matrix<O> &output,
+                                      const size_t &sx,
+                                      const size_t &sy,
+                                      const Shape &shape);
 
     template <class T>
     friend void transposeSingleThread(const Matrix<T> &a,
@@ -317,9 +387,93 @@ private:
                                       const Shape &shape);
 };
 
+inline Shape::Shape(size_t rows, size_t columns) : rows(rows), columns(columns) {}
+
+inline bool Shape::operator==(const Shape &other) const {
+    return rows == other.rows && columns == other.columns;
+}
+
+inline bool Shape::operator!=(const Shape &other) const { return !(*this == other); }
+
+inline size_t Shape::size() const { return rows * columns; }
+
 // TODO
 template <class ELEMENT_TYPE>
-void Matrix<ELEMENT_TYPE>::fill(const ELEMENT_TYPE &value) {}
+Matrix<ELEMENT_TYPE>::Matrix(const Shape &shape) {}
+
+// TODO
+template <class ELEMENT_TYPE>
+Matrix<ELEMENT_TYPE>::Matrix(
+    const std::initializer_list<std::initializer_list<ELEMENT_TYPE>> &init) {
+    shape.rows = init.size();
+    if (init.size() != 0) { shape.columns = init.begin()->size(); }
+    if (shape.size() != 0) {
+        data     = std::make_unique<ELEMENT_TYPE[]>(shape.size());
+        size_t i = 0;
+        for (auto &&rows : init) {
+            assert(rows.size() == shape.columns);
+            size_t j = 0;
+            for (auto &&item : rows) {
+                get(i, j) = item;
+                j++;
+            }
+            i++;
+        }
+        //             TODO: update with multi thread
+        //             *this         = init;
+    }
+}
+
+// TODO
+template <class ELEMENT_TYPE>
+Matrix<ELEMENT_TYPE>::Matrix(const std::vector<std::vector<ELEMENT_TYPE>> &init) {
+    shape.rows = init.size();
+    if (init.size() != 0) { shape.columns = init.begin()->size(); }
+    if (shape.size() != 0) {
+        data = std::make_unique<ELEMENT_TYPE[]>(shape.size());
+        for (size_t i = 0; i < rows(); i++) {
+            assert(columns() == init[i].size());
+            for (size_t j = 0; j < columns(); j++) { get(i, j) = init[i][j]; }
+        }
+        //             TODO: update with multi thread
+        //             *this         = init;
+    }
+}
+
+// TODO
+template <class ELEMENT_TYPE>
+inline Matrix<ELEMENT_TYPE>::Matrix(const Shape &shape, const ELEMENT_TYPE &defaultValue) {
+    this->shape = shape;
+    if (shape.size() != 0) {
+        data = std::make_unique<ELEMENT_TYPE[]>(shape.size());
+        std::fill(data.get(), data.get() + shape.size(), defaultValue);
+        // TODO: update with multi thread
+        //             fill(defaultValue);
+    }
+}
+
+// TODO
+template <class ELEMENT_TYPE>
+Matrix<ELEMENT_TYPE>::Matrix(const std::initializer_list<ELEMENT_TYPE> &diag) {}
+
+// TODO: not finished yet, once copy assignment finishs, this will finish
+template <class ELEMENT_TYPE>
+template <class T>
+inline Matrix<ELEMENT_TYPE>::Matrix(const Matrix<T> &other) {
+    *this = other;
+}
+
+template <class ELEMENT_TYPE>
+inline Matrix<ELEMENT_TYPE>::Matrix(Matrix &&other) noexcept {
+    *this = std::move(other);
+}
+
+template <class ELEMENT_TYPE>
+inline Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(Matrix &&other) noexcept {
+    shape = std::move(other.shape);
+    data  = std::move(other.data);
+    return *this;
+}
 
 // TODO
 template <class ELEMENT_TYPE>
@@ -331,9 +485,81 @@ Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(const Matrix<T> &other) {
 // TODO
 template <class ELEMENT_TYPE>
 template <class T>
+Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(
+    const std::initializer_list<std::initializer_list<T>> &init) {
+    return *this;
+}
+
+// TODO
+template <class ELEMENT_TYPE>
+template <class T>
 Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(const std::vector<std::vector<T>> &init) {
     return *this;
 }
+
+template <class ELEMENT_TYPE>
+ELEMENT_TYPE &Matrix<ELEMENT_TYPE>::get(size_t i, size_t j) {
+    assert(i < shape.rows && j < shape.columns);
+    return data[i * shape.columns + j];
+}
+template <class ELEMENT_TYPE>
+const ELEMENT_TYPE &Matrix<ELEMENT_TYPE>::get(size_t i, size_t j) const {
+    assert(i < shape.rows && j < shape.columns);
+    return data[i * shape.columns + j];
+}
+template <class ELEMENT_TYPE>
+inline ELEMENT_TYPE *Matrix<ELEMENT_TYPE>::dataPtr() {
+    return data.get();
+}
+
+template <class ELEMENT_TYPE>
+inline const ELEMENT_TYPE *Matrix<ELEMENT_TYPE>::dataPtr() const {
+    return data.get();
+}
+
+template <class ELEMENT_TYPE>
+inline size_t Matrix<ELEMENT_TYPE>::rows() const {
+    return shape.rows;
+}
+
+template <class ELEMENT_TYPE>
+inline size_t Matrix<ELEMENT_TYPE>::columns() const {
+    return shape.columns;
+}
+
+template <class ELEMENT_TYPE>
+inline Shape Matrix<ELEMENT_TYPE>::getShape() const {
+    return shape;
+}
+
+template <class ELEMENT_TYPE>
+inline void Matrix<ELEMENT_TYPE>::reshape(const Shape &shape) {
+    assert(this->shape.size() == shape.size());
+    this->shape = shape;
+}
+// TODO
+template <class ELEMENT_TYPE>
+void Matrix<ELEMENT_TYPE>::fill(const ELEMENT_TYPE &value) {}
+
+// TODO
+template <class ELEMENT_TYPE>
+template <class Number, class O>
+void Matrix<ELEMENT_TYPE>::numberPow(Number &&number, const Matrix<O> &output) {}
+
+// TODO
+template <class ELEMENT_TYPE>
+template <class Number, class O>
+void Matrix<ELEMENT_TYPE>::powNumber(Number &&number, const Matrix<O> &output) {}
+
+// TODO
+template <class ELEMENT_TYPE>
+template <class O>
+void Matrix<ELEMENT_TYPE>::pow(size_t exponent, Matrix<O> &output) {}
+
+// TODO
+template <class ELEMENT_TYPE>
+template <class O>
+void Matrix<ELEMENT_TYPE>::transpose(Matrix<O> &output) {}
 
 }  // namespace mca
 

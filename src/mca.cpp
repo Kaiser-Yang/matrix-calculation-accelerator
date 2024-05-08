@@ -1,3 +1,5 @@
 #include "mca.h"
 
-#include "single_thread_matrix_calculation.h"
+namespace mca {
+double eps = 1e-100;
+}
