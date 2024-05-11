@@ -111,11 +111,11 @@ public:
     // Make all the elements of the matrix be a new value
     void fill(const ELEMENT_TYPE &value);
 
-    // Calcualte number ^ (*this), and store the result in output
+    // Calculate number ^ (*this), and store the result in output
     // If the output is nullptr, (*this) will be changed
     // NOTE: (*this) must have the same shape with output
-    //       If O and ELEMENT_TYPE are not same, all the elements will first be casted to
-    //       std::common_type<O, ELEMENT_TYPE>, after calculation they will be casted into O
+    //       If O and ELEMENT_TYPE are not same, all the elements will first be cast to
+    //       std::common_type<O, ELEMENT_TYPE>, after calculation they will be cast into O
     //       by using static_cast
     // for example: a = [[1, 2, 3],
     //                   [2, 3, 4]]
@@ -128,11 +128,11 @@ public:
     template <class Number, class O>
     void numberPow(Number &&number, const Matrix<O> &output = nullptr);
 
-    // Calcualte (*this) ^ number, and store the result in output
+    // Calculate (*this) ^ number, and store the result in output
     // If the output is nullptr, (*this) will be changed
     // NOTE: (*this) must have the same shape with output
-    //       If O and ELEMENT_TYPE are not same, all the elements will first be casted to
-    //       std::common_type<O, ELEMENT_TYPE>, after calculation they will be casted into O
+    //       If O and ELEMENT_TYPE are not same, all the elements will first be cast to
+    //       std::common_type<O, ELEMENT_TYPE>, after calculation they will be cast into O
     //       by using static_cast
     // for example: a = [[1, 2, 3],
     //                   [2, 3, 4]]
@@ -145,14 +145,14 @@ public:
     template <class Number, class O>
     void powNumber(Number &&number, const Matrix<O> &output = nullptr);
 
-    // Calcualte (*this) ^ exponet, and store the result in output
+    // Calculate (*this) ^ exponent, and store the result in output
     // This is different with powNumber or numberPow
-    // This will calculate the matrix exponention
+    // This will calculate the matrix exponentiation
     // This is only valid when (*this) is a square matrix
     // NOTE: (*this) must be a square matrix
     //       (*this) must have the same shape with output
-    //       If O and ELEMENT_TYPE are not same, all the elements will first be casted to
-    //       std::common_type<O, ELEMENT_TYPE>, after calculation they will be casted into O
+    //       If O and ELEMENT_TYPE are not same, all the elements will first be cast to
+    //       std::common_type<O, ELEMENT_TYPE>, after calculation they will be cast into O
     //       by using static_cast
     // for example: a = [[1, 2],
     //                   [2, 3]]
@@ -164,9 +164,9 @@ public:
 
     // Transpose (*this), and store the result in output
     // If the output is nullptr, (*this) will be changed
-    // NOTE: output must have the same shape with the current matrix after tranpositon
-    //       If O and ELEMENT_TYPE are not same, all the elements will first be casted to
-    //       std::common_type<O, ELEMENT_TYPE>, after calculation they will be casted into O
+    // NOTE: output must have the same shape with the current matrix after transposition
+    //       If O and ELEMENT_TYPE are not same, all the elements will first be cast to
+    //       std::common_type<O, ELEMENT_TYPE>, after calculation they will be cast into O
     //       by using static_cast
     // for example: a = [[1, 2, 3],
     //                   [2, 3, 4]]
@@ -180,6 +180,12 @@ public:
     //                  [3, 4]]
     template <class O>
     void transpose(Matrix<O> &output = nullptr);
+
+    // Check if the matrix is symmetric with multi-thread
+    bool symmetric();
+
+    // Check if the matrix is antisymmetric with multi-thread
+    bool antisymmetric();
 
 private:
     std::unique_ptr<ELEMENT_TYPE[]> data;
@@ -385,6 +391,17 @@ private:
                                       const size_t &sx,
                                       const size_t &sy,
                                       const Shape &shape);
+
+    template <class T>
+    friend bool symmetricSingleThread(const Matrix<T> &a,
+                                      const size_t &sx,
+                                      const size_t rows,
+                                      const double &eps);
+    template <class T>
+    friend bool antisymmetricSingleThread(const Matrix<T> &a,
+                                          const size_t &sx,
+                                          const size_t rows,
+                                          const double &eps);
 };
 
 inline Shape::Shape(size_t rows, size_t columns) : rows(rows), columns(columns) {}

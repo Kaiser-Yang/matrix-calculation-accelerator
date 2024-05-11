@@ -11,15 +11,17 @@ namespace mca {
 namespace test {
 class TestSinglThreadCalculation : public testing::Test {
 protected:
-    Matrix<> one, negOne, output, a, b, c, d;
+    Matrix<> one, negOne, output, a, b, c, d, sym, antisym;
 
     void SetUp() override {
-        one    = Matrix<>({3, 3}, 1);
-        negOne = Matrix<>({3, 3}, -1);
-        a      = Matrix<>({{0, 0, 0}, {1, 1, 1}, {2, 2, 2}});
-        b      = Matrix<>({{1, 0, 0}, {0, 1, 0}, {0, 0, 1}});
-        c      = Matrix<>({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
-        d      = Matrix<>({{0, 0, 0}, {1, 1, 1}, {2, 2, 2}});
+        one     = Matrix<>({3, 3}, 1);
+        negOne  = Matrix<>({3, 3}, -1);
+        a       = Matrix<>({{0, 0, 0}, {1, 1, 1}, {2, 2, 2}});
+        b       = Matrix<>({{1, 0, 0}, {0, 1, 0}, {0, 0, 1}});
+        c       = Matrix<>({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
+        d       = Matrix<>({{0, 0, 0}, {1, 1, 1}, {2, 2, 2}});
+        sym     = Matrix<>({{1, 2. / 3, 3. / 5}, {4. / 6, 3, 8. / 6}, {1.5 / 2.5, 4. / 3, 5}});
+        antisym = Matrix<>({{1, -2. / 3, -3. / 5}, {4. / 6, 3, -8. / 6}, {1.5 / 2.5, 4. / 3, 5}});
     }
 
     void TearDown() override {}
@@ -193,5 +195,26 @@ TEST_F(TestSinglThreadCalculation, transposeSubMatrix) {
     Matrix<> result({{-1, -1, -1}, {-1, 5, 8}, {-1, 6, 9}});
     ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
 }
+
+TEST_F(TestSinglThreadCalculation, symmetricWholeMatrix) {
+    ASSERT_TRUE(symmetricSingleThread(sym, 0, 3));
+    ASSERT_FALSE(symmetricSingleThread(antisym, 0, 3));
+}
+
+TEST_F(TestSinglThreadCalculation, symmetricSubMatrix) {
+    ASSERT_TRUE(symmetricSingleThread(sym, 1, 2));
+    ASSERT_FALSE(symmetricSingleThread(antisym, 1, 2));
+}
+
+TEST_F(TestSinglThreadCalculation, antisymmetricWholeMatrix) {
+    ASSERT_TRUE(antisymmetricSingleThread(antisym, 0, 3));
+    ASSERT_FALSE(antisymmetricSingleThread(sym, 0, 3));
+}
+
+TEST_F(TestSinglThreadCalculation, antisymmetricSubMatrix) {
+    ASSERT_TRUE(antisymmetricSingleThread(antisym, 0, 1));
+    ASSERT_FALSE(antisymmetricSingleThread(sym, 0, 1));
+}
+
 }  // namespace test
 }  // namespace mca
