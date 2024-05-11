@@ -143,6 +143,11 @@ TEST_F(TestSinglThreadCalculation, subtractNumberWholeMatrix) {
     subtractSingleThread(a, 1, output, 0, 0, a.getShape());
     Matrix<> result({{-1, -1, -1}, {0, 0, 0}, {1, 1, 1}});
     ASSERT_TRUE(equalSingleThread(output, result, 0, 0, {3, 3}));
+
+    Matrix<int> output2({3, 3}, -1);
+    subtractSingleThread(9, e, output2, 0, 0, a.getShape());
+    Matrix<> result2({{8, 7, 6}, {7, 6, 5}, {3, 3, 3}});
+    ASSERT_TRUE(equalSingleThread(output2, result2, 0, 0, {3, 3}));
 }
 
 TEST_F(TestSinglThreadCalculation, subtractNumberSubMatrix) {
