@@ -11,6 +11,7 @@ namespace test {
 class TestSinglThreadCalculation : public testing::Test {
 protected:
     Matrix<> one, negOne, output, a, b, c, d, sym, antisym;
+    Matrix<int> e;
 
     void SetUp() override {
         one     = Matrix<>({3, 3}, 1);
@@ -19,6 +20,7 @@ protected:
         b       = Matrix<>({{1, 0, 0}, {0, 1, 0}, {0, 0, 1}});
         c       = Matrix<>({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
         d       = Matrix<>({{0, 0, 0}, {1, 1, 1}, {2, 2, 2}});
+        e       = Matrix<int>({{1, 2, 3}, {2, 3, 4}, {6, 6, 6}});
         sym     = Matrix<>({{1, 2. / 3, 3. / 5}, {4. / 6, 3, 8. / 6}, {1.5 / 2.5, 4. / 3, 5}});
         antisym = Matrix<>({{1, -2. / 3, -3. / 5}, {4. / 6, 3, -8. / 6}, {1.5 / 2.5, 4. / 3, 5}});
     }
@@ -121,14 +123,44 @@ TEST_F(TestSinglThreadCalculation, notEqualSubMatrix) {
     ASSERT_TRUE(notEqualSingleThread(a, c, 1, 1, {2, 1}));
     ASSERT_FALSE(notEqualSingleThread(a, d, 1, 1, {2, 1}));
 }
-// TODO
-TEST_F(TestSinglThreadCalculation, addNumberWholeMatrix) {}
-// TODO
-TEST_F(TestSinglThreadCalculation, addNumberSubMatrix) {}
-// TODO
-TEST_F(TestSinglThreadCalculation, sustractNumberWholeMatrix) {}
-// TODO
-TEST_F(TestSinglThreadCalculation, sustractNumberSubMatrix) {}
+
+TEST_F(TestSinglThreadCalculation, addNumberWholeMatrix) {
+    output = Matrix<>({3, 3}, -1);
+    addSingleThread(2, a, output, 0, 0, a.getShape());
+    Matrix<> result({{2, 2, 2}, {3, 3, 3}, {4, 4, 4}});
+    ASSERT_TRUE(equalSingleThread(output, result, 0, 0, {3, 3}));
+}
+
+TEST_F(TestSinglThreadCalculation, addNumberSubMatrix) {
+    output = Matrix<>({3, 3}, -1);
+    addSingleThread(2, a, output, 1, 1, {2, 2});
+    Matrix<> result({{-1, -1, -1}, {-1, 3, 3}, {-1, 4, 4}});
+    ASSERT_TRUE(equalSingleThread(output, result, 0, 0, {3, 3}));
+}
+
+TEST_F(TestSinglThreadCalculation, subtractNumberWholeMatrix) {
+    output = Matrix<>({3, 3}, -1);
+    subtractSingleThread(a, 1, output, 0, 0, a.getShape());
+    Matrix<> result({{-1, -1, -1}, {0, 0, 0}, {1, 1, 1}});
+    ASSERT_TRUE(equalSingleThread(output, result, 0, 0, {3, 3}));
+
+    Matrix<int> output2({3, 3}, -1);
+    subtractSingleThread(9, e, output2, 0, 0, a.getShape());
+    Matrix<> result2({{8, 7, 6}, {7, 6, 5}, {3, 3, 3}});
+    ASSERT_TRUE(equalSingleThread(output2, result2, 0, 0, {3, 3}));
+}
+
+TEST_F(TestSinglThreadCalculation, subtractNumberSubMatrix) {
+    output = Matrix<>({3, 3}, -1);
+    subtractSingleThread(a, 1, output, 1, 1, {2, 2});
+    Matrix<> result({{-1, -1, -1}, {-1, 0, 0}, {-1, 1, 1}});
+    ASSERT_TRUE(equalSingleThread(output, result, 0, 0, {3, 3}));
+
+    Matrix<int> output2({3, 3}, -1);
+    subtractSingleThread(9, e, output2, 1, 0, {2, 3});
+    Matrix<> result2({{-1, -1, -1}, {7, 6, 5}, {3, 3, 3}});
+    ASSERT_TRUE(equalSingleThread(output2, result2, 0, 0, {3, 3}));
+}
 // TODO
 TEST_F(TestSinglThreadCalculation, multiplyNumberWholeMatrix) {}
 // TODO
