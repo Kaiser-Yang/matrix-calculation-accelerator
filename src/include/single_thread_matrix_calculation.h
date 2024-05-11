@@ -8,53 +8,56 @@
 
 namespace mca {
 
-// Calcualte number ^ a, and store the result in output
+// Calculate number ^ a, and store the result in output
 // This will only calculate the number^a[sx:sx+shape.rows][sy:sy+shape+shape.columns]
 // sx: start row
 // sy: start column
 // shape: the shape of matrix will be calculated
 // NOTE: a must have the same shape with output
-//       the matrix which will be caculated must in range
+//       &a must not be equal with &output
+//       the matrix which will be calculated must in range
 // for example: number = 2,
 //              a = [[1, 2, 3],
 //                   [2, 3, 4]]
 //              sx = 0, sy = 1
 //              shape = {2, 2}
-//              output = [[1, 2^2, 2^3],
-//                        [2, 2^3, 2^4]]
+//              output = [[origin, 2^2, 2^3],
+//                        [origin, 2^3, 2^4]]
 template <class Number, class T, class O>
-void powSingleThread(Number &&number,
-                     const Matrix<T> &a,
-                     Matrix<O> &output,
-                     const size_t &sx,
-                     const size_t &sy,
-                     const Shape &shape);
+void numberPowSingleThread(Number &&number,
+                           const Matrix<T> &a,
+                           Matrix<O> &output,
+                           const size_t &sx,
+                           const size_t &sy,
+                           const Shape &shape);
 
-// Calcualte a ^ number, and store the result in output
+// Calculate a ^ number, and store the result in output
 // This will only calculate the a^number[sx:sx+shape.rows][sy:sy+shape+shape.columns]
 // sx: start row
 // sy: start column
 // shape: the shape of matrix will be calculated
 // NOTE: a must have the same shape with output
-//       the matrix which will be caculated must in range
+//       &a must not be equal with &output
+//       the matrix which will be calculated must in range
 // for example: number = 2,
 //              a = [[1, 2, 3],
 //                   [2, 3, 4]]
 //              sx = 0, sy = 1
 //              shape = {2, 2}
-//              output = [[1, 2^2, 3^2],
-//                        [2, 3^2, 4^2]]
+//              output = [[origin, 2^2, 3^2],
+//                        [origin, 3^2, 4^2]]
 template <class T, class Number, class O>
-void powSingleThread(const Matrix<T> &a,
-                     Number &&number,
-                     Matrix<O> &output,
-                     const size_t &sx,
-                     const size_t &sy,
-                     const Shape &shape);
+void powNumberSingleThread(const Matrix<T> &a,
+                           Number &&number,
+                           Matrix<O> &output,
+                           const size_t &sx,
+                           const size_t &sy,
+                           const Shape &shape);
 
 // Check if the elements of the sub-matrix of a are all less than the sub-matrix of b's
 // This will only check the a[sx:sx+shape.rows][sy:sy+shape+shape.columns] with
 // b[sx:sx+shape.rows][sy:sy+shape+shape.columns]
+// NOTE: eps will be used when T1 or T2 is floating number
 template <class T1, class T2>
 bool lessSingleThread(const Matrix<T1> &a,
                       const Matrix<T2> &b,
@@ -66,6 +69,7 @@ bool lessSingleThread(const Matrix<T1> &a,
 // Check if the elements of the sub-matrix of a are all equal with the sub-matrix of b's
 // This will only check the a[sx:sx+shape.rows][sy:sy+shape+shape.columns] with
 // b[sx:sx+shape.rows][sy:sy+shape+shape.columns]
+// NOTE: eps will be used when T1 or T2 is floating number
 template <class T1, class T2>
 inline bool equalSingleThread(const Matrix<T1> &a,
                               const Matrix<T2> &b,
@@ -77,6 +81,7 @@ inline bool equalSingleThread(const Matrix<T1> &a,
 // Check if the elements of the sub-matrix of a are all less than or equal with the sub-matrix of
 // b's This will only check the a[sx:sx+shape.rows][sy:sy+shape+shape.columns] with
 // b[sx:sx+shape.rows][sy:sy+shape+shape.columns]
+// NOTE: eps will be used when T1 or T2 is floating number
 template <class T1, class T2>
 inline bool lessEqualSingleThread(const Matrix<T1> &a,
                                   const Matrix<T2> &b,
@@ -88,6 +93,7 @@ inline bool lessEqualSingleThread(const Matrix<T1> &a,
 // Check if the elements of the sub-matrix of a are all greater than the sub-matrix of b's
 // This will only check the a[sx:sx+shape.rows][sy:sy+shape+shape.columns] with
 // b[sx:sx+shape.rows][sy:sy+shape+shape.columns]
+// NOTE: eps will be used when T1 or T2 is floating number
 template <class T1, class T2>
 inline bool greaterSingleThread(const Matrix<T1> &a,
                                 const Matrix<T2> &b,
@@ -99,6 +105,7 @@ inline bool greaterSingleThread(const Matrix<T1> &a,
 // Check if the elements of the sub-matrix of a are all greater than or equal with the sub-matrix of
 // b's This will only check the a[sx:sx+shape.rows][sy:sy+shape+shape.columns] with
 // b[sx:sx+shape.rows][sy:sy+shape+shape.columns]
+// NOTE: eps will be used when T1 or T2 is floating number
 template <class T1, class T2>
 inline bool greaterEqualSingleThread(const Matrix<T1> &a,
                                      const Matrix<T2> &b,
@@ -110,6 +117,7 @@ inline bool greaterEqualSingleThread(const Matrix<T1> &a,
 // Check if any element of the sub-matrix of a is not equal with the sub-matrix of b's
 // This will only check the a[sx:sx+shape.rows][sy:sy+shape+shape.columns] with
 // b[sx:sx+shape.rows][sy:sy+shape+shape.columns]
+// NOTE: eps will be used when T1 or T2 is floating number
 template <class T1, class T2>
 bool notEqualSingleThread(const Matrix<T1> &a,
                           const Matrix<T2> &b,
@@ -118,13 +126,14 @@ bool notEqualSingleThread(const Matrix<T1> &a,
                           const Shape &shape,
                           const double &eps = 1e-100);
 
-// Calcualte a + b, and store the result in output
+// Calculate a + b, and store the result in output
 // This will only calculate the a+b[sx:sx+shape.rows][sy:sy+shape+shape.columns]
 // sx: start row
 // sy: start column
 // shape: the shape of matrix will be calculated
 // NOTE: a must have the same shape with output and b
-//       the matrix which will be caculated must in range
+//       &a must not be equal with &output
+//       the matrix which will be calculated must in range
 // for example: a = [[-1, -2, -3],
 //                   [-1, -2, -3]]
 //              b = [[1, 2, 3],
@@ -141,13 +150,14 @@ void addSingleThread(const Matrix<T1> &a,
                      const size_t &sy,
                      const Shape &shape);
 
-// Calcualte a - b, and store the result in output
+// Calculate a - b, and store the result in output
 // This will only calculate the a-b[sx:sx+shape.rows][sy:sy+shape+shape.columns]
 // sx: start row
 // sy: start column
 // shape: the shape of matrix will be calculated
 // NOTE: a must have the same shape with output and b
-//       the matrix which will be caculated must in range
+//       &a must not be equal with &output
+//       the matrix which will be calculated must in range
 // for example: a = [[-1, -2, -3],
 //                   [-1, -2, -3]]
 //              b = [[1, 2, 3],
@@ -157,20 +167,21 @@ void addSingleThread(const Matrix<T1> &a,
 //              output = [[origin, -2-2, -3-3],
 //                        [origin, -2-3, -3-4]]
 template <class T1, class T2, class O>
-void substractSingleThread(const Matrix<T1> &a,
-                           const Matrix<T2> &b,
-                           Matrix<O> &output,
-                           const size_t &sx,
-                           const size_t &sy,
-                           const Shape &shape);
+void subtractSingleThread(const Matrix<T1> &a,
+                          const Matrix<T2> &b,
+                          Matrix<O> &output,
+                          const size_t &sx,
+                          const size_t &sy,
+                          const Shape &shape);
 
-// Calcualte a * b, and store the result in output
+// Calculate a * b, and store the result in output
 // This will only calculate the a*b[sx:sx+shape.rows][sy:sy+shape+shape.columns]
 // sx: start row
 // sy: start column
 // shape: the shape of matrix will be calculated
 // NOTE: a must have the same shape with output and b
-//       the matrix which will be caculated must in range
+//       &a must not be equal with &output
+//       the matrix which will be calculated must in range
 template <class T1, class T2, class O>
 void multiplySingleThread(const Matrix<T1> &a,
                           const Matrix<T2> &b,
@@ -179,20 +190,21 @@ void multiplySingleThread(const Matrix<T1> &a,
                           const size_t &sy,
                           const Shape &shape);
 
-// Calcualte number + a, and store the result in output
+// Calculate number + a, and store the result in output
 // This will only calculate the number+a[sx:sx+shape.rows][sy:sy+shape+shape.columns]
 // sx: start row
 // sy: start column
 // shape: the shape of matrix will be calculated
 // NOTE: a must have the same shape with output
-//       the matrix which will be caculated must in range
+//       &a must not be equal with &output
+//       the matrix which will be calculated must in range
 // for example: number = 2,
 //              a = [[1, 2, 3],
 //                   [2, 3, 4]]
 //              sx = 0, sy = 1
 //              shape = {2, 2}
-//              output = [[1, 2+2, 2+3],
-//                        [2, 2+3, 2+4]]
+//              output = [[origin, 2+2, 2+3],
+//                        [origin, 2+3, 2+4]]
 template <class Number, class T, class O>
 void addSingleThread(const Number &number,
                      const Matrix<T> &a,
@@ -201,64 +213,67 @@ void addSingleThread(const Number &number,
                      const size_t &sy,
                      const Shape &shape);
 
-// Calcualte number - a, and store the result in output
+// Calculate number - a, and store the result in output
 // This will only calculate the number+a[sx:sx+shape.rows][sy:sy+shape+shape.columns]
 // sx: start row
 // sy: start column
 // shape: the shape of matrix will be calculated
 // NOTE: a must have the same shape with output
-//       the matrix which will be caculated must in range
+//       &a must not be equal with &output
+//       the matrix which will be calculated must in range
 // for example: number = 2,
 //              a = [[1, 2, 3],
 //                   [2, 3, 4]]
 //              sx = 0, sy = 1
 //              shape = {2, 2}
-//              output = [[1, 2-2, 2-3],
-//                        [2, 2-3, 2-4]]
+//              output = [[origin, 2-2, 2-3],
+//                        [origin, 2-3, 2-4]]
 template <class Number, class T, class O>
-void substractSingleThread(const Number &number,
-                           const Matrix<T> &a,
-                           Matrix<O> &output,
-                           const size_t &sx,
-                           const size_t &sy,
-                           const Shape &shape);
+void subtractSingleThread(const Number &number,
+                          const Matrix<T> &a,
+                          Matrix<O> &output,
+                          const size_t &sx,
+                          const size_t &sy,
+                          const Shape &shape);
 
-// Calcualte a - number, and store the result in output
+// Calculate a - number, and store the result in output
 // This will only calculate the a^number[sx:sx+shape.rows][sy:sy+shape+shape.columns]
 // sx: start row
 // sy: start column
 // shape: the shape of matrix will be calculated
 // NOTE: a must have the same shape with output
-//       the matrix which will be caculated must in range
+//       &a must not be equal with &output
+//       the matrix which will be calculated must in range
 // for example: number = 2,
 //              a = [[1, 2, 3],
 //                   [2, 3, 4]]
 //              sx = 0, sy = 1
 //              shape = {2, 2}
-//              output = [[1, 2-2, 3-2],
-//                        [2, 3-2, 4-2]]
+//              output = [[origin, 2-2, 3-2],
+//                        [origin, 3-2, 4-2]]
 template <class T, class Number, class O>
-void substractSingleThread(const Matrix<T> &a,
-                           const Number &number,
-                           Matrix<O> &output,
-                           const size_t &sx,
-                           const size_t &sy,
-                           const Shape &shape);
+void subtractSingleThread(const Matrix<T> &a,
+                          const Number &number,
+                          Matrix<O> &output,
+                          const size_t &sx,
+                          const size_t &sy,
+                          const Shape &shape);
 
-// Calcualte number * a, and store the result in output
+// Calculate number * a, and store the result in output
 // This will only calculate the number*a[sx:sx+shape.rows][sy:sy+shape+shape.columns]
 // sx: start row
 // sy: start column
 // shape: the shape of matrix will be calculated
 // NOTE: a must have the same shape with output
-//       the matrix which will be caculated must in range
+//       &a must not be equal with &output
+//       the matrix which will be calculated must in range
 // for example: number = 2,
 //              a = [[1, 2, 3],
 //                   [2, 3, 4]]
 //              sx = 0, sy = 1
 //              shape = {2, 2}
-//              output = [[1, 2*2, 2*3],
-//                        [2, 2*3, 2*4]]
+//              output = [[origin, 2*2, 2*3],
+//                        [origin, 2*3, 2*4]]
 template <class Number, class T, class O>
 void multiplySingleThread(const Number &number,
                           const Matrix<T> &a,
@@ -267,20 +282,21 @@ void multiplySingleThread(const Number &number,
                           const size_t &sy,
                           const Shape &shape);
 
-// Calcualte a / number, and store the result in output
+// Calculate a / number, and store the result in output
 // This will only calculate the a^number[sx:sx+shape.rows][sy:sy+shape+shape.columns]
 // sx: start row
 // sy: start column
 // shape: the shape of matrix will be calculated
 // NOTE: a must have the same shape with output
-//       the matrix which will be caculated must in range
+//       &a must not be equal with &output
+//       the matrix which will be calculated must in range
 // for example: number = 2,
 //              a = [[1, 2, 3],
 //                   [2, 3, 4]]
 //              sx = 0, sy = 1
 //              shape = {2, 2}
-//              output = [[1, 2/2, 3/2],
-//                        [2, 3/2, 4/2]]
+//              output = [[origin, 2/2, 3/2],
+//                        [origin, 3/2, 4/2]]
 template <class T, class Number, class O>
 void divideSingleThread(const Matrix<T> &a,
                         const Number &number,
@@ -289,20 +305,21 @@ void divideSingleThread(const Matrix<T> &a,
                         const size_t &sy,
                         const Shape &shape);
 
-// Calcualte number / a, and store the result in output
+// Calculate number / a, and store the result in output
 // This will only calculate the number+a[sx:sx+shape.rows][sy:sy+shape+shape.columns]
 // sx: start row
 // sy: start column
 // shape: the shape of matrix will be calculated
 // NOTE: a must have the same shape with output
-//       the matrix which will be caculated must in range
+//       &a must not be equal with &output
+//       the matrix which will be calculated must in range
 // for example: number = 2,
 //              a = [[1, 2, 3],
 //                   [2, 3, 4]]
 //              sx = 0, sy = 1
 //              shape = {2, 2}
-//              output = [[1, 2/2, 2/3],
-//                        [2, 2/3, 2/4]]
+//              output = [[origin, 2/2, 2/3],
+//                        [origin, 2/3, 2/4]]
 template <class Number, class T, class O>
 void divideSingleThread(const Number &number,
                         const Matrix<T> &a,
@@ -312,12 +329,13 @@ void divideSingleThread(const Number &number,
                         const Shape &shape);
 
 // Transpose a matrix, and store the result in output
-// This will only get the tansposed a[sx:sx+shape.rows][sy:sy+shape+shape.columns]
+// This will only get the transposed a[sx:sx+shape.rows][sy:sy+shape+shape.columns]
 // sx: start row
 // sy: start column
 // shape: the shape of matrix will be calculated
-// NOTE: a must have the same shape with output after tranposition
-//       the matrix which will be caculated must in range
+// NOTE: a must have the same shape with output after transposition
+//       &a must not be equal with &output
+//       the matrix which will be calculated must in range
 // for example: number = 2,
 //              a = [[1, 2, 3],
 //                   [2, 3, 4]]
@@ -333,14 +351,49 @@ void transposeSingleThread(const Matrix<T> &a,
                            const size_t &sy,
                            const Shape &shape);
 
+// Check whether or not rows of matrix are symmetric
+// sx: start row
+// rows: the number of rows
+// NOTE: a must be a square matrix
+//       sx + rows must less or equal a.rows()
+// for example: a = [[1, 2, 3],
+//                   [2, 3, 4],
+//                   [3, 6, 5]]
+//              sx = 0
+//              rows = 1
+//              return: true
+template <class T>
+bool symmetricSingleThread(const Matrix<T> &a,
+                           const size_t &sx,
+                           const size_t rows,
+                           const double &eps = 1e-100);
+
+// Check whether or not rows of matrix are antisymmetric
+// sx: start row
+// rows: the number of rows
+// NOTE: a must be a square matrix
+//       sx + rows must less or equal a.rows()
+// for example: a = [[1,  2, 3],
+//                   [2,  3, 4],
+//                   [3, -4, 5]]
+//              sx = 1
+//              rows = 2
+//              return: true
+template <class T>
+bool antisymmetricSingleThread(const Matrix<T> &a,
+                               const size_t &sx,
+                               const size_t rows,
+                               const double &eps = 1e-100);
+
 // Those below are the implementations
 template <class Number, class T, class O>
-void powSingleThread(Number &&number,
-                     const Matrix<T> &a,
-                     Matrix<O> &output,
-                     const size_t &sx,
-                     const size_t &sy,
-                     const Shape &shape) {
+void numberPowSingleThread(Number &&number,
+                           const Matrix<T> &a,
+                           Matrix<O> &output,
+                           const size_t &sx,
+                           const size_t &sy,
+                           const Shape &shape) {
+    assert(&a != &output);
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
     assert(sy + shape.columns <= output.shape.columns);
@@ -354,12 +407,13 @@ void powSingleThread(Number &&number,
 }
 
 template <class T, class Number, class O>
-void powSingleThread(const Matrix<T> &a,
-                     Number &&number,
-                     Matrix<O> &output,
-                     const size_t &sx,
-                     const size_t &sy,
-                     const Shape &shape) {
+void powNumberSingleThread(const Matrix<T> &a,
+                           Number &&number,
+                           Matrix<O> &output,
+                           const size_t &sx,
+                           const size_t &sy,
+                           const Shape &shape) {
+    assert(&a != &output);
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
     assert(sy + shape.columns <= output.shape.columns);
@@ -542,6 +596,7 @@ void multiplySingleThread(const Number &number,
                           const size_t &sx,
                           const size_t &sy,
                           const Shape &shape) {
+    assert(&a != &output);
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
     assert(sy + shape.columns <= output.shape.columns);
@@ -561,6 +616,7 @@ void addSingleThread(const Matrix<T1> &a,
                      const size_t &sx,
                      const size_t &sy,
                      const Shape &shape) {
+    assert(&a != &output);
     assert(a.shape == b.shape);
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
@@ -575,13 +631,13 @@ void addSingleThread(const Matrix<T1> &a,
 }
 
 template <class T1, class T2, class O>
-void substractSingleThread(const Matrix<T1> &a,
-                           const Matrix<T2> &b,
-                           Matrix<O> &output,
-                           const size_t &sx,
-                           const size_t &sy,
-                           const Shape &shape) {
-    assert(a.shape == b.shape);
+void subtractSingleThread(const Matrix<T1> &a,
+                          const Matrix<T2> &b,
+                          Matrix<O> &output,
+                          const size_t &sx,
+                          const size_t &sy,
+                          const Shape &shape) {
+    assert(&a != &output);
     assert(a.shape == b.shape);
     assert(sx + shape.rows <= a.shape.rows);
     assert(sy + shape.columns <= a.shape.columns);
@@ -629,6 +685,7 @@ void addSingleThread(const Number &number,
                      const size_t &sx,
                      const size_t &sy,
                      const Shape &shape) {
+    assert(&a != &output);
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
     assert(sy + shape.columns <= output.shape.columns);
@@ -642,12 +699,13 @@ void addSingleThread(const Number &number,
 }
 
 template <class Number, class T, class O>
-void substractSingleThread(const Number &number,
-                           const Matrix<T> &a,
-                           Matrix<O> &output,
-                           const size_t &sx,
-                           const size_t &sy,
-                           const Shape &shape) {
+void subtractSingleThread(const Number &number,
+                          const Matrix<T> &a,
+                          Matrix<O> &output,
+                          const size_t &sx,
+                          const size_t &sy,
+                          const Shape &shape) {
+    assert(&a != &output);
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
     assert(sy + shape.columns <= output.shape.columns);
@@ -660,12 +718,13 @@ void substractSingleThread(const Number &number,
     }
 }
 template <class T, class Number, class O>
-void substractSingleThread(const Matrix<T> &a,
-                           const Number &number,
-                           Matrix<O> &output,
-                           const size_t &sx,
-                           const size_t &sy,
-                           const Shape &shape) {
+void subtractSingleThread(const Matrix<T> &a,
+                          const Number &number,
+                          Matrix<O> &output,
+                          const size_t &sx,
+                          const size_t &sy,
+                          const Shape &shape) {
+    assert(&a != &output);
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
     assert(sy + shape.columns <= output.shape.columns);
@@ -685,6 +744,7 @@ void divideSingleThread(const Matrix<T> &a,
                         const size_t &sx,
                         const size_t &sy,
                         const Shape &shape) {
+    assert(&a != &output);
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
     assert(sy + shape.columns <= output.shape.columns);
@@ -704,6 +764,7 @@ void divideSingleThread(const Number &number,
                         const size_t &sx,
                         const size_t &sy,
                         const Shape &shape) {
+    assert(&a != &output);
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
     assert(sy + shape.columns <= output.shape.columns);
@@ -729,6 +790,44 @@ void transposeSingleThread(const Matrix<T> &a,
     for (size_t i = sx; i < sx + shape.rows; i++) {
         for (size_t j = sy; j < sy + shape.columns; j++) { output.get(i, j) = a.get(j, i); }
     }
+}
+
+template <class T>
+bool symmetricSingleThread(const Matrix<T> &a,
+                           const size_t &sx,
+                           const size_t rows,
+                           const double &eps) {
+    assert(a.rows() == a.columns());
+    assert(sx + rows <= a.rows());
+    for (size_t i = sx; i < sx + rows; i++) {
+        for (size_t j = i + 1; j < a.columns(); j++) {
+            if (std::is_floating_point_v<T> && fabs(a.get(i, j) - a.get(j, i)) > eps) {
+                return false;
+            } else if (!std::is_floating_point_v<T> && a.get(i, j) != a.get(j, i)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+template <class T>
+bool antisymmetricSingleThread(const Matrix<T> &a,
+                               const size_t &sx,
+                               const size_t rows,
+                               const double &eps) {
+    assert(a.rows() == a.columns());
+    assert(sx + rows <= a.rows());
+    for (size_t i = sx; i < sx + rows; i++) {
+        for (size_t j = i + 1; j < a.columns(); j++) {
+            if (std::is_floating_point_v<T> && fabs(a.get(i, j) + a.get(j, i)) > eps) {
+                return false;
+            } else if (!std::is_floating_point_v<T> && a.get(i, j) != -a.get(j, i)) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 }  // namespace mca
 #endif
