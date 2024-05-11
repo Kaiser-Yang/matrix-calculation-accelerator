@@ -105,7 +105,8 @@ public:
     Shape getShape() const;
 
     // Reshape the matrix
-    // NOTE: this is only valid, when the new shape has the same elements with the old one
+    // NOTE: this is only valid, when the new shape has the same number of elements with the old
+    //       one
     void reshape(const Shape &shape);
 
     // Make all the elements of the matrix be a new value

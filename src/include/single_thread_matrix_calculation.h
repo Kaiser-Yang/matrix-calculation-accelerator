@@ -373,12 +373,12 @@ bool symmetricSingleThread(const Matrix<T> &a,
 // rows: the number of rows
 // NOTE: a must be a square matrix
 //       sx + rows must less or equal a.rows()
-// for example: a = [[1, 2, 3],
-//                   [2, 3, 4],
-//                   [3, 6, 5]]
-//              sx = 0
-//              rows = 1
-//              return: false
+// for example: a = [[1,  2, 3],
+//                   [2,  3, 4],
+//                   [3, -4, 5]]
+//              sx = 1
+//              rows = 2
+//              return: true
 template <class T>
 bool antisymmetricSingleThread(const Matrix<T> &a,
                                const size_t &sx,
