@@ -1,4 +1,4 @@
-[![codecov](https://codecov.io/gh/Kaiser-Yang/matrix-calculation-accelarator/graph/badge.svg?token=INWEC8613W)](https://codecov.io/gh/Kaiser-Yang/matrix-calculation-accelarator)
+[![codecov](https://codecov.io/gh/Kaiser-Yang/matrix-calculation-accelerator/graph/badge.svg?token=INWEC8613W)](https://codecov.io/gh/Kaiser-Yang/matrix-calculation-accelerator)
 
 # matrix-calculation-accelerator
 
