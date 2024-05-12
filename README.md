@@ -17,6 +17,12 @@ Those below are what you can learn:
 * ...
 
 # Release Log
+`v0.1.2`:
+* This version adds titles of the statistical figures.
+
+`v0.1.1`:
+* This version updates the `url` of `codecov`.
+
 `v0.1.0`:
 * This version has finished all the needed methods by multi-thread calculation.
 
@@ -33,11 +39,19 @@ Those below are what you can learn:
 * This is the initial commit. We finish `cmake` configure, `googletest` configure, and add `github workflow`.
 
 # Statistics
+Composition of code lines:
+
 ![image](https://github.com/Kaiser-Yang/matrix-calculation-accelerator/assets/58209855/7c18251a-2f2c-4618-ac30-fe06462b20c7)
+
+Composition of commits per person:
 
 ![image](https://github.com/Kaiser-Yang/matrix-calculation-accelerator/assets/58209855/d067eed2-b5c3-475c-b656-eaeab62a2db6)
 
+Test code and project code's composition:
+
 ![image](https://github.com/Kaiser-Yang/matrix-calculation-accelerator/assets/58209855/a62b6cb7-9b7f-43f4-925d-459abca0a009)
+
+Git branch graph:
 
 ![image](https://github.com/Kaiser-Yang/matrix-calculation-accelerator/assets/58209855/bd48df2b-351b-414b-bd71-81be0dbf7b27)
 
