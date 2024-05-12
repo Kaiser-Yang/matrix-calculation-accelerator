@@ -16,25 +16,22 @@ namespace mca {
 class ThreadPool {
 public:
     // size is the size of the thread pool
-    ThreadPool(size_t size = 5) { resize(size); }
+    inline ThreadPool(size_t size = 5);
 
     // set a new size
     // this will not clear the taskQueue
     // if the new size is greater than the old one
     // this will not stop the previous threads
-    // otherwise this will wail for all the running threads finish
+    // otherwise this will wait for all the running threads finish
     // and recreate new threads
     void resize(size_t newSize);
 
     // the size of the thread pool
-    size_t size() { return threadQueue.size(); }
+    inline size_t size();
 
     // get the number of unstarted tasks
     // which is the size() of taskQueue
-    size_t getTaskNum() {
-        std::unique_lock<std::mutex> locker{mu};
-        return taskQueue.size();
-    }
+    inline size_t getTaskNum();
 
     // add a task to the thread pool
     // this will return a std::future
@@ -45,10 +42,7 @@ public:
 
     // clear the taskQueue
     // the tasks which are executing will not stop
-    void clearTaskQueue() {
-        std::unique_lock<std::mutex> locker{mu};
-        taskQueue = std::queue<std::function<void()>>();
-    }
+    inline void clearTaskQueue();
 
     // clear taskQueue, and stop all threads
     // if a thread is running
@@ -56,7 +50,7 @@ public:
     void clear();
 
     // the destructor will stop all the threads
-    ~ThreadPool() { clear(); }
+    inline ~ThreadPool();
 
 private:
     std::queue<std::function<void()>> taskQueue;
@@ -77,6 +71,22 @@ auto ThreadPool::addTask(Function &&func, Args &&...args)
     cv.notify_one();
     return taskPtr->get_future();
 }
+
+inline ThreadPool::ThreadPool(size_t size) { resize(size); }
+
+inline size_t ThreadPool::size() { return threadQueue.size(); }
+
+inline size_t ThreadPool::getTaskNum() {
+    std::unique_lock<std::mutex> locker{mu};
+    return taskQueue.size();
+}
+
+inline void ThreadPool::clearTaskQueue() {
+    std::unique_lock<std::mutex> locker{mu};
+    taskQueue = std::queue<std::function<void()>>();
+}
+
+inline ThreadPool::~ThreadPool() { clear(); }
 }  // namespace mca
 
 #endif

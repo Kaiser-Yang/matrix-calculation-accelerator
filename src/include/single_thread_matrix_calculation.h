@@ -71,48 +71,48 @@ bool lessSingleThread(const Matrix<T1> &a,
 // b[sx:sx+shape.rows][sy:sy+shape+shape.columns]
 // NOTE: eps will be used when T1 or T2 is floating number
 template <class T1, class T2>
-inline bool equalSingleThread(const Matrix<T1> &a,
-                              const Matrix<T2> &b,
-                              const size_t &sx,
-                              const size_t &sy,
-                              const Shape &shape,
-                              const double &eps = 1e-100);
+bool equalSingleThread(const Matrix<T1> &a,
+                       const Matrix<T2> &b,
+                       const size_t &sx,
+                       const size_t &sy,
+                       const Shape &shape,
+                       const double &eps = 1e-100);
 
 // Check if the elements of the sub-matrix of a are all less than or equal with the sub-matrix of
 // b's This will only check the a[sx:sx+shape.rows][sy:sy+shape+shape.columns] with
 // b[sx:sx+shape.rows][sy:sy+shape+shape.columns]
 // NOTE: eps will be used when T1 or T2 is floating number
 template <class T1, class T2>
-inline bool lessEqualSingleThread(const Matrix<T1> &a,
-                                  const Matrix<T2> &b,
-                                  const size_t &sx,
-                                  const size_t &sy,
-                                  const Shape &shape,
-                                  const double &eps = 1e-100);
+bool lessEqualSingleThread(const Matrix<T1> &a,
+                           const Matrix<T2> &b,
+                           const size_t &sx,
+                           const size_t &sy,
+                           const Shape &shape,
+                           const double &eps = 1e-100);
 
 // Check if the elements of the sub-matrix of a are all greater than the sub-matrix of b's
 // This will only check the a[sx:sx+shape.rows][sy:sy+shape+shape.columns] with
 // b[sx:sx+shape.rows][sy:sy+shape+shape.columns]
 // NOTE: eps will be used when T1 or T2 is floating number
 template <class T1, class T2>
-inline bool greaterSingleThread(const Matrix<T1> &a,
-                                const Matrix<T2> &b,
-                                const size_t &sx,
-                                const size_t &sy,
-                                const Shape &shape,
-                                const double &eps = 1e-100);
+bool greaterSingleThread(const Matrix<T1> &a,
+                         const Matrix<T2> &b,
+                         const size_t &sx,
+                         const size_t &sy,
+                         const Shape &shape,
+                         const double &eps = 1e-100);
 
 // Check if the elements of the sub-matrix of a are all greater than or equal with the sub-matrix of
 // b's This will only check the a[sx:sx+shape.rows][sy:sy+shape+shape.columns] with
 // b[sx:sx+shape.rows][sy:sy+shape+shape.columns]
 // NOTE: eps will be used when T1 or T2 is floating number
 template <class T1, class T2>
-inline bool greaterEqualSingleThread(const Matrix<T1> &a,
-                                     const Matrix<T2> &b,
-                                     const size_t &sx,
-                                     const size_t &sy,
-                                     const Shape &shape,
-                                     const double &eps = 1e-100);
+bool greaterEqualSingleThread(const Matrix<T1> &a,
+                              const Matrix<T2> &b,
+                              const size_t &sx,
+                              const size_t &sy,
+                              const Shape &shape,
+                              const double &eps = 1e-100);
 
 // Check if any element of the sub-matrix of a is not equal with the sub-matrix of b's
 // This will only check the a[sx:sx+shape.rows][sy:sy+shape+shape.columns] with
@@ -454,12 +454,12 @@ bool lessSingleThread(const Matrix<T1> &a,
 }
 
 template <class T1, class T2>
-inline bool equalSingleThread(const Matrix<T1> &a,
-                              const Matrix<T2> &b,
-                              const size_t &sx,
-                              const size_t &sy,
-                              const Shape &shape,
-                              const double &eps) {
+bool equalSingleThread(const Matrix<T1> &a,
+                       const Matrix<T2> &b,
+                       const size_t &sx,
+                       const size_t &sy,
+                       const Shape &shape,
+                       const double &eps) {
     assert(a.shape == b.shape);
     assert(sx + shape.rows <= a.shape.rows);
     assert(sy + shape.columns <= a.shape.columns);
@@ -481,12 +481,12 @@ inline bool equalSingleThread(const Matrix<T1> &a,
 }
 
 template <class T1, class T2>
-inline bool lessEqualSingleThread(const Matrix<T1> &a,
-                                  const Matrix<T2> &b,
-                                  const size_t &sx,
-                                  const size_t &sy,
-                                  const Shape &shape,
-                                  const double &eps) {
+bool lessEqualSingleThread(const Matrix<T1> &a,
+                           const Matrix<T2> &b,
+                           const size_t &sx,
+                           const size_t &sy,
+                           const Shape &shape,
+                           const double &eps) {
     assert(a.shape == b.shape);
     assert(sx + shape.rows <= a.shape.rows);
     assert(sy + shape.columns <= a.shape.columns);
@@ -507,12 +507,12 @@ inline bool lessEqualSingleThread(const Matrix<T1> &a,
 }
 
 template <class T1, class T2>
-inline bool greaterSingleThread(const Matrix<T1> &a,
-                                const Matrix<T2> &b,
-                                const size_t &sx,
-                                const size_t &sy,
-                                const Shape &shape,
-                                const double &eps) {
+bool greaterSingleThread(const Matrix<T1> &a,
+                         const Matrix<T2> &b,
+                         const size_t &sx,
+                         const size_t &sy,
+                         const Shape &shape,
+                         const double &eps) {
     assert(a.shape == b.shape);
     assert(sx + shape.rows <= a.shape.rows);
     assert(sy + shape.columns <= a.shape.columns);
@@ -536,12 +536,12 @@ inline bool greaterSingleThread(const Matrix<T1> &a,
 }
 
 template <class T1, class T2>
-inline bool greaterEqualSingleThread(const Matrix<T1> &a,
-                                     const Matrix<T2> &b,
-                                     const size_t &sx,
-                                     const size_t &sy,
-                                     const Shape &shape,
-                                     const double &eps) {
+bool greaterEqualSingleThread(const Matrix<T1> &a,
+                              const Matrix<T2> &b,
+                              const size_t &sx,
+                              const size_t &sy,
+                              const Shape &shape,
+                              const double &eps) {
     assert(a.shape == b.shape);
     assert(sx + shape.rows <= a.shape.rows);
     assert(sy + shape.columns <= a.shape.columns);
