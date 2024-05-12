@@ -393,7 +393,7 @@ void numberPowSingleThread(Number &&number,
                            const size_t &sx,
                            const size_t &sy,
                            const Shape &shape) {
-    assert(&a != &output);
+    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
     assert(sy + shape.columns <= output.shape.columns);
@@ -413,7 +413,7 @@ void powNumberSingleThread(const Matrix<T> &a,
                            const size_t &sx,
                            const size_t &sy,
                            const Shape &shape) {
-    assert(&a != &output);
+    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
     assert(sy + shape.columns <= output.shape.columns);
@@ -596,7 +596,7 @@ void multiplySingleThread(const Number &number,
                           const size_t &sx,
                           const size_t &sy,
                           const Shape &shape) {
-    assert(&a != &output);
+    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
     assert(sy + shape.columns <= output.shape.columns);
@@ -616,7 +616,7 @@ void addSingleThread(const Matrix<T1> &a,
                      const size_t &sx,
                      const size_t &sy,
                      const Shape &shape) {
-    assert(&a != &output);
+    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == b.shape);
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
@@ -637,7 +637,7 @@ void subtractSingleThread(const Matrix<T1> &a,
                           const size_t &sx,
                           const size_t &sy,
                           const Shape &shape) {
-    assert(&a != &output);
+    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == b.shape);
     assert(sx + shape.rows <= a.shape.rows);
     assert(sy + shape.columns <= a.shape.columns);
@@ -657,7 +657,7 @@ void multiplySingleThread(const Matrix<T1> &a,
                           const size_t &sx,
                           const size_t &sy,
                           const Shape &shape) {
-    assert(&a != &output);
+    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape.columns == b.shape.rows);
     assert(a.shape.rows == output.shape.rows);
     assert(b.shape.columns == output.shape.columns);
@@ -685,7 +685,7 @@ void addSingleThread(const Number &number,
                      const size_t &sx,
                      const size_t &sy,
                      const Shape &shape) {
-    assert(&a != &output);
+    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
     assert(sy + shape.columns <= output.shape.columns);
@@ -705,7 +705,7 @@ void subtractSingleThread(const Number &number,
                           const size_t &sx,
                           const size_t &sy,
                           const Shape &shape) {
-    assert(&a != &output);
+    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
     assert(sy + shape.columns <= output.shape.columns);
@@ -724,7 +724,7 @@ void subtractSingleThread(const Matrix<T> &a,
                           const size_t &sx,
                           const size_t &sy,
                           const Shape &shape) {
-    assert(&a != &output);
+    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
     assert(sy + shape.columns <= output.shape.columns);
@@ -744,7 +744,7 @@ void divideSingleThread(const Matrix<T> &a,
                         const size_t &sx,
                         const size_t &sy,
                         const Shape &shape) {
-    assert(&a != &output);
+    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
     assert(sy + shape.columns <= output.shape.columns);
@@ -764,7 +764,7 @@ void divideSingleThread(const Number &number,
                         const size_t &sx,
                         const size_t &sy,
                         const Shape &shape) {
-    assert(&a != &output);
+    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
     assert(sy + shape.columns <= output.shape.columns);
