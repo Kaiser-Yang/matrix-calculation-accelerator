@@ -71,48 +71,48 @@ bool lessSingleThread(const Matrix<T1> &a,
 // b[sx:sx+shape.rows][sy:sy+shape+shape.columns]
 // NOTE: eps will be used when T1 or T2 is floating number
 template <class T1, class T2>
-inline bool equalSingleThread(const Matrix<T1> &a,
-                              const Matrix<T2> &b,
-                              const size_t &sx,
-                              const size_t &sy,
-                              const Shape &shape,
-                              const double &eps = 1e-100);
+bool equalSingleThread(const Matrix<T1> &a,
+                       const Matrix<T2> &b,
+                       const size_t &sx,
+                       const size_t &sy,
+                       const Shape &shape,
+                       const double &eps = 1e-100);
 
 // Check if the elements of the sub-matrix of a are all less than or equal with the sub-matrix of
 // b's This will only check the a[sx:sx+shape.rows][sy:sy+shape+shape.columns] with
 // b[sx:sx+shape.rows][sy:sy+shape+shape.columns]
 // NOTE: eps will be used when T1 or T2 is floating number
 template <class T1, class T2>
-inline bool lessEqualSingleThread(const Matrix<T1> &a,
-                                  const Matrix<T2> &b,
-                                  const size_t &sx,
-                                  const size_t &sy,
-                                  const Shape &shape,
-                                  const double &eps = 1e-100);
+bool lessEqualSingleThread(const Matrix<T1> &a,
+                           const Matrix<T2> &b,
+                           const size_t &sx,
+                           const size_t &sy,
+                           const Shape &shape,
+                           const double &eps = 1e-100);
 
 // Check if the elements of the sub-matrix of a are all greater than the sub-matrix of b's
 // This will only check the a[sx:sx+shape.rows][sy:sy+shape+shape.columns] with
 // b[sx:sx+shape.rows][sy:sy+shape+shape.columns]
 // NOTE: eps will be used when T1 or T2 is floating number
 template <class T1, class T2>
-inline bool greaterSingleThread(const Matrix<T1> &a,
-                                const Matrix<T2> &b,
-                                const size_t &sx,
-                                const size_t &sy,
-                                const Shape &shape,
-                                const double &eps = 1e-100);
+bool greaterSingleThread(const Matrix<T1> &a,
+                         const Matrix<T2> &b,
+                         const size_t &sx,
+                         const size_t &sy,
+                         const Shape &shape,
+                         const double &eps = 1e-100);
 
 // Check if the elements of the sub-matrix of a are all greater than or equal with the sub-matrix of
 // b's This will only check the a[sx:sx+shape.rows][sy:sy+shape+shape.columns] with
 // b[sx:sx+shape.rows][sy:sy+shape+shape.columns]
 // NOTE: eps will be used when T1 or T2 is floating number
 template <class T1, class T2>
-inline bool greaterEqualSingleThread(const Matrix<T1> &a,
-                                     const Matrix<T2> &b,
-                                     const size_t &sx,
-                                     const size_t &sy,
-                                     const Shape &shape,
-                                     const double &eps = 1e-100);
+bool greaterEqualSingleThread(const Matrix<T1> &a,
+                              const Matrix<T2> &b,
+                              const size_t &sx,
+                              const size_t &sy,
+                              const Shape &shape,
+                              const double &eps = 1e-100);
 
 // Check if any element of the sub-matrix of a is not equal with the sub-matrix of b's
 // This will only check the a[sx:sx+shape.rows][sy:sy+shape+shape.columns] with
@@ -393,7 +393,7 @@ void numberPowSingleThread(Number &&number,
                            const size_t &sx,
                            const size_t &sy,
                            const Shape &shape) {
-    assert(&a != &output);
+    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
     assert(sy + shape.columns <= output.shape.columns);
@@ -413,7 +413,7 @@ void powNumberSingleThread(const Matrix<T> &a,
                            const size_t &sx,
                            const size_t &sy,
                            const Shape &shape) {
-    assert(&a != &output);
+    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
     assert(sy + shape.columns <= output.shape.columns);
@@ -454,12 +454,12 @@ bool lessSingleThread(const Matrix<T1> &a,
 }
 
 template <class T1, class T2>
-inline bool equalSingleThread(const Matrix<T1> &a,
-                              const Matrix<T2> &b,
-                              const size_t &sx,
-                              const size_t &sy,
-                              const Shape &shape,
-                              const double &eps) {
+bool equalSingleThread(const Matrix<T1> &a,
+                       const Matrix<T2> &b,
+                       const size_t &sx,
+                       const size_t &sy,
+                       const Shape &shape,
+                       const double &eps) {
     assert(a.shape == b.shape);
     assert(sx + shape.rows <= a.shape.rows);
     assert(sy + shape.columns <= a.shape.columns);
@@ -481,12 +481,12 @@ inline bool equalSingleThread(const Matrix<T1> &a,
 }
 
 template <class T1, class T2>
-inline bool lessEqualSingleThread(const Matrix<T1> &a,
-                                  const Matrix<T2> &b,
-                                  const size_t &sx,
-                                  const size_t &sy,
-                                  const Shape &shape,
-                                  const double &eps) {
+bool lessEqualSingleThread(const Matrix<T1> &a,
+                           const Matrix<T2> &b,
+                           const size_t &sx,
+                           const size_t &sy,
+                           const Shape &shape,
+                           const double &eps) {
     assert(a.shape == b.shape);
     assert(sx + shape.rows <= a.shape.rows);
     assert(sy + shape.columns <= a.shape.columns);
@@ -507,12 +507,12 @@ inline bool lessEqualSingleThread(const Matrix<T1> &a,
 }
 
 template <class T1, class T2>
-inline bool greaterSingleThread(const Matrix<T1> &a,
-                                const Matrix<T2> &b,
-                                const size_t &sx,
-                                const size_t &sy,
-                                const Shape &shape,
-                                const double &eps) {
+bool greaterSingleThread(const Matrix<T1> &a,
+                         const Matrix<T2> &b,
+                         const size_t &sx,
+                         const size_t &sy,
+                         const Shape &shape,
+                         const double &eps) {
     assert(a.shape == b.shape);
     assert(sx + shape.rows <= a.shape.rows);
     assert(sy + shape.columns <= a.shape.columns);
@@ -536,12 +536,12 @@ inline bool greaterSingleThread(const Matrix<T1> &a,
 }
 
 template <class T1, class T2>
-inline bool greaterEqualSingleThread(const Matrix<T1> &a,
-                                     const Matrix<T2> &b,
-                                     const size_t &sx,
-                                     const size_t &sy,
-                                     const Shape &shape,
-                                     const double &eps) {
+bool greaterEqualSingleThread(const Matrix<T1> &a,
+                              const Matrix<T2> &b,
+                              const size_t &sx,
+                              const size_t &sy,
+                              const Shape &shape,
+                              const double &eps) {
     assert(a.shape == b.shape);
     assert(sx + shape.rows <= a.shape.rows);
     assert(sy + shape.columns <= a.shape.columns);
@@ -596,7 +596,7 @@ void multiplySingleThread(const Number &number,
                           const size_t &sx,
                           const size_t &sy,
                           const Shape &shape) {
-    assert(&a != &output);
+    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
     assert(sy + shape.columns <= output.shape.columns);
@@ -616,7 +616,7 @@ void addSingleThread(const Matrix<T1> &a,
                      const size_t &sx,
                      const size_t &sy,
                      const Shape &shape) {
-    assert(&a != &output);
+    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == b.shape);
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
@@ -637,7 +637,7 @@ void subtractSingleThread(const Matrix<T1> &a,
                           const size_t &sx,
                           const size_t &sy,
                           const Shape &shape) {
-    assert(&a != &output);
+    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == b.shape);
     assert(sx + shape.rows <= a.shape.rows);
     assert(sy + shape.columns <= a.shape.columns);
@@ -657,7 +657,7 @@ void multiplySingleThread(const Matrix<T1> &a,
                           const size_t &sx,
                           const size_t &sy,
                           const Shape &shape) {
-    assert(&a != &output);
+    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape.columns == b.shape.rows);
     assert(a.shape.rows == output.shape.rows);
     assert(b.shape.columns == output.shape.columns);
@@ -685,7 +685,7 @@ void addSingleThread(const Number &number,
                      const size_t &sx,
                      const size_t &sy,
                      const Shape &shape) {
-    assert(&a != &output);
+    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
     assert(sy + shape.columns <= output.shape.columns);
@@ -705,7 +705,7 @@ void subtractSingleThread(const Number &number,
                           const size_t &sx,
                           const size_t &sy,
                           const Shape &shape) {
-    assert(&a != &output);
+    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
     assert(sy + shape.columns <= output.shape.columns);
@@ -724,7 +724,7 @@ void subtractSingleThread(const Matrix<T> &a,
                           const size_t &sx,
                           const size_t &sy,
                           const Shape &shape) {
-    assert(&a != &output);
+    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
     assert(sy + shape.columns <= output.shape.columns);
@@ -744,7 +744,7 @@ void divideSingleThread(const Matrix<T> &a,
                         const size_t &sx,
                         const size_t &sy,
                         const Shape &shape) {
-    assert(&a != &output);
+    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
     assert(sy + shape.columns <= output.shape.columns);
@@ -764,7 +764,7 @@ void divideSingleThread(const Number &number,
                         const size_t &sx,
                         const size_t &sy,
                         const Shape &shape) {
-    assert(&a != &output);
+    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == output.shape);
     assert(sx + shape.rows <= output.shape.rows);
     assert(sy + shape.columns <= output.shape.columns);

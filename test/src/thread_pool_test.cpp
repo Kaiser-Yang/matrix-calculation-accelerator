@@ -10,7 +10,7 @@ TEST(TestThreadPool, defaultConstructor) {
     ASSERT_EQ(tp.getTaskNum(), (size_t)0);
 }
 
-TEST(TestThreadPool, setThreadNum) {
+TEST(TestThreadPool, resize) {
     ThreadPool tp(3);
     ASSERT_EQ(tp.size(), (size_t)3);
     ASSERT_EQ(tp.getTaskNum(), (size_t)0);
@@ -35,6 +35,17 @@ TEST(TestThreadPool, addTask) {
     for (size_t i = 0; i < taskNum; i++) {
         ASSERT_EQ(resultVector[i].get(), (size_t)2 + (size_t)3);
     }
+}
+
+TEST(TestThreadPool, clearTaskQueue) {
+    ThreadPool tp(0);
+    size_t taskNum = 10;
+    for (size_t i = 0; i < taskNum; i++) {
+        tp.addTask([]() {});
+    }
+    ASSERT_EQ(tp.getTaskNum(), taskNum);
+    tp.clearTaskQueue();
+    ASSERT_EQ(tp.getTaskNum(), 0);
 }
 
 // this test will check if the running task will be executed normally

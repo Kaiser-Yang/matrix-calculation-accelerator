@@ -42,7 +42,7 @@ public:
     Matrix(const std::vector<std::vector<ELEMENT_TYPE>> &init);
 
     // Construct a matrix with shape and defaultValue
-    Matrix(const Shape &shape, const ELEMENT_TYPE &defaultValue);
+    inline Matrix(const Shape &shape, const ELEMENT_TYPE &defaultValue);
 
     // Construct a diagonal matrix, the diag is the diagonal elements
     // Matrix<>({1, 2, 3, 4}) will construct a matrix whose shape are 4 * 4,
@@ -55,15 +55,15 @@ public:
     // the other matrix's data will use static_cast<> to convert its type the same with current
     // matrix
     template <class T>
-    Matrix(const Matrix<T> &other);
+    inline Matrix(const Matrix<T> &other);
 
     // Move constructor
     // NOTE: only those which have the same ELEMENT_TYPE can use move constructor
-    Matrix(Matrix &&other) noexcept;
+    inline Matrix(Matrix &&other) noexcept;
 
     // Move assignment
     // NOTE: only those which have the same ELEMENT_TYPE can use move assignment
-    Matrix &operator=(Matrix &&other) noexcept;
+    inline Matrix &operator=(Matrix &&other) noexcept;
 
     // Copy assignment
     // If the other matrix's ELEMENT_TYPE is not same with current matrix,
@@ -88,26 +88,26 @@ public:
     Matrix<ELEMENT_TYPE> &operator=(const std::vector<std::vector<T>> &init);
 
     // get the reference to the element of i-th row, j-th column
-    ELEMENT_TYPE &get(size_t i, size_t j);
-    const ELEMENT_TYPE &get(size_t i, size_t j) const;
+    inline ELEMENT_TYPE &get(size_t i, size_t j);
+    inline const ELEMENT_TYPE &get(size_t i, size_t j) const;
 
     // get the date pointer
-    ELEMENT_TYPE *dataPtr();
-    const ELEMENT_TYPE *dataPtr() const;
+    inline ELEMENT_TYPE *dataPtr();
+    inline const ELEMENT_TYPE *dataPtr() const;
 
     // get the number of rows
-    size_t rows() const;
+    inline size_t rows() const;
 
     // get the number of columns
-    size_t columns() const;
+    inline size_t columns() const;
 
     // get the matrix's shape
-    Shape getShape() const;
+    inline Shape getShape() const;
 
     // Reshape the matrix
     // NOTE: this is only valid, when the new shape has the same number of elements with the old
     //       one
-    void reshape(const Shape &shape);
+    inline void reshape(const Shape &shape);
 
     // Make all the elements of the matrix be a new value
     void fill(const ELEMENT_TYPE &value);
@@ -516,12 +516,12 @@ Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(const std::vector<std::vec
 }
 
 template <class ELEMENT_TYPE>
-ELEMENT_TYPE &Matrix<ELEMENT_TYPE>::get(size_t i, size_t j) {
+inline ELEMENT_TYPE &Matrix<ELEMENT_TYPE>::get(size_t i, size_t j) {
     assert(i < shape.rows && j < shape.columns);
     return data[i * shape.columns + j];
 }
 template <class ELEMENT_TYPE>
-const ELEMENT_TYPE &Matrix<ELEMENT_TYPE>::get(size_t i, size_t j) const {
+inline const ELEMENT_TYPE &Matrix<ELEMENT_TYPE>::get(size_t i, size_t j) const {
     assert(i < shape.rows && j < shape.columns);
     return data[i * shape.columns + j];
 }
