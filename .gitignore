@@ -40,3 +40,6 @@
 # cache
 *.cache*/
 *__pycache__*/
+
+# compile commands
+compile_commands.json

@@ -1,0 +1,40 @@
+name: generate unit tests coverage
+on:
+  pull_request:
+    branches: [ "develop", "master" ]
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: build
+        shell: bash
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -Dmca_GENERATE_COVERAGE=on
+          cmake --build build
+
+      - name: Install LCOV
+        shell: bash
+        run: |
+          sudo apt-get --assume-yes install lcov > /dev/null
+
+      - name: run test
+        shell: bash
+        run: ./build/test/mca_unit_test
+
+      - name: lcov collection
+        shell: bash
+        run: |
+          cd build
+          lcov -c -d ./ -o cover.info
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: build/cover.info
+          verbose: true
