@@ -8,7 +8,15 @@
 #include <type_traits>
 #include <vector>
 
+#include "thread_pool.h"
+
 namespace mca {
+extern ThreadPool &threadPool();
+
+extern size_t limit();
+
+extern size_t threadNum();
+
 struct Shape {
     size_t rows    = 0;
     size_t columns = 0;
@@ -27,6 +35,8 @@ struct Shape {
 template <class ELEMENT_TYPE = double>
 class Matrix {
 public:
+    using ElementType = ELEMENT_TYPE;
+
     // Construct an empty matrix
     Matrix() = default;
 
@@ -100,6 +110,9 @@ public:
 
     // get the number of columns
     inline size_t columns() const;
+
+    // get the number of elements
+    inline size_t size() const;
 
     // get the matrix's shape
     inline Shape getShape() const;
@@ -546,6 +559,11 @@ inline size_t Matrix<ELEMENT_TYPE>::columns() const {
 }
 
 template <class ELEMENT_TYPE>
+inline size_t Matrix<ELEMENT_TYPE>::size() const {
+    return shape.size();
+}
+
+template <class ELEMENT_TYPE>
 inline Shape Matrix<ELEMENT_TYPE>::getShape() const {
     return shape;
 }
@@ -555,9 +573,37 @@ inline void Matrix<ELEMENT_TYPE>::reshape(const Shape &shape) {
     assert(this->shape.size() == shape.size());
     this->shape = shape;
 }
-// TODO
+
 template <class ELEMENT_TYPE>
-void Matrix<ELEMENT_TYPE>::fill(const ELEMENT_TYPE &value) {}
+void Matrix<ELEMENT_TYPE>::fill(const ELEMENT_TYPE &value) {
+    // single mode
+    if (threadNum() == 0 || limit() > size()) {
+        std::fill(dataPtr(), dataPtr() + size(), value);
+        return;
+    }
+    // calculate the calculation of every thread
+    size_t threadCalculation = std::max<size_t>(size() / (threadNum() + 1), limit());
+
+    // calculate how many sub-thread will join this calculation
+    size_t taskNum = size() / threadCalculation;
+
+    if (size() % threadCalculation > 0) { taskNum++; }
+
+    // the return value of every task, use this to make sure every task is finished
+    std::vector<std::future<void>> returnValue(taskNum - 1);
+    // assign task for every sub-thread
+    for (size_t i = 0; i < taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask([this, i, threadCalculation, value]() {
+            std::fill(
+                dataPtr() + i * threadCalculation, dataPtr() + (i + 1) * threadCalculation, value);
+        });
+    }
+    // let main thread calculate two
+    std::fill(dataPtr() + (taskNum - 1) * threadCalculation, dataPtr() + size(), value);
+
+    // make sure all the sub threads are finished
+    for (size_t i = 0; i < taskNum - 1; i++) { returnValue[i].get(); }
+}
 
 // TODO
 template <class ELEMENT_TYPE>

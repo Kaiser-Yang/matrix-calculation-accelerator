@@ -32,8 +32,6 @@ TEST_F(TestSinglThreadCalculation, powNumberWholeMatrix) {
     output = Matrix<>({3, 3}, 0);
     powNumberSingleThread(a, 2, output, 0, 0, a.getShape());
     Matrix<> result = Matrix<>({{0, 0, 0}, {1, 1, 1}, {4, 4, 4}});
-    std::cout << output.rows() << output.columns() << std::endl;
-    std::cout << result.rows() << result.columns() << std::endl;
     ASSERT_TRUE(equalSingleThread(output, result, 0, 0, output.getShape()));
 }
 
