@@ -8,9 +8,15 @@
 #include <type_traits>
 #include <vector>
 
-#include "mca_config.h"
+#include "thread_pool.h"
 
 namespace mca {
+extern ThreadPool &threadPool();
+
+extern size_t limit();
+
+extern size_t threadNum();
+
 struct Shape {
     size_t rows    = 0;
     size_t columns = 0;
@@ -571,12 +577,12 @@ inline void Matrix<ELEMENT_TYPE>::reshape(const Shape &shape) {
 template <class ELEMENT_TYPE>
 void Matrix<ELEMENT_TYPE>::fill(const ELEMENT_TYPE &value) {
     // single mode
-    if (threadPool.size() == 0 || _limit > size()) {
+    if (threadNum() == 0 || limit() > size()) {
         std::fill(dataPtr(), dataPtr() + size(), value);
         return;
     }
     // calculate the calculation of every thread
-    size_t threadCalculation = std::max<size_t>(size() / (threadPool.size() + 1), _limit);
+    size_t threadCalculation = std::max<size_t>(size() / (threadNum() + 1), limit());
 
     // calculate how many sub-thread will join this calculation
     size_t taskNum = size() / threadCalculation;
@@ -587,7 +593,7 @@ void Matrix<ELEMENT_TYPE>::fill(const ELEMENT_TYPE &value) {
     std::vector<std::future<void>> returnValue(taskNum - 1);
     // assign task for every sub-thread
     for (size_t i = 0; i < taskNum - 1; i++) {
-        returnValue[i] = threadPool.addTask([this, i, threadCalculation, value]() {
+        returnValue[i] = threadPool().addTask([this, i, threadCalculation, value]() {
             std::fill(
                 dataPtr() + i * threadCalculation, dataPtr() + (i + 1) * threadCalculation, value);
         });
