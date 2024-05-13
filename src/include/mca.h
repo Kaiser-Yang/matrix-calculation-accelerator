@@ -1,12 +1,42 @@
 #ifndef MCA_PRIVATE_H
 #define MCA_PRIVATE_H
 
+#include <thread>
+
 #include "matrix.h"
 
 namespace mca {
 
-// the eps will be used when comparing matrices whose elements are floating numbers
-extern double eps;
+// Initialize the mca, before using mca, you must call init
+// If you don't call init, mca will run in single thread mode
+// threadNum is how many threads will be used when calculating
+// limit is the minimal quantity of a thread's calculation
+// eps is the epsilon when comparing matrices whose elements' types are floating number
+extern void init(const size_t &threadNum = std::thread::hardware_concurrency() - 1,
+                 const size_t &limit     = 623,
+                 const double &eps       = 1e-100);
+
+// Set how many threads will be used when calculating
+extern void setThreadNum(const size_t &threadNum);
+
+// Set the minimal quantity of a thread's calculation
+// Make sure every sub-thread's calculation is no less than limit
+// When the rest part is less than limit, the main thread will calculate the rest
+// NOTE: if you want to calculate with single thread, you can set the limit with
+//       std::numeric_limits<size_t>::max()
+extern void setLimit(const size_t &limit);
+
+// set the epsilon used for comparing floating numbers
+extern void setEpsilon(const double &eps);
+
+// return current thread number
+extern size_t threadNum();
+
+// return current limit
+extern size_t limit();
+
+// return current epsilon
+extern double epsilon();
 
 // Check if matrix a and matrix b are equal using multi-thread
 // return false when a's shape is not same with b's shape
