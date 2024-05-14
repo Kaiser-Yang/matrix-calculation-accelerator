@@ -41,7 +41,7 @@ TEST_F(TestMatrixMultiThread, fill) {
     init();
 
     // the expected time in multi thread
-    testing::Test::RecordProperty("BaseTime", executionTime / threadNum());
+    testing::Test::RecordProperty("BaseTime", executionTime / (threadNum() + 1));
 
     // get the multi-thread mode time
     startTime = high_resolution_clock::now();
@@ -81,7 +81,7 @@ TEST_F(TestMatrixMultiThread, constructors) {
     // multi thread mode
     init();
     // the expected time in multi thread
-    testing::Test::RecordProperty("BaseTime", executionTime / threadNum());
+    testing::Test::RecordProperty("BaseTime", executionTime / (threadNum() + 1));
     startTime = high_resolution_clock::now();
     // construct a matrix with a specified value
     Matrix<int> n1(shape, -1);
@@ -124,7 +124,7 @@ TEST_F(TestMatrixMultiThread, assignments) {
     // multi thread mode
     init();
     // the expected time in multi thread
-    testing::Test::RecordProperty("BaseTime", executionTime / threadNum());
+    testing::Test::RecordProperty("BaseTime", executionTime / (threadNum() + 1));
     startTime = high_resolution_clock::now();
     // copy from a Matrix<int>
     m = multiThread;
