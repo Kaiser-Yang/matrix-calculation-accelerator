@@ -8,15 +8,10 @@
 #include <type_traits>
 #include <vector>
 
+#include "mca.h"
 #include "thread_pool.h"
 
 namespace mca {
-extern ThreadPool &threadPool();
-
-extern size_t limit();
-
-extern size_t threadNum();
-
 struct Shape {
     size_t rows    = 0;
     size_t columns = 0;
