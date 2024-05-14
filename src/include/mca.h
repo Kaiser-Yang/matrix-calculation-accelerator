@@ -3,9 +3,12 @@
 
 #include <thread>
 
-#include "matrix.h"
+#include "thread_pool.h"
 
 namespace mca {
+// forward declaration to remove circular dependency
+template <class ELEMENT_TYPE>
+class Matrix;
 
 // Initialize the mca, before using mca, you must call init
 // If you don't call init, mca will run in single thread mode
@@ -37,6 +40,10 @@ extern size_t limit();
 
 // return current epsilon
 extern double epsilon();
+
+// return trhead pool object, this should not called by the usrs
+// this is for developers
+extern ThreadPool &threadPool();
 
 // Check if matrix a and matrix b are equal using multi-thread
 // return false when a's shape is not same with b's shape
@@ -331,9 +338,7 @@ template <class Number, class T>
 Matrix<std::common_type_t<T, Number>> operator-(const Number &number, const Matrix<T> &a) {}
 // TODO
 template <class T, class Number>
-Matrix<std::common_type_t<T, Number>> operator*(const Matrix<T> &a,
-                                                // TODO
-                                                const Number &number) {}
+Matrix<std::common_type_t<T, Number>> operator*(const Matrix<T> &a, const Number &number) {}
 template <class Number, class T>
 Matrix<std::common_type_t<T, Number>> operator*(const Number &number, const Matrix<T> &a) {}
 // TODO
