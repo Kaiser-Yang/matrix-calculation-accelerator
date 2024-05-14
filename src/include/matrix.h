@@ -59,6 +59,7 @@ public:
     // and diagonal elements are 1, 2, 3, 4 other elements will be ELEMENT_TYPE()
     // In this case, double() will be 0
     Matrix(const std::initializer_list<ELEMENT_TYPE> &diag);
+    Matrix(const std::vector<ELEMENT_TYPE> &diag);
 
     // Copy constructor
     // If the other matrix's ELEMENT_TYPE is not same with current matrix,
@@ -81,6 +82,7 @@ public:
     // matrix
     template <class T>
     Matrix<ELEMENT_TYPE> &operator=(const Matrix<T> &other);
+    Matrix<ELEMENT_TYPE> &operator=(const Matrix &other);
 
     // Copy assignment from a initializer_list
     // You can use this like: matrix = {{1, 2}, {3, 4}}
@@ -442,15 +444,15 @@ template <class ELEMENT_TYPE>
 Matrix<ELEMENT_TYPE>::Matrix(const Shape &shape) {
     if (shape.size() == 0) { return; }
     this->shape = shape;
-    capacity = size();
-    data = std::make_unique<ELEMENT_TYPE[]>(size());
+    capacity    = size();
+    data        = std::make_unique<ELEMENT_TYPE[]>(size());
     fill(ELEMENT_TYPE());
     size_t totalCalculation = std::min(rows(), columns());
     if (threadNum() == 0 || limit() > totalCalculation) {
         for (size_t i = 0; i < totalCalculation; i++) { get(i, i) = ELEMENT_TYPE(1); }
         return;
     }
-    auto res = threadCalculationTaskNum(size());
+    auto res = threadCalculationTaskNum(totalCalculation);
     std::vector<std::future<void>> returnValue(res.second - 1);
     for (size_t i = 0; i < res.second - 1; i++) {
         returnValue[i] =
@@ -503,7 +505,7 @@ template <class ELEMENT_TYPE>
 Matrix<ELEMENT_TYPE>::Matrix(const std::initializer_list<ELEMENT_TYPE> &diag) {
     if (diag.size() == 0) { return; }
     this->shape = {diag.size(), diag.size()};
-    data = std::make_unique<ELEMENT_TYPE[]>(size());
+    data        = std::make_unique<ELEMENT_TYPE[]>(size());
     fill(ELEMENT_TYPE());
     if (threadNum() == 0 || limit() > rows()) {
         for (size_t i = 0; i < rows(); i++) { get(i, i) = std::data(diag)[i]; }
@@ -520,6 +522,28 @@ Matrix<ELEMENT_TYPE>::Matrix(const std::initializer_list<ELEMENT_TYPE> &diag) {
     for (size_t i = (res.second - 1) * res.first; i < rows(); i++) {
         get(i, i) = std::data(diag)[i];
     }
+    for (auto &item : returnValue) { item.get(); }
+}
+
+template <class ELEMENT_TYPE>
+Matrix<ELEMENT_TYPE>::Matrix(const std::vector<ELEMENT_TYPE> &diag) {
+    if (diag.size() == 0) { return; }
+    this->shape = {diag.size(), diag.size()};
+    data        = std::make_unique<ELEMENT_TYPE[]>(size());
+    fill(ELEMENT_TYPE());
+    if (threadNum() == 0 || limit() > rows()) {
+        for (size_t i = 0; i < rows(); i++) { get(i, i) = diag[i]; }
+        return;
+    }
+    auto res = threadCalculationTaskNum(rows());
+    std::vector<std::future<void>> returnValue(res.second - 1);
+    for (size_t i = 0; i < res.second - 1; i++) {
+        returnValue[i] =
+            threadPool().addTask([this, &diag, start = i * res.first, end = (i + 1) * res.first]() {
+                for (size_t i = start; i < end; i++) { get(i, i) = diag[i]; }
+            });
+    }
+    for (size_t i = (res.second - 1) * res.first; i < rows(); i++) { get(i, i) = diag[i]; }
     for (auto &item : returnValue) { item.get(); }
 }
 
@@ -570,6 +594,11 @@ Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(const Matrix<T> &other) {
     }
     for (auto &item : returnValue) { item.get(); }
     return *this;
+}
+
+template <class ELEMENT_TYPE>
+Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(const Matrix &other) {
+    return operator=<ELEMENT_TYPE>(other);
 }
 
 template <class ELEMENT_TYPE>
@@ -631,7 +660,7 @@ Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(const std::vector<std::vec
         return *this;
     }
     if (capacity < size()) {
-        capacity = shape.size();
+        capacity = size();
         data     = std::make_unique<ELEMENT_TYPE[]>(size());
     }
     if (threadNum() == 0 || limit() > size()) {
@@ -640,16 +669,15 @@ Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(const std::vector<std::vec
         return *this;
     }
     auto res = threadCalculationTaskNum(size());
-    std::vector<std::future<void>> returnValue;
+    std::vector<std::future<void>> returnValue(res.second - 1);
     for (size_t i = 0; i < res.second - 1; i++) {
-        returnValue[i] = threadPool().addTask(
-            [this, start = i * res.first, end = (i + 1) * res.second, &init]() {
+        returnValue[i] =
+            threadPool().addTask([this, start = i * res.first, end = (i + 1) * res.first, &init]() {
                 for (size_t i = start; i < end; i++) {
                     dataPtr()[i] = static_cast<ELEMENT_TYPE>(init[i / columns()][i % columns()]);
                 }
             });
     }
-
     for (size_t i = (res.second - 1) * res.first; i < res.second * res.first; i++) {
         dataPtr()[i] = static_cast<ELEMENT_TYPE>(init[i / columns()][i % columns()]);
     }

@@ -386,7 +386,7 @@ template <class Number, class T>
 void operator/=(const Number &number, Matrix<T> &a) {}
 
 inline std::pair<size_t, size_t> threadCalculationTaskNum(const size_t &total) {
-    size_t threadCalculation = total / (threadNum() + 1);
+    size_t threadCalculation = std::max(total / (threadNum() + 1), limit());
     size_t taskNum           = total / threadCalculation;
     if (total % threadCalculation > 0) { taskNum++; }
     return {threadCalculation, taskNum};
