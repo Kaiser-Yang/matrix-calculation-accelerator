@@ -13,7 +13,7 @@ using namespace std::chrono;
 namespace mca {
 namespace test {
 class TestMatrixMultiThread : public testing::Test {
-public:
+protected:
     std::default_random_engine generator;
     Shape shape{9000, 9000};
     Matrix<int>::ElementType value = generator();
@@ -24,7 +24,6 @@ public:
     Matrix<int> singleThread = Matrix<>(shape, value);
     Matrix<int> multiThread  = Matrix<>(shape, value);
 
-protected:
     void SetUp() override { generator.seed(time(nullptr)); }
 
     void TearDown() override {}

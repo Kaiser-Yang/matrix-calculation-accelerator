@@ -775,7 +775,7 @@ void Matrix<ELEMENT_TYPE>::fill(const ELEMENT_TYPE &value, const size_t &pos) {
                 std::fill(dataPtr() + start, dataPtr() + end, value);
             });
     }
-    // let main thread calculate two
+    // let main thread calculate too
     std::fill(dataPtr() + (res.second - 1) * res.first, dataPtr() + size(), value);
 
     // make sure all the sub threads are finished
