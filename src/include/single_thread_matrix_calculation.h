@@ -395,8 +395,8 @@ void numberPowSingleThread(Number &&number,
                            const Shape &shape) {
     assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == output.shape);
-    assert(sx + shape.rows <= output.shape.rows);
-    assert(sy + shape.columns <= output.shape.columns);
+    assert(sx + shape.rows <= output.rows());
+    assert(sy + shape.columns <= output.columns());
     using CommonType = std::common_type_t<Number, T, O>;
     for (size_t i = sx; i < sx + shape.rows; i++) {
         for (size_t j = sy; j < sy + shape.columns; j++) {
@@ -415,8 +415,8 @@ void powNumberSingleThread(const Matrix<T> &a,
                            const Shape &shape) {
     assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == output.shape);
-    assert(sx + shape.rows <= output.shape.rows);
-    assert(sy + shape.columns <= output.shape.columns);
+    assert(sx + shape.rows <= output.rows());
+    assert(sy + shape.columns <= output.columns());
     using CommonType = std::common_type_t<Number, T, O>;
     for (size_t i = sx; i < sx + shape.rows; i++) {
         for (size_t j = sy; j < sy + shape.columns; j++) {
@@ -434,8 +434,8 @@ bool lessSingleThread(const Matrix<T1> &a,
                       const Shape &shape,
                       const double &eps) {
     assert(a.shape == b.shape);
-    assert(sx + shape.rows <= a.shape.rows);
-    assert(sy + shape.columns <= a.shape.columns);
+    assert(sx + shape.rows <= a.rows());
+    assert(sy + shape.columns <= a.columns());
     using CommonType = std::common_type_t<T1, T2>;
     for (size_t i = sx; i < sx + shape.rows; i++) {
         for (size_t j = sy; j < sy + shape.columns; j++) {
@@ -461,8 +461,8 @@ bool equalSingleThread(const Matrix<T1> &a,
                        const Shape &shape,
                        const double &eps) {
     assert(a.shape == b.shape);
-    assert(sx + shape.rows <= a.shape.rows);
-    assert(sy + shape.columns <= a.shape.columns);
+    assert(sx + shape.rows <= a.rows());
+    assert(sy + shape.columns <= a.columns());
     using CommonType = std::common_type_t<T1, T2>;
     for (size_t i = sx; i < sx + shape.rows; i++) {
         for (size_t j = sy; j < sy + shape.columns; j++) {
@@ -488,8 +488,8 @@ bool lessEqualSingleThread(const Matrix<T1> &a,
                            const Shape &shape,
                            const double &eps) {
     assert(a.shape == b.shape);
-    assert(sx + shape.rows <= a.shape.rows);
-    assert(sy + shape.columns <= a.shape.columns);
+    assert(sx + shape.rows <= a.rows());
+    assert(sy + shape.columns <= a.columns());
     using CommonType = std::common_type_t<T1, T2>;
     for (size_t i = sx; i < sx + shape.rows; i++) {
         for (size_t j = sy; j < sy + shape.columns; j++) {
@@ -514,8 +514,8 @@ bool greaterSingleThread(const Matrix<T1> &a,
                          const Shape &shape,
                          const double &eps) {
     assert(a.shape == b.shape);
-    assert(sx + shape.rows <= a.shape.rows);
-    assert(sy + shape.columns <= a.shape.columns);
+    assert(sx + shape.rows <= a.rows());
+    assert(sy + shape.columns <= a.columns());
     using CommonType = std::common_type_t<T1, T2>;
     for (size_t i = sx; i < sx + shape.rows; i++) {
         for (size_t j = sy; j < sy + shape.columns; j++) {
@@ -543,8 +543,8 @@ bool greaterEqualSingleThread(const Matrix<T1> &a,
                               const Shape &shape,
                               const double &eps) {
     assert(a.shape == b.shape);
-    assert(sx + shape.rows <= a.shape.rows);
-    assert(sy + shape.columns <= a.shape.columns);
+    assert(sx + shape.rows <= a.rows());
+    assert(sy + shape.columns <= a.columns());
     using CommonType = std::common_type_t<T1, T2>;
     for (size_t i = sx; i < sx + shape.rows; i++) {
         for (size_t j = sy; j < sy + shape.columns; j++) {
@@ -570,8 +570,8 @@ bool notEqualSingleThread(const Matrix<T1> &a,
                           const Shape &shape,
                           const double &eps) {
     assert(a.shape == b.shape);
-    assert(sx + shape.rows <= a.shape.rows);
-    assert(sy + shape.columns <= a.shape.columns);
+    assert(sx + shape.rows <= a.rows());
+    assert(sy + shape.columns <= a.columns());
     using CommonType = std::common_type_t<T1, T2>;
     for (size_t i = sx; i < sx + shape.rows; i++) {
         for (size_t j = sy; j < sy + shape.columns; j++) {
@@ -598,8 +598,8 @@ void multiplySingleThread(const Number &number,
                           const Shape &shape) {
     assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == output.shape);
-    assert(sx + shape.rows <= output.shape.rows);
-    assert(sy + shape.columns <= output.shape.columns);
+    assert(sx + shape.rows <= output.rows());
+    assert(sy + shape.columns <= output.columns());
     using CommonType = std::common_type_t<Number, T, O>;
     for (size_t i = sx; i < sx + shape.rows; i++) {
         for (size_t j = sy; j < sy + shape.columns; j++) {
@@ -619,8 +619,8 @@ void addSingleThread(const Matrix<T1> &a,
     assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == b.shape);
     assert(a.shape == output.shape);
-    assert(sx + shape.rows <= output.shape.rows);
-    assert(sy + shape.columns <= output.shape.columns);
+    assert(sx + shape.rows <= output.rows());
+    assert(sy + shape.columns <= output.columns());
     using CommonType = std::common_type_t<T1, T2, O>;
     for (size_t i = sx; i < sx + shape.rows; i++) {
         for (size_t j = sy; j < sy + shape.columns; j++) {
@@ -639,8 +639,8 @@ void subtractSingleThread(const Matrix<T1> &a,
                           const Shape &shape) {
     assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == b.shape);
-    assert(sx + shape.rows <= a.shape.rows);
-    assert(sy + shape.columns <= a.shape.columns);
+    assert(sx + shape.rows <= a.rows());
+    assert(sy + shape.columns <= a.columns());
     using CommonType = std::common_type_t<T1, T2, O>;
     for (size_t i = sx; i < sx + shape.rows; i++) {
         for (size_t j = sy; j < sy + shape.columns; j++) {
@@ -658,16 +658,16 @@ void multiplySingleThread(const Matrix<T1> &a,
                           const size_t &sy,
                           const Shape &shape) {
     assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
-    assert(a.shape.columns == b.shape.rows);
-    assert(a.shape.rows == output.shape.rows);
-    assert(b.shape.columns == output.shape.columns);
-    assert(sx + shape.rows <= output.shape.rows);
-    assert(sy + shape.columns <= output.shape.columns);
+    assert(a.columns() == b.rows());
+    assert(a.rows() == output.rows());
+    assert(b.columns() == output.columns());
+    assert(sx + shape.rows <= output.rows());
+    assert(sy + shape.columns <= output.columns());
     using CommonType = std::common_type_t<T1, T2, O>;
     for (size_t i = sx; i < sx + shape.rows; i++) {
         for (size_t j = sy; j < sy + shape.columns; j++) {
             output.get(i, j) = 0;
-            for (size_t k = 0; k < a.shape.columns; k++) {
+            for (size_t k = 0; k < a.columns(); k++) {
                 // clang-format off
                 output.get(i, j) = static_cast<O>(static_cast<CommonType>(output.get(i, j)) +
                                                   static_cast<CommonType>(a.get(i, k)) *
@@ -687,8 +687,8 @@ void addSingleThread(const Number &number,
                      const Shape &shape) {
     assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == output.shape);
-    assert(sx + shape.rows <= output.shape.rows);
-    assert(sy + shape.columns <= output.shape.columns);
+    assert(sx + shape.rows <= output.rows());
+    assert(sy + shape.columns <= output.columns());
     using CommonType = std::common_type_t<Number, T, O>;
     for (size_t i = sx; i < sx + shape.rows; i++) {
         for (size_t j = sy; j < sy + shape.columns; j++) {
@@ -707,8 +707,8 @@ void subtractSingleThread(const Number &number,
                           const Shape &shape) {
     assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == output.shape);
-    assert(sx + shape.rows <= output.shape.rows);
-    assert(sy + shape.columns <= output.shape.columns);
+    assert(sx + shape.rows <= output.rows());
+    assert(sy + shape.columns <= output.columns());
     using CommonType = std::common_type_t<Number, T, O>;
     for (size_t i = sx; i < sx + shape.rows; i++) {
         for (size_t j = sy; j < sy + shape.columns; j++) {
@@ -726,8 +726,8 @@ void subtractSingleThread(const Matrix<T> &a,
                           const Shape &shape) {
     assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == output.shape);
-    assert(sx + shape.rows <= output.shape.rows);
-    assert(sy + shape.columns <= output.shape.columns);
+    assert(sx + shape.rows <= output.rows());
+    assert(sy + shape.columns <= output.columns());
     using CommonType = std::common_type_t<Number, T, O>;
     for (size_t i = sx; i < sx + shape.rows; i++) {
         for (size_t j = sy; j < sy + shape.columns; j++) {
@@ -746,8 +746,8 @@ void divideSingleThread(const Matrix<T> &a,
                         const Shape &shape) {
     assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == output.shape);
-    assert(sx + shape.rows <= output.shape.rows);
-    assert(sy + shape.columns <= output.shape.columns);
+    assert(sx + shape.rows <= output.rows());
+    assert(sy + shape.columns <= output.columns());
     using CommonType = std::common_type_t<Number, T, O>;
     for (size_t i = sx; i < sx + shape.rows; i++) {
         for (size_t j = sy; j < sy + shape.columns; j++) {
@@ -766,8 +766,8 @@ void divideSingleThread(const Number &number,
                         const Shape &shape) {
     assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape == output.shape);
-    assert(sx + shape.rows <= output.shape.rows);
-    assert(sy + shape.columns <= output.shape.columns);
+    assert(sx + shape.rows <= output.rows());
+    assert(sy + shape.columns <= output.columns());
     using CommonType = std::common_type_t<Number, T, O>;
     for (size_t i = sx; i < sx + shape.rows; i++) {
         for (size_t j = sy; j < sy + shape.columns; j++) {
@@ -783,10 +783,10 @@ void transposeSingleThread(const Matrix<T> &a,
                            const size_t &sx,
                            const size_t &sy,
                            const Shape &shape) {
-    assert(a.shape.rows == output.shape.columns);
-    assert(a.shape.columns == output.shape.rows);
-    assert(sx + shape.rows <= output.shape.rows);
-    assert(sy + shape.columns <= output.shape.columns);
+    assert(a.rows() == output.columns());
+    assert(a.columns() == output.rows());
+    assert(sx + shape.rows <= output.rows());
+    assert(sy + shape.columns <= output.columns());
     for (size_t i = sx; i < sx + shape.rows; i++) {
         for (size_t j = sy; j < sy + shape.columns; j++) { output.get(i, j) = a.get(j, i); }
     }
