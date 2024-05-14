@@ -48,7 +48,7 @@ TEST_F(TestMatrixMultiThread, fill) {
     multiThread.fill(newValue);
     endTime       = high_resolution_clock::now();
     executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
-    // record thread number and time in gtest
+    // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
 
     // TODO this should be updated with Matrix::operator== with multi-thread

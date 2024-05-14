@@ -2,6 +2,10 @@
 
 #include <gtest/gtest.h>
 
+#include <vector>
+
+#include "single_thread_matrix_calculation.h"
+
 namespace mca {
 namespace test {
 TEST(TestShape, defaultConstructor) {
@@ -27,38 +31,88 @@ TEST(TestShape, size) {
     ASSERT_EQ(s.size(), 3 * 2);
 }
 
-// test all constructors
+// test all constructors in single thread mode
 TEST(TestMatrix, constructors) {
+    // default constructor
     Matrix<int> m;
     ASSERT_EQ(m.getShape(), Shape(0, 0));
     ASSERT_EQ(m.dataPtr(), nullptr);
+
+    // construct a matrix with a specified value
     Matrix<int> m1(Shape{3, 3}, -1);
     ASSERT_EQ(m1.getShape(), Shape(3, 3));
     ASSERT_NE(m1.dataPtr(), nullptr);
-    for (size_t i = 0; i < m.getShape().rows; i++) {
-        for (size_t j = 0; j < m.getShape().columns; j++) { ASSERT_EQ(m.get(i, j), -1); }
+    for (size_t i = 0; i < m.rows(); i++) {
+        for (size_t j = 0; j < m.columns(); j++) { ASSERT_EQ(m.get(i, j), -1); }
     }
+
+    // construct from a std::initializer_list
     Matrix<int> m2 = Matrix<int>({{-1, -1, -1}, {-1, -1, -1}});
     ASSERT_EQ(m2.getShape(), Shape(2, 3));
     ASSERT_NE(m2.dataPtr(), nullptr);
-    for (size_t i = 0; i < m2.getShape().rows; i++) {
-        for (size_t j = 0; j < m2.getShape().columns; j++) { ASSERT_EQ(m2.get(i, j), -1); }
+    for (size_t i = 0; i < m2.rows(); i++) {
+        for (size_t j = 0; j < m2.columns(); j++) { ASSERT_EQ(m2.get(i, j), -1); }
     }
+
+    // construct an identity matrix
+    Matrix<int> m3     = Matrix<int>(Shape{3, 3});
+    Matrix<int> result = Matrix<int>({{1, 0, 0}, {0, 1, 0}, {0, 0, 1}});
+    ASSERT_TRUE(equalSingleThread(m3, result, 0, 0, m3.getShape()));
+
+    // construct from a pointer
+    int data[] = {1, 2, 3};
+    Matrix<int> m4 = Matrix<int>({3, 3}, &data[0], 3);
+    result         = Matrix<int>({{1, 2, 3}, {0, 0, 0}, {0, 0, 0}});
+    ASSERT_TRUE(equalSingleThread(m4, result, 0, 0, m4.getShape()));
+
+    // construct from a vector
+    std::vector<std::vector<int>> vec{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+    Matrix<int> m5 = Matrix<int>(vec);
+    result         = Matrix<int>({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
+    ASSERT_TRUE(equalSingleThread(m5, result, 0, 0, m5.getShape()));
+
+    // construct a diagonal matrix
+    Matrix<int> m6 = Matrix<int>({1, 2, 3});
+    result         = Matrix<int>({{1, 0, 0}, {0, 2, 0}, {0, 0, 3}});
+    ASSERT_TRUE(equalSingleThread(m6, result, 0, 0, m6.getShape()));
 }
 
 TEST(TestMatrix, assignments) {
     Matrix<int> m;
     ASSERT_EQ(m.getShape(), Shape(0, 0));
     ASSERT_EQ(m.dataPtr(), nullptr);
+
+    // copy from Matrix<int>
     m = Matrix<int>({3, 3}, 1);
     ASSERT_EQ(m.getShape(), Shape(3, 3));
     ASSERT_NE(m.dataPtr(), nullptr);
     for (size_t i = 0; i < m.rows(); i++) {
         for (size_t j = 0; j < m.columns(); j++) { ASSERT_EQ(m.get(i, j), 1); }
     }
+
+    // copy from Matrix<double>
+    m = Matrix<>({3, 3}, 1.5);
+    Matrix<int> result({3, 3}, 1);
+    ASSERT_TRUE(equalSingleThread(m, result, 0, 0, m.getShape()));
+
+    // copy from a pointer
+    double data[9] = {1.5, 2.5, 3.5};
+    m = &data[0];
+    result = Matrix<>({3, 3}, &data[0], 3);
+    ASSERT_TRUE(equalSingleThread(m, result, 0, 0, m.getShape()));
+
+    // copy from std::initializer_list
+    m = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+    result = Matrix<>({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
+    ASSERT_TRUE(equalSingleThread(m, result, 0, 0, m.getShape()));
+
+    // copy from a vector
+    std::vector<std::vector<int>> vec{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+    m = Matrix<>();
+    m = vec;
+    ASSERT_TRUE(equalSingleThread(m, result, 0, 0, m.getShape()));
 }
 
-// test get() and getShape()
 TEST(TestMatrix, geter) {
     Matrix<int> m({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
     ASSERT_EQ(m.getShape(), Shape(3, 3));

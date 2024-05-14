@@ -6,6 +6,7 @@
 #include <initializer_list>
 #include <memory>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "mca.h"
@@ -41,10 +42,14 @@ public:
     // Construct a matrix from a initializer_list
     // You can use this like Matrix<>({{1, 2}, {3, 4}})
     // NOTE: if you use Matrix({{1, 2}, {3, 4}}) the ELEMENT_TYPE will be int rather than double
-    Matrix(const std::initializer_list<std::initializer_list<ELEMENT_TYPE>> &init);
+    inline Matrix(const std::initializer_list<std::initializer_list<ELEMENT_TYPE>> &init);
 
     // Construct a matrix from a vector
-    Matrix(const std::vector<std::vector<ELEMENT_TYPE>> &init);
+    inline Matrix(const std::vector<std::vector<ELEMENT_TYPE>> &init);
+
+    // Construct a matrix from a pointer
+    // when len is less than shape.size(), the rest part will be filled with ELEMENT_TYPE()
+    inline Matrix(const Shape &shape, const ELEMENT_TYPE *data, const size_t &len);
 
     // Construct a matrix with shape and defaultValue
     inline Matrix(const Shape &shape, const ELEMENT_TYPE &defaultValue);
@@ -92,6 +97,13 @@ public:
     template <class T>
     Matrix<ELEMENT_TYPE> &operator=(const std::vector<std::vector<T>> &init);
 
+    // Copy assignment from a pointer
+    // If the T is not same with current matrix,
+    // the data will use static_cast<> to convert its type the same with current
+    // size() should be less than or equal with the data's size
+    template <class T>
+    Matrix<ELEMENT_TYPE> &operator=(const T *data);
+
     // get the reference to the element of i-th row, j-th column
     inline ELEMENT_TYPE &get(size_t i, size_t j);
     inline const ELEMENT_TYPE &get(size_t i, size_t j) const;
@@ -117,8 +129,10 @@ public:
     //       one
     inline void reshape(const Shape &shape);
 
-    // Make all the elements of the matrix be a new value
-    void fill(const ELEMENT_TYPE &value);
+    // Make all the elements of the matrix be a new value, when pos = 0
+    // Otherwise, the elements before pos will not changed
+    // pos should be less than or equal with size()
+    void fill(const ELEMENT_TYPE &value, const size_t &pos = 0);
 
     // Calculate number ^ (*this), and store the result in output
     // If the output is nullptr, (*this) will be changed
@@ -199,6 +213,7 @@ public:
 private:
     std::unique_ptr<ELEMENT_TYPE[]> data;
     Shape shape;
+    size_t capacity{0};
 
     template <class T1, class T2>
     friend bool operator==(const Matrix<T1> &a, const Matrix<T2> &b);
@@ -423,66 +438,91 @@ inline bool Shape::operator!=(const Shape &other) const { return !(*this == othe
 
 inline size_t Shape::size() const { return rows * columns; }
 
-// TODO
 template <class ELEMENT_TYPE>
-Matrix<ELEMENT_TYPE>::Matrix(const Shape &shape) {}
+Matrix<ELEMENT_TYPE>::Matrix(const Shape &shape) {
+    if (shape.size() == 0) { return; }
+    this->shape = shape;
+    capacity = size();
+    data = std::make_unique<ELEMENT_TYPE[]>(size());
+    fill(ELEMENT_TYPE());
+    size_t totalCalculation = std::min(rows(), columns());
+    if (threadNum() == 0 || limit() > totalCalculation) {
+        for (size_t i = 0; i < totalCalculation; i++) { get(i, i) = ELEMENT_TYPE(1); }
+        return;
+    }
+    auto res = threadCalculationTaskNum(size());
+    std::vector<std::future<void>> returnValue(res.second - 1);
+    for (size_t i = 0; i < res.second - 1; i++) {
+        returnValue[i] =
+            threadPool().addTask([this, start = i * res.first, end = (i + 1) * res.first]() {
+                for (size_t i = start; i < end; i++) { get(i, i) = ELEMENT_TYPE(1); }
+            });
+    }
+    for (size_t i = (res.second - 1) * res.first; i < totalCalculation; i++) {
+        get(i, i) = ELEMENT_TYPE(1);
+    }
+    for (auto &item : returnValue) { item.get(); }
+}
 
-// TODO
 template <class ELEMENT_TYPE>
-Matrix<ELEMENT_TYPE>::Matrix(
+inline Matrix<ELEMENT_TYPE>::Matrix(
     const std::initializer_list<std::initializer_list<ELEMENT_TYPE>> &init) {
-    shape.rows = init.size();
-    if (init.size() != 0) { shape.columns = init.begin()->size(); }
-    if (shape.size() != 0) {
-        data     = std::make_unique<ELEMENT_TYPE[]>(shape.size());
-        size_t i = 0;
-        for (auto &&rows : init) {
-            assert(rows.size() == shape.columns);
-            size_t j = 0;
-            for (auto &&item : rows) {
-                get(i, j) = item;
-                j++;
-            }
-            i++;
-        }
-        //             TODO: update with multi thread
-        //             *this         = init;
-    }
+    *this = init;
 }
 
-// TODO
 template <class ELEMENT_TYPE>
-Matrix<ELEMENT_TYPE>::Matrix(const std::vector<std::vector<ELEMENT_TYPE>> &init) {
-    shape.rows = init.size();
-    if (init.size() != 0) { shape.columns = init.begin()->size(); }
-    if (shape.size() != 0) {
-        data = std::make_unique<ELEMENT_TYPE[]>(shape.size());
-        for (size_t i = 0; i < rows(); i++) {
-            assert(columns() == init[i].size());
-            for (size_t j = 0; j < columns(); j++) { get(i, j) = init[i][j]; }
-        }
-        //             TODO: update with multi thread
-        //             *this         = init;
-    }
+inline Matrix<ELEMENT_TYPE>::Matrix(const std::vector<std::vector<ELEMENT_TYPE>> &init) {
+    *this = init;
 }
 
-// TODO
+template <class ELEMENT_TYPE>
+inline Matrix<ELEMENT_TYPE>::Matrix(const Shape &shape,
+                                    const ELEMENT_TYPE *data,
+                                    const size_t &len) {
+    if (shape.size() == 0) { return; }
+    capacity    = shape.size();
+    this->data  = std::make_unique<ELEMENT_TYPE[]>(shape.size());
+    this->shape = {std::min(len, shape.size()), 1};
+    *this       = data;
+    this->shape = shape;
+    if (size() <= len) { return; }
+    fill(0, len);
+}
+
 template <class ELEMENT_TYPE>
 inline Matrix<ELEMENT_TYPE>::Matrix(const Shape &shape, const ELEMENT_TYPE &defaultValue) {
     this->shape = shape;
     if (shape.size() != 0) {
-        data = std::make_unique<ELEMENT_TYPE[]>(shape.size());
-        std::fill(data.get(), data.get() + shape.size(), defaultValue);
-        // TODO: update with multi thread
-        //             fill(defaultValue);
+        capacity = size();
+        data     = std::make_unique<ELEMENT_TYPE[]>(size());
+        fill(defaultValue);
     }
 }
 
-// TODO
 template <class ELEMENT_TYPE>
-Matrix<ELEMENT_TYPE>::Matrix(const std::initializer_list<ELEMENT_TYPE> &diag) {}
+Matrix<ELEMENT_TYPE>::Matrix(const std::initializer_list<ELEMENT_TYPE> &diag) {
+    if (diag.size() == 0) { return; }
+    this->shape = {diag.size(), diag.size()};
+    data = std::make_unique<ELEMENT_TYPE[]>(size());
+    fill(ELEMENT_TYPE());
+    if (threadNum() == 0 || limit() > rows()) {
+        for (size_t i = 0; i < rows(); i++) { get(i, i) = std::data(diag)[i]; }
+        return;
+    }
+    auto res = threadCalculationTaskNum(rows());
+    std::vector<std::future<void>> returnValue(res.second - 1);
+    for (size_t i = 0; i < res.second - 1; i++) {
+        returnValue[i] =
+            threadPool().addTask([this, &diag, start = i * res.first, end = (i + 1) * res.first]() {
+                for (size_t i = start; i < end; i++) { get(i, i) = std::data(diag)[i]; }
+            });
+    }
+    for (size_t i = (res.second - 1) * res.first; i < rows(); i++) {
+        get(i, i) = std::data(diag)[i];
+    }
+    for (auto &item : returnValue) { item.get(); }
+}
 
-// TODO: not finished yet, once copy assignment finishs, this will finish
 template <class ELEMENT_TYPE>
 template <class T>
 inline Matrix<ELEMENT_TYPE>::Matrix(const Matrix<T> &other) {
@@ -501,25 +541,143 @@ inline Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(Matrix &&other) noe
     return *this;
 }
 
-// TODO
 template <class ELEMENT_TYPE>
 template <class T>
 Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(const Matrix<T> &other) {
+    if (capacity < other.size()) {
+        capacity = shape.size();
+        data     = std::make_unique<ELEMENT_TYPE[]>(other.size());
+    }
+    shape = other.getShape();
+    if (threadNum() == 0 || limit() > size()) {
+        for (size_t i = 0; i < size(); i++) {
+            dataPtr()[i] = static_cast<ELEMENT_TYPE>(other.dataPtr()[i]);
+        }
+        return *this;
+    }
+    auto res = threadCalculationTaskNum(size());
+    std::vector<std::future<void>> returnValue(res.second - 1);
+    for (size_t i = 0; i < res.second - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [this, start = i * res.first, end = (i + 1) * res.first, &other]() {
+                for (size_t i = start; i < end; i++) {
+                    dataPtr()[i] = static_cast<ELEMENT_TYPE>(other.dataPtr()[i]);
+                }
+            });
+    }
+    for (size_t i = (res.second - 1) * res.first; i < res.second * res.first; i++) {
+        dataPtr()[i] = static_cast<ELEMENT_TYPE>(other.dataPtr()[i]);
+    }
+    for (auto &item : returnValue) { item.get(); }
     return *this;
 }
 
-// TODO
 template <class ELEMENT_TYPE>
 template <class T>
 Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(
     const std::initializer_list<std::initializer_list<T>> &init) {
+    shape.rows = init.size();
+    if (init.size() == 0) {
+        shape.columns = 0;
+        data          = nullptr;
+        return *this;
+    }
+    shape.columns = init.begin()->size();
+    if (size() == 0) {
+        data = nullptr;
+        return *this;
+    }
+    if (capacity < size()) {
+        capacity = shape.size();
+        data     = std::make_unique<ELEMENT_TYPE[]>(size());
+    }
+    if (threadNum() == 0 || limit() > size()) {
+        for (size_t i = 0; i < rows(); i++)
+            for (size_t j = 0; j < columns(); j++) { get(i, j) = std::data(std::data(init)[i])[j]; }
+        return *this;
+    }
+    auto res = threadCalculationTaskNum(size());
+    std::vector<std::future<void>> returnValue;
+    for (size_t i = 0; i < res.second - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [this, start = i * res.first, end = (i + 1) * res.second, &init]() {
+                for (size_t i = start; i < end; i++) {
+                    dataPtr()[i] = static_cast<ELEMENT_TYPE>(
+                        std::data(std::data(init)[i / columns()])[i % columns()]);
+                }
+            });
+    }
+
+    for (size_t i = (res.second - 1) * res.first; i < res.second * res.first; i++) {
+        dataPtr()[i] =
+            static_cast<ELEMENT_TYPE>(std::data(std::data(init)[i / columns()])[i % columns()]);
+    }
+    for (auto &item : returnValue) { item.get(); }
     return *this;
 }
 
-// TODO
 template <class ELEMENT_TYPE>
 template <class T>
 Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(const std::vector<std::vector<T>> &init) {
+    shape.rows = init.size();
+    if (init.size() == 0) {
+        shape.columns = 0;
+        data          = nullptr;
+        return *this;
+    }
+    shape.columns = init.begin()->size();
+    if (size() == 0) {
+        data = nullptr;
+        return *this;
+    }
+    if (capacity < size()) {
+        capacity = shape.size();
+        data     = std::make_unique<ELEMENT_TYPE[]>(size());
+    }
+    if (threadNum() == 0 || limit() > size()) {
+        for (size_t i = 0; i < rows(); i++)
+            for (size_t j = 0; j < columns(); j++) { get(i, j) = init[i][j]; }
+        return *this;
+    }
+    auto res = threadCalculationTaskNum(size());
+    std::vector<std::future<void>> returnValue;
+    for (size_t i = 0; i < res.second - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [this, start = i * res.first, end = (i + 1) * res.second, &init]() {
+                for (size_t i = start; i < end; i++) {
+                    dataPtr()[i] = static_cast<ELEMENT_TYPE>(init[i / columns()][i % columns()]);
+                }
+            });
+    }
+
+    for (size_t i = (res.second - 1) * res.first; i < res.second * res.first; i++) {
+        dataPtr()[i] = static_cast<ELEMENT_TYPE>(init[i / columns()][i % columns()]);
+    }
+    for (auto &item : returnValue) { item.get(); }
+    return *this;
+}
+
+template <class ELEMENT_TYPE>
+template <class T>
+Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(const T *data) {
+    if (threadNum() == 0 || limit() > size()) {
+        for (size_t i = 0; i < size(); i++) { dataPtr()[i] = static_cast<ELEMENT_TYPE>(data[i]); }
+        return *this;
+    }
+    auto res = threadCalculationTaskNum(size());
+    std::vector<std::future<void>> returnValue(res.second - 1);
+    for (size_t i = 0; i < res.second - 1; i++) {
+        returnValue[i] =
+            threadPool().addTask([this, start = i * res.first, end = (i + 1) * res.first, data]() {
+                for (size_t i = start; i < end; i++) {
+                    dataPtr()[i] = static_cast<ELEMENT_TYPE>(data[i]);
+                }
+            });
+    }
+    for (size_t i = (res.second - 1) * res.first; i < res.second * res.first; i++) {
+        dataPtr()[i] = static_cast<ELEMENT_TYPE>(data[i]);
+    }
+    for (auto &item : returnValue) { item.get(); }
     return *this;
 }
 
@@ -570,34 +728,30 @@ inline void Matrix<ELEMENT_TYPE>::reshape(const Shape &shape) {
 }
 
 template <class ELEMENT_TYPE>
-void Matrix<ELEMENT_TYPE>::fill(const ELEMENT_TYPE &value) {
+void Matrix<ELEMENT_TYPE>::fill(const ELEMENT_TYPE &value, const size_t &pos) {
+    if (size() <= pos) { return; }
     // single mode
-    if (threadNum() == 0 || limit() > size()) {
-        std::fill(dataPtr(), dataPtr() + size(), value);
+    if (threadNum() == 0 || limit() > size() - pos) {
+        std::fill(dataPtr() + pos, dataPtr() + size(), value);
         return;
     }
-    // calculate the calculation of every thread
-    size_t threadCalculation = std::max<size_t>(size() / (threadNum() + 1), limit());
-
-    // calculate how many sub-thread will join this calculation
-    size_t taskNum = size() / threadCalculation;
-
-    if (size() % threadCalculation > 0) { taskNum++; }
+    // threadCalculation and taskNum
+    auto res = threadCalculationTaskNum(size());
 
     // the return value of every task, use this to make sure every task is finished
-    std::vector<std::future<void>> returnValue(taskNum - 1);
+    std::vector<std::future<void>> returnValue(res.second - 1);
     // assign task for every sub-thread
-    for (size_t i = 0; i < taskNum - 1; i++) {
-        returnValue[i] = threadPool().addTask([this, i, threadCalculation, value]() {
-            std::fill(
-                dataPtr() + i * threadCalculation, dataPtr() + (i + 1) * threadCalculation, value);
-        });
+    for (size_t i = 0; i < res.second - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [this, start = i * res.first + pos, end = (i + 1) * res.first + pos, &value]() {
+                std::fill(dataPtr() + start, dataPtr() + end, value);
+            });
     }
     // let main thread calculate two
-    std::fill(dataPtr() + (taskNum - 1) * threadCalculation, dataPtr() + size(), value);
+    std::fill(dataPtr() + (res.second - 1) * res.first, dataPtr() + size(), value);
 
     // make sure all the sub threads are finished
-    for (size_t i = 0; i < taskNum - 1; i++) { returnValue[i].get(); }
+    for (auto &item : returnValue) { item.get(); }
 }
 
 // TODO
