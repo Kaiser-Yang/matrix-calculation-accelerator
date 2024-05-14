@@ -93,7 +93,7 @@ TEST(TestMatrix, assignments) {
         for (size_t j = 0; j < m.columns(); j++) { ASSERT_EQ(m.get(i, j), 1); }
     }
 
-    // move assignment from Matrix<double>
+    // copy assignment from Matrix<double>
     m = Matrix<>({3, 3}, 1.5);
     Matrix<int> result({3, 3}, 1);
     ASSERT_TRUE(equalSingleThread(m, result, 0, 0, m.getShape()));
