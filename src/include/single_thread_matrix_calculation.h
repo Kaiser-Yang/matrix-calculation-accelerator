@@ -189,119 +189,104 @@ void multiplySingleThread(const Matrix<T1> &a,
                           const Shape &shape);
 
 // Calculate number + a, and store the result in output
-// This will only calculate the number+a[sx:sx+shape.rows][sy:sy+shape+shape.columns]
-// sx: start row
-// sy: start column
-// shape: the shape of matrix will be calculated
+// This will only calculate the number+a[pos:pos+len]
+// pos: one-demensional starting index of the matrix
+// len: number of elements to be calculated
 // NOTE: a must have the same shape with output
 //       &a must not be equal with &output
 //       the matrix which will be calculated must in range
 // for example: number = 2,
 //              a = [[1, 2, 3],
 //                   [2, 3, 4]]
-//              sx = 0, sy = 1
-//              shape = {2, 2}
-//              output = [[origin, 2+2, 2+3],
-//                        [origin, 2+3, 2+4]]
+//              pos = 0, len = 4
+//              output = [[2+1, 2+2,    2+3],
+//                        [2+2, origin, origin]]
 template <class Number, class T, class O>
 void addSingleThread(const Number &number,
                      const Matrix<T> &a,
                      Matrix<O> &output,
-                     const size_t &sx,
-                     const size_t &sy,
-                     const Shape &shape);
+                     const size_t &pos,
+                     const size_t &len);
 
 // Calculate number - a, and store the result in output
-// This will only calculate the number+a[sx:sx+shape.rows][sy:sy+shape+shape.columns]
-// sx: start row
-// sy: start column
-// shape: the shape of matrix will be calculated
+// This will only calculate the number-a[pos:pos+len]
+// pos: one-demensional starting index of the matrix
+// len: number of elements to be calculated
 // NOTE: a must have the same shape with output
 //       &a must not be equal with &output
 //       the matrix which will be calculated must in range
 // for example: number = 2,
 //              a = [[1, 2, 3],
 //                   [2, 3, 4]]
-//              sx = 0, sy = 1
-//              shape = {2, 2}
-//              output = [[origin, 2-2, 2-3],
-//                        [origin, 2-3, 2-4]]
+//              pos = 0, len = 4
+//              output = [[2-1, 2-2,    2-3],
+//                        [2-2, origin, origin]]
 template <class Number, class T, class O>
 void subtractSingleThread(const Number &number,
                           const Matrix<T> &a,
                           Matrix<O> &output,
-                          const size_t &sx,
-                          const size_t &sy,
-                          const Shape &shape);
+                          const size_t &pos,
+                          const size_t &len);
 
 // Calculate a - number, and store the result in output
-// This will only calculate the a^number[sx:sx+shape.rows][sy:sy+shape+shape.columns]
-// sx: start row
-// sy: start column
-// shape: the shape of matrix will be calculated
+// This will only calculate the a[pos:pos+len]-number
+// pos: one-demensional starting index of the matrix
+// len: number of elements to be calculated
 // NOTE: a must have the same shape with output
 //       &a must not be equal with &output
 //       the matrix which will be calculated must in range
 // for example: number = 2,
 //              a = [[1, 2, 3],
 //                   [2, 3, 4]]
-//              sx = 0, sy = 1
-//              shape = {2, 2}
-//              output = [[origin, 2-2, 3-2],
-//                        [origin, 3-2, 4-2]]
+//              pos = 0, len = 4
+//              output = [[1-2, 2-2,    3-2],
+//                        [2-2, origin, origin]]
 template <class T, class Number, class O>
 void subtractSingleThread(const Matrix<T> &a,
                           const Number &number,
                           Matrix<O> &output,
-                          const size_t &sx,
-                          const size_t &sy,
-                          const Shape &shape);
+                          const size_t &pos,
+                          const size_t &len);
 
 // Calculate number * a, and store the result in output
-// This will only calculate the number*a[sx:sx+shape.rows][sy:sy+shape+shape.columns]
-// sx: start row
-// sy: start column
-// shape: the shape of matrix will be calculated
+// This will only calculate the number*a[pos:pos+len]
+// pos: one-demensional starting index of the matrix
+// len: number of elements to be calculated
 // NOTE: a must have the same shape with output
 //       &a must not be equal with &output
 //       the matrix which will be calculated must in range
 // for example: number = 2,
 //              a = [[1, 2, 3],
 //                   [2, 3, 4]]
-//              sx = 0, sy = 1
-//              shape = {2, 2}
-//              output = [[origin, 2*2, 2*3],
-//                        [origin, 2*3, 2*4]]
+//              pos = 0, len = 4
+//              output = [[2*1, 2*2,    2*3],
+//                        [2*2, origin, origin]]
 template <class Number, class T, class O>
 void multiplySingleThread(const Number &number,
                           const Matrix<T> &a,
                           Matrix<O> &output,
-                          const size_t &sx,
-                          const size_t &sy,
-                          const Shape &shape);
+                          const size_t &pos,
+                          const size_t &len);
 
 // Calculate a / number, and store the result in output
-// This will only calculate the a^number[sx:sx+shape.rows][sy:sy+shape+shape.columns]
-// sx: start row
-// sy: start column
-// shape: the shape of matrix will be calculated
+// This will only calculate the a[pos:pos+len]/number
+// pos: one-demensional starting index of the matrix
+// len: number of elements to be calculated
 // NOTE: a must have the same shape with output
 //       &a must not be equal with &output
 //       the matrix which will be calculated must in range
 // for example: number = 2,
 //              a = [[1, 2, 3],
 //                   [2, 3, 4]]
-//              sx = 0, sy = 1
-//              shape = {2, 2}
-//              output = [[origin, 2/2, 3/2],
-//                        [origin, 3/2, 4/2]]
+//              pos = 0, len = 4
+//              output = [[1/2, 2/2, 3/2],
+//                        [2/2, origin, origin]]
 template <class T, class Number, class O>
 void divideSingleThread(const Matrix<T> &a,
                         const Number &number,
                         Matrix<O> &output,
-                        const size_t &sx,
-                        const size_t &sy,
-                        const Shape &shape);
+                        const size_t &pos,
+                        const size_t &len);
 
 // Calculate number / a, and store the result in output
 // This will only calculate the number+a[sx:sx+shape.rows][sy:sy+shape+shape.columns]
@@ -586,20 +571,15 @@ template <class Number, class T, class O>
 void multiplySingleThread(const Number &number,
                           const Matrix<T> &a,
                           Matrix<O> &output,
-                          const size_t &sx,
-                          const size_t &sy,
-                          const Shape &shape) {
+                          const size_t &pos,
+                          const size_t &len) {
     assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape() == output.shape());
-    assert(sx + shape.rows <= output.rows());
-    assert(sy + shape.columns <= output.columns());
+    assert(pos + len <= a.size());
     using CommonType = std::common_type_t<Number, T, O>;
-    for (size_t i = sx; i < sx + shape.rows; i++) {
-        for (size_t j = sy; j < sy + shape.columns; j++) {
-            output.get(i, j) = static_cast<O>(static_cast<CommonType>(number) *
-                                              static_cast<CommonType>(a.get(i, j)));
-        }
-    }
+    for (size_t i = pos; i < pos + len; i++)
+        output.dataPtr()[i] = static_cast<O>(static_cast<CommonType>(a.dataPtr()[i]) *
+                                             static_cast<CommonType>(number));
 }
 
 template <class T1, class T2, class O>
@@ -675,79 +655,60 @@ template <class Number, class T, class O>
 void addSingleThread(const Number &number,
                      const Matrix<T> &a,
                      Matrix<O> &output,
-                     const size_t &sx,
-                     const size_t &sy,
-                     const Shape &shape) {
+                     const size_t &pos,
+                     const size_t &len) {
     assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape() == output.shape());
-    assert(sx + shape.rows <= output.rows());
-    assert(sy + shape.columns <= output.columns());
+    assert(pos + len <= a.size());
     using CommonType = std::common_type_t<Number, T, O>;
-    for (size_t i = sx; i < sx + shape.rows; i++) {
-        for (size_t j = sy; j < sy + shape.columns; j++) {
-            output.get(i, j) = static_cast<O>(static_cast<CommonType>(number) +
-                                              static_cast<CommonType>(a.get(i, j)));
-        }
-    }
+    for (size_t i = pos; i < pos + len; i++)
+        output.dataPtr()[i] = static_cast<O>(static_cast<CommonType>(number) +
+                                             static_cast<CommonType>(a.dataPtr()[i]));
 }
 
 template <class Number, class T, class O>
 void subtractSingleThread(const Number &number,
                           const Matrix<T> &a,
                           Matrix<O> &output,
-                          const size_t &sx,
-                          const size_t &sy,
-                          const Shape &shape) {
+                          const size_t &pos,
+                          const size_t &len) {
     assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape() == output.shape());
-    assert(sx + shape.rows <= output.rows());
-    assert(sy + shape.columns <= output.columns());
+    assert(pos + len <= a.size());
     using CommonType = std::common_type_t<Number, T, O>;
-    for (size_t i = sx; i < sx + shape.rows; i++) {
-        for (size_t j = sy; j < sy + shape.columns; j++) {
-            output.get(i, j) = static_cast<O>(static_cast<CommonType>(number) -
-                                              static_cast<CommonType>(a.get(i, j)));
-        }
-    }
+    for (size_t i = pos; i < pos + len; i++)
+        output.dataPtr()[i] = static_cast<O>(static_cast<CommonType>(number) -
+                                             static_cast<CommonType>(a.dataPtr()[i]));
 }
+
 template <class T, class Number, class O>
 void subtractSingleThread(const Matrix<T> &a,
                           const Number &number,
                           Matrix<O> &output,
-                          const size_t &sx,
-                          const size_t &sy,
-                          const Shape &shape) {
+                          const size_t &pos,
+                          const size_t &len) {
     assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape() == output.shape());
-    assert(sx + shape.rows <= output.rows());
-    assert(sy + shape.columns <= output.columns());
+    assert(pos + len <= a.size());
     using CommonType = std::common_type_t<Number, T, O>;
-    for (size_t i = sx; i < sx + shape.rows; i++) {
-        for (size_t j = sy; j < sy + shape.columns; j++) {
-            output.get(i, j) = static_cast<O>(static_cast<CommonType>(a.get(i, j)) -
-                                              static_cast<CommonType>(number));
-        }
-    }
+    for (size_t i = pos; i < pos + len; i++)
+        output.dataPtr()[i] = static_cast<O>(static_cast<CommonType>(a.dataPtr()[i]) -
+                                             static_cast<CommonType>(number));
 }
 
 template <class T, class Number, class O>
 void divideSingleThread(const Matrix<T> &a,
                         const Number &number,
                         Matrix<O> &output,
-                        const size_t &sx,
-                        const size_t &sy,
-                        const Shape &shape) {
+                        const size_t &pos,
+                        const size_t &len) {
     assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape() == output.shape());
-    assert(sx + shape.rows <= output.rows());
-    assert(sy + shape.columns <= output.columns());
+    assert(pos + len <= a.size());
     using CommonType = std::common_type_t<Number, T, O>;
-    for (size_t i = sx; i < sx + shape.rows; i++) {
-        for (size_t j = sy; j < sy + shape.columns; j++) {
-            output.get(i, j) = static_cast<O>(static_cast<CommonType>(a.get(i, j)) /
-                                              static_cast<CommonType>(number));
-        }
-    }
+    for (size_t i = pos; i < pos + len; i++)
+        output.dataPtr()[i] = static_cast<O>(static_cast<CommonType>(a.dataPtr()[i]) /
+                                             static_cast<CommonType>(number));
 }
 
 template <class Number, class T, class O>
