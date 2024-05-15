@@ -22,9 +22,9 @@ protected:
 TEST_F(TestDifferentType, differentTypeComparison) {
     ASSERT_TRUE(equalSingleThread(doubleMatrix, intMatrix, 0, doubleMatrix.size()));
     ASSERT_FALSE(notEqualSingleThread(doubleMatrix, intMatrix, 0, 0, doubleMatrix.shape()));
-    ASSERT_FALSE(lessSingleThread(doubleMatrix, intMatrix, 0, 0, doubleMatrix.shape()));
-    ASSERT_TRUE(lessEqualSingleThread(doubleMatrix, intMatrix, 0, 0, doubleMatrix.shape()));
-    ASSERT_FALSE(greaterSingleThread(doubleMatrix, intMatrix, 0, 0, doubleMatrix.shape()));
+    ASSERT_FALSE(lessSingleThread(doubleMatrix, intMatrix, 0, doubleMatrix.size()));
+    ASSERT_TRUE(lessEqualSingleThread(doubleMatrix, intMatrix, 0, doubleMatrix.size()));
+    ASSERT_FALSE(greaterSingleThread(doubleMatrix, intMatrix, 0, doubleMatrix.size()));
     ASSERT_TRUE(greaterEqualSingleThread(doubleMatrix, intMatrix, 0, 0, doubleMatrix.shape()));
 }
 
@@ -50,29 +50,29 @@ TEST_F(TestDifferentType, differentTypeCalculation) {
     intResult = Matrix<int>({3, 3}, 3);
     ASSERT_TRUE(equalSingleThread(intOutput, intResult, 0, intOutput.size()));
 
-    powNumberSingleThread(doubleMatrix, 2, doubleOutput, 0, 0, doubleMatrix.shape());
+    powNumberSingleThread(doubleMatrix, 2, doubleOutput, 0, doubleMatrix.size());
     doubleResult = Matrix<>({3, 3}, 1.);
     ASSERT_TRUE(equalSingleThread(doubleOutput, doubleResult, 0, doubleOutput.size()));
-    powNumberSingleThread(doubleMatrix, 2, intOutput, 0, 0, doubleMatrix.shape());
+    powNumberSingleThread(doubleMatrix, 2, intOutput, 0, doubleMatrix.size());
     intResult = Matrix<int>({3, 3}, 1);
     ASSERT_TRUE(equalSingleThread(intOutput, intResult, 0, intOutput.size()));
-    powNumberSingleThread(intMatrix, 2, doubleOutput, 0, 0, intMatrix.shape());
+    powNumberSingleThread(intMatrix, 2, doubleOutput, 0, intMatrix.size());
     doubleResult = Matrix<>({3, 3}, 1.);
     ASSERT_TRUE(equalSingleThread(doubleOutput, doubleResult, 0, doubleOutput.size()));
-    powNumberSingleThread(intMatrix, 2, intOutput, 0, 0, intMatrix.shape());
+    powNumberSingleThread(intMatrix, 2, intOutput, 0, intMatrix.size());
     intResult = Matrix<int>({3, 3}, 1);
     ASSERT_TRUE(equalSingleThread(intOutput, intResult, 0, intOutput.size()));
 
-    numberPowSingleThread(2, doubleMatrix, doubleOutput, 0, 0, doubleMatrix.shape());
+    numberPowSingleThread(2, doubleMatrix, doubleOutput, 0, doubleMatrix.size());
     doubleResult = Matrix<>({3, 3}, std::pow(2, -1));
     ASSERT_TRUE(equalSingleThread(doubleOutput, doubleResult, 0, doubleOutput.size()));
-    numberPowSingleThread(2, doubleMatrix, intOutput, 0, 0, doubleMatrix.shape());
+    numberPowSingleThread(2, doubleMatrix, intOutput, 0, doubleMatrix.size());
     intResult = Matrix<int>({3, 3}, static_cast<int>(std::pow(2, -1)));
     ASSERT_TRUE(equalSingleThread(intOutput, intResult, 0, intOutput.size()));
-    numberPowSingleThread(2, intMatrix, doubleOutput, 0, 0, intMatrix.shape());
+    numberPowSingleThread(2, intMatrix, doubleOutput, 0, intMatrix.size());
     doubleResult = Matrix<>({3, 3}, std::pow(2, -1));
     ASSERT_TRUE(equalSingleThread(doubleOutput, doubleResult, 0, doubleOutput.size()));
-    numberPowSingleThread(2, intMatrix, intOutput, 0, 0, intMatrix.shape());
+    numberPowSingleThread(2, intMatrix, intOutput, 0, intMatrix.size());
     intResult = Matrix<int>({3, 3}, static_cast<int>(std::pow(2, -1)));
     ASSERT_TRUE(equalSingleThread(intOutput, intResult, 0, intOutput.size()));
 

@@ -295,27 +295,27 @@ private:
     //                                   const size_t &sy,
     //                                   const Shape &shape,
     //                                   const double &eps);
-    template <class T1, class T2>
-    friend bool lessSingleThread(const Matrix<T1> &a,
-                                 const Matrix<T2> &b,
-                                 const size_t &sx,
-                                 const size_t &sy,
-                                 const Shape &shape,
-                                 const double &eps);
-    template <class T1, class T2>
-    friend bool lessEqualSingleThread(const Matrix<T1> &a,
-                                      const Matrix<T2> &b,
-                                      const size_t &sx,
-                                      const size_t &sy,
-                                      const Shape &shape,
-                                      const double &eps);
-    template <class T1, class T2>
-    friend bool greaterSingleThread(const Matrix<T1> &a,
-                                    const Matrix<T2> &b,
-                                    const size_t &sx,
-                                    const size_t &sy,
-                                    const Shape &shape,
-                                    const double &eps);
+    //     template <class T1, class T2>
+    //     friend bool lessSingleThread(const Matrix<T1> &a,
+    //                                  const Matrix<T2> &b,
+    //                                  const size_t &sx,
+    //                                  const size_t &sy,
+    //                                  const Shape &shape,
+    //                                  const double &eps);
+    //     template <class T1, class T2>
+    //     friend bool lessEqualSingleThread(const Matrix<T1> &a,
+    //                                       const Matrix<T2> &b,
+    //                                       const size_t &sx,
+    //                                       const size_t &sy,
+    //                                       const Shape &shape,
+    //                                       const double &eps);
+    //     template <class T1, class T2>
+    //     friend bool greaterSingleThread(const Matrix<T1> &a,
+    //                                     const Matrix<T2> &b,
+    //                                     const size_t &sx,
+    //                                     const size_t &sy,
+    //                                     const Shape &shape,
+    //                                     const double &eps);
     template <class T1, class T2>
     friend bool greaterEqualSingleThread(const Matrix<T1> &a,
                                          const Matrix<T2> &b,
@@ -396,20 +396,20 @@ private:
     //                                    const size_t &sy,
     //                                    const Shape &shape);
 
-    template <class Number, class T, class O>
-    friend void numberPowSingleThread(Number &&number,
-                                      const Matrix<T> &a,
-                                      Matrix<O> &output,
-                                      const size_t &sx,
-                                      const size_t &sy,
-                                      const Shape &shape);
-    template <class T, class Number, class O>
-    friend void powNumberSingleThread(const Matrix<T> &a,
-                                      Number &&number,
-                                      Matrix<O> &output,
-                                      const size_t &sx,
-                                      const size_t &sy,
-                                      const Shape &shape);
+    //     template <class Number, class T, class O>
+    //     friend void numberPowSingleThread(Number &&number,
+    //                                       const Matrix<T> &a,
+    //                                       Matrix<O> &output,
+    //                                       const size_t &sx,
+    //                                       const size_t &sy,
+    //                                       const Shape &shape);
+    //     template <class T, class Number, class O>
+    //     friend void powNumberSingleThread(const Matrix<T> &a,
+    //                                       Number &&number,
+    //                                       Matrix<O> &output,
+    //                                       const size_t &sx,
+    //                                       const size_t &sy,
+    //                                       const Shape &shape);
 
     // template <class T>
     // friend void transposeSingleThread(const Matrix<T> &a,
