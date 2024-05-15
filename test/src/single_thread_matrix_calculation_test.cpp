@@ -30,40 +30,40 @@ protected:
 
 TEST_F(TestSinglThreadCalculation, powNumberWholeMatrix) {
     output = Matrix<>({3, 3}, 0);
-    powNumberSingleThread(a, 2, output, 0, 0, a.shape());
+    powNumberSingleThread(a, 2, output, 0, a.size());
     Matrix<> result = Matrix<>({{0, 0, 0}, {1, 1, 1}, {4, 4, 4}});
     ASSERT_TRUE(equalSingleThread(output, result, 0, output.size()));
 }
 
 TEST_F(TestSinglThreadCalculation, powNumberSubMatrix) {
     output = Matrix<>({3, 3}, -1);
-    powNumberSingleThread(c, 2, output, 0, 1, {2, 2});
-    Matrix<> result = Matrix<>({{-1, 4, 9}, {-1, 25, 36}, {-1, -1, -1}});
+    powNumberSingleThread(c, 2, output, 1, 5);
+    Matrix<> result = Matrix<>({{-1, 4, 9}, {16, 25, 36}, {-1, -1, -1}});
     ASSERT_TRUE(equalSingleThread(output, result, 0, output.size()));
 }
 
 TEST_F(TestSinglThreadCalculation, numberPowWholeMatrix) {
     output = Matrix<>({3, 3}, 0);
-    numberPowSingleThread(2, a, output, 0, 0, a.shape());
+    numberPowSingleThread(2, a, output, 0, a.size());
     Matrix<> result = Matrix<>({{1, 1, 1}, {2, 2, 2}, {4, 4, 4}});
     ASSERT_TRUE(equalSingleThread(output, result, 0, output.size()));
 }
 
 TEST_F(TestSinglThreadCalculation, numberPowSubMatrix) {
     output = Matrix<>({3, 3}, -1);
-    numberPowSingleThread(2, c, output, 0, 1, {2, 2});
-    Matrix<> result({{-1, 4, 8}, {-1, 32, 64}, {-1, -1, -1}});
+    numberPowSingleThread(2, c, output, 1, 5);
+    Matrix<> result({{-1, 4, 8}, {16, 32, 64}, {-1, -1, -1}});
     ASSERT_TRUE(equalSingleThread(output, result, 0, output.size()));
 }
 
 TEST_F(TestSinglThreadCalculation, lessWholeMatrix) {
-    ASSERT_TRUE(lessSingleThread(a, c, 0, 0, a.shape()));
-    ASSERT_FALSE(lessSingleThread(a, b, 0, 0, a.shape()));
+    ASSERT_TRUE(lessSingleThread(a, c, 0, a.size()));
+    ASSERT_FALSE(lessSingleThread(a, b, 0, a.size()));
 }
 
 TEST_F(TestSinglThreadCalculation, lessSubMatrix) {
-    ASSERT_TRUE(lessSingleThread(a, c, 1, 0, {2, 3}));
-    ASSERT_FALSE(lessSingleThread(a, b, 1, 0, {2, 2}));
+    ASSERT_TRUE(lessSingleThread(a, c, 1, 3));
+    ASSERT_FALSE(lessSingleThread(a, b, 3, 3));
 }
 
 TEST_F(TestSinglThreadCalculation, equalWholeMatrix) {
@@ -77,27 +77,27 @@ TEST_F(TestSinglThreadCalculation, equalSubMatrix) {
 }
 
 TEST_F(TestSinglThreadCalculation, lessEqualWholeMatrix) {
-    ASSERT_TRUE(lessEqualSingleThread(a, c, 0, 0, a.shape()));
-    ASSERT_TRUE(lessEqualSingleThread(a, d, 0, 0, a.shape()));
-    ASSERT_FALSE(lessEqualSingleThread(c, b, 0, 0, a.shape()));
+    ASSERT_TRUE(lessEqualSingleThread(a, c, 0, a.size()));
+    ASSERT_TRUE(lessEqualSingleThread(a, d, 0, a.size()));
+    ASSERT_FALSE(lessEqualSingleThread(c, b, 0, c.size()));
 }
 
 TEST_F(TestSinglThreadCalculation, lessEqualSubMatrix) {
-    ASSERT_TRUE(lessEqualSingleThread(a, c, 0, 0, {2, 3}));
-    ASSERT_TRUE(lessEqualSingleThread(a, d, 0, 0, {2, 3}));
-    ASSERT_FALSE(lessEqualSingleThread(c, a, 0, 0, {2, 3}));
+    ASSERT_TRUE(lessEqualSingleThread(a, c, 4, 4));
+    ASSERT_TRUE(lessEqualSingleThread(a, d, 4, 4));
+    ASSERT_FALSE(lessEqualSingleThread(c, a, 4, 4));
 }
 
 TEST_F(TestSinglThreadCalculation, greaterWholeMatrix) {
-    ASSERT_TRUE(greaterSingleThread(c, a, 0, 0, c.shape()));
-    ASSERT_FALSE(greaterSingleThread(d, a, 0, 0, d.shape()));
-    ASSERT_FALSE(greaterSingleThread(d, b, 0, 0, b.shape()));
+    ASSERT_TRUE(greaterSingleThread(c, a, 0, c.size()));
+    ASSERT_FALSE(greaterSingleThread(d, a, 0, d.size()));
+    ASSERT_FALSE(greaterSingleThread(d, b, 0, d.size()));
 }
 
 TEST_F(TestSinglThreadCalculation, greaterSubMatrix) {
-    ASSERT_TRUE(greaterSingleThread(c, a, 0, 1, {2, 2}));
-    ASSERT_FALSE(greaterSingleThread(a, b, 0, 1, {2, 2}));
-    ASSERT_FALSE(greaterSingleThread(a, d, 0, 1, {2, 2}));
+    ASSERT_TRUE(greaterSingleThread(c, a, 2, 3));
+    ASSERT_FALSE(greaterSingleThread(a, b, 2, 3));
+    ASSERT_FALSE(greaterSingleThread(a, d, 2, 3));
 }
 
 TEST_F(TestSinglThreadCalculation, greaterEqualWholeMatrix) {
@@ -124,59 +124,59 @@ TEST_F(TestSinglThreadCalculation, notEqualSubMatrix) {
 
 TEST_F(TestSinglThreadCalculation, addNumberWholeMatrix) {
     output = Matrix<>({3, 3}, -1);
-    addSingleThread(2, a, output, 0, 0, a.shape());
+    addSingleThread(2, a, output, 0, a.size());
     Matrix<> result({{2, 2, 2}, {3, 3, 3}, {4, 4, 4}});
     ASSERT_TRUE(equalSingleThread(output, result, 0, output.size()));
 }
 
 TEST_F(TestSinglThreadCalculation, addNumberSubMatrix) {
     output = Matrix<>({3, 3}, -1);
-    addSingleThread(2, a, output, 1, 1, {2, 2});
-    Matrix<> result({{-1, -1, -1}, {-1, 3, 3}, {-1, 4, 4}});
+    addSingleThread(2, a, output, 4, 4);
+    Matrix<> result({{-1, -1, -1}, {-1, 3, 3}, {4, 4, -1}});
     ASSERT_TRUE(equalSingleThread(output, result, 0, output.size()));
 }
 
 TEST_F(TestSinglThreadCalculation, subtractNumberWholeMatrix) {
     output = Matrix<>({3, 3}, -1);
-    subtractSingleThread(a, 1, output, 0, 0, a.shape());
+    subtractSingleThread(a, 1, output, 0, a.size());
     Matrix<> result({{-1, -1, -1}, {0, 0, 0}, {1, 1, 1}});
     ASSERT_TRUE(equalSingleThread(output, result, 0, output.size()));
 
     Matrix<int> output2({3, 3}, -1);
-    subtractSingleThread(9, e, output2, 0, 0, a.shape());
+    subtractSingleThread(9, e, output2, 0, a.size());
     Matrix<> result2({{8, 7, 6}, {7, 6, 5}, {3, 3, 3}});
     ASSERT_TRUE(equalSingleThread(output2, result2, 0, output2.size()));
 }
 
 TEST_F(TestSinglThreadCalculation, subtractNumberSubMatrix) {
     output = Matrix<>({3, 3}, -1);
-    subtractSingleThread(a, 1, output, 1, 1, {2, 2});
-    Matrix<> result({{-1, -1, -1}, {-1, 0, 0}, {-1, 1, 1}});
+    subtractSingleThread(a, 1, output, 4, 4);
+    Matrix<> result({{-1, -1, -1}, {-1, 0, 0}, {1, 1, -1}});
     ASSERT_TRUE(equalSingleThread(output, result, 0, output.size()));
 
     Matrix<int> output2({3, 3}, -1);
-    subtractSingleThread(9, e, output2, 1, 0, {2, 3});
+    subtractSingleThread(9, e, output2, 3, 6);
     Matrix<> result2({{-1, -1, -1}, {7, 6, 5}, {3, 3, 3}});
     ASSERT_TRUE(equalSingleThread(output2, result2, 0, output2.size()));
 }
 
 TEST_F(TestSinglThreadCalculation, multiplyNumberWholeMatrix) {
     output = Matrix<>({3, 3}, -1);
-    multiplySingleThread(3, c, output, 0, 0, c.shape());
+    multiplySingleThread(3, c, output, 0, c.size());
     Matrix<> result({{3, 6, 9}, {12, 15, 18}, {21, 24, 27}});
     ASSERT_TRUE(equalSingleThread(output, result, 0, output.size()));
 }
 
 TEST_F(TestSinglThreadCalculation, multiplyNumberSubMatrix) {
     output = Matrix<>({3, 3}, -1);
-    multiplySingleThread(3, c, output, 1, 0, {2, 3});
+    multiplySingleThread(3, c, output, 3, 6);
     Matrix<> result({{-1, -1, -1}, {12, 15, 18}, {21, 24, 27}});
     ASSERT_TRUE(equalSingleThread(output, result, 0, output.size()));
 }
 
 TEST_F(TestSinglThreadCalculation, divideNumberWholeMatrix) {
     output = Matrix<>({3, 3}, -1);
-    divideSingleThread(c, 3, output, 0, 0, c.shape());
+    divideSingleThread(c, 3, output, 0, c.size());
     Matrix<> result({{1. / 3, 2. / 3, 1}, {4. / 3, 5. / 3, 2}, {7. / 3, 8. / 3, 3}});
     ASSERT_TRUE(equalSingleThread(output, result, 0, output.size()));
 
@@ -188,7 +188,7 @@ TEST_F(TestSinglThreadCalculation, divideNumberWholeMatrix) {
 
 TEST_F(TestSinglThreadCalculation, divideNumberSubMatrix) {
     output = Matrix<>({3, 3}, -1);
-    divideSingleThread(c, 3, output, 1, 0, {2, 3});
+    divideSingleThread(c, 3, output, 3, 6);
     Matrix<> result({{-1, -1, -1}, {4. / 3, 5. / 3, 2}, {7. / 3, 8. / 3, 3}});
     ASSERT_TRUE(equalSingleThread(output, result, 0, output.size()));
 
