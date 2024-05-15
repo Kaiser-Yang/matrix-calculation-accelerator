@@ -21,32 +21,32 @@ protected:
 
 TEST_F(TestDifferentType, differentTypeComparison) {
     ASSERT_TRUE(equalSingleThread(doubleMatrix, intMatrix, 0, doubleMatrix.size()));
-    ASSERT_FALSE(notEqualSingleThread(doubleMatrix, intMatrix, 0, 0, doubleMatrix.shape()));
+    ASSERT_FALSE(notEqualSingleThread(doubleMatrix, intMatrix, 0, doubleMatrix.size()));
     ASSERT_FALSE(lessSingleThread(doubleMatrix, intMatrix, 0, doubleMatrix.size()));
     ASSERT_TRUE(lessEqualSingleThread(doubleMatrix, intMatrix, 0, doubleMatrix.size()));
     ASSERT_FALSE(greaterSingleThread(doubleMatrix, intMatrix, 0, doubleMatrix.size()));
-    ASSERT_TRUE(greaterEqualSingleThread(doubleMatrix, intMatrix, 0, 0, doubleMatrix.shape()));
+    ASSERT_TRUE(greaterEqualSingleThread(doubleMatrix, intMatrix, 0, doubleMatrix.size()));
 }
 
 TEST_F(TestDifferentType, differentTypeCalculation) {
-    addSingleThread(intMatrix, doubleMatrix, doubleOutput, 0, 0, intMatrix.shape());
+    addSingleThread(intMatrix, doubleMatrix, doubleOutput, 0, intMatrix.size());
     doubleResult = Matrix<>({3, 3}, -2.);
     ASSERT_TRUE(equalSingleThread(doubleOutput, doubleResult, 0, doubleOutput.size()));
-    addSingleThread(intMatrix, doubleMatrix, intOutput, 0, 0, intMatrix.shape());
+    addSingleThread(intMatrix, doubleMatrix, intOutput, 0, intMatrix.size());
     intResult = Matrix<int>({3, 3}, -2);
     ASSERT_TRUE(equalSingleThread(intOutput, intResult, 0, intOutput.size()));
 
-    subtractSingleThread(intMatrix, doubleMatrix, doubleOutput, 0, 0, intMatrix.shape());
+    subtractSingleThread(intMatrix, doubleMatrix, doubleOutput, 0, intMatrix.size());
     doubleResult = Matrix<>({3, 3}, 0);
     ASSERT_TRUE(equalSingleThread(doubleOutput, doubleResult, 0, doubleOutput.size()));
-    subtractSingleThread(intMatrix, doubleMatrix, intOutput, 0, 0, intMatrix.shape());
+    subtractSingleThread(intMatrix, doubleMatrix, intOutput, 0, intMatrix.size());
     intResult = Matrix<int>({3, 3}, 0);
     ASSERT_TRUE(equalSingleThread(intOutput, intResult, 0, intOutput.size()));
 
-    multiplySingleThread(intMatrix, doubleMatrix, doubleOutput, 0, 0, intMatrix.shape());
+    multiplySingleThread(intMatrix, doubleMatrix, doubleOutput, 0, intMatrix.size());
     doubleResult = Matrix<>({3, 3}, 3.);
     ASSERT_TRUE(equalSingleThread(doubleOutput, doubleResult, 0, doubleOutput.size()));
-    multiplySingleThread(intMatrix, doubleMatrix, intOutput, 0, 0, intMatrix.shape());
+    multiplySingleThread(intMatrix, doubleMatrix, intOutput, 0, intMatrix.size());
     intResult = Matrix<int>({3, 3}, 3);
     ASSERT_TRUE(equalSingleThread(intOutput, intResult, 0, intOutput.size()));
 
