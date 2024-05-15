@@ -9,7 +9,7 @@
 namespace mca {
 
 // Calculate number ^ a, and store the result in output
-// This will only calculate the number^a[pos: pos + len] in the matrix
+// This will only calculate the number^a[pos:pos+len] in the matrix
 // pos: one-demensional starting index of the matrix
 // len: number of elements to be calculated
 // NOTE: a must have the same shape with output
@@ -21,7 +21,7 @@ namespace mca {
 //              pos = 1
 //              len = 4
 //              output = [[origin, 2^2, 2^3],
-//                        [2^2, 2^3, origin]]
+//                        [2^2,    2^3, origin]]
 template <class Number, class T, class O>
 void numberPowSingleThread(Number &&number,
                            const Matrix<T> &a,
@@ -42,7 +42,7 @@ void numberPowSingleThread(Number &&number,
 //              pos = 1
 //              len = 4
 //              output = [[origin, 2^2, 3^2],
-//                        [2^2, 3^2, origin]]
+//                        [2^2,    3^2, origin]]
 template <class T, class Number, class O>
 void powNumberSingleThread(const Matrix<T> &a,
                            Number &&number,
