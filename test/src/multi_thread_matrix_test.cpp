@@ -53,7 +53,7 @@ TEST_F(TestMatrixMultiThread, fill) {
 
     // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    // ASSERT_TRUE(equalSingleThread(singleThread, multiThread, 0, 0, singleThread.getShape()));
+    // ASSERT_TRUE(equalSingleThread(singleThread, multiThread, 0, 0, singleThread.shape()));
 }
 
 TEST_F(TestMatrixMultiThread, constructors) {

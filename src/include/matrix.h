@@ -124,7 +124,7 @@ public:
     inline size_t size() const;
 
     // get the matrix's shape
-    inline Shape getShape() const;
+    inline Shape shape() const;
 
     // Reshape the matrix
     // NOTE: this is only valid, when the new shape has the same number of elements with the old
@@ -214,7 +214,7 @@ public:
 
 private:
     std::unique_ptr<ELEMENT_TYPE[]> data;
-    Shape shape;
+    Shape _shape;
     size_t capacity{0};
 
     template <class T1, class T2>
@@ -288,13 +288,13 @@ private:
     template <class Number, class T>
     friend void operator/=(const Number &number, Matrix<T> &a);
 
-    template <class T1, class T2>
-    friend bool equalSingleThread(const Matrix<T1> &a,
-                                  const Matrix<T2> &b,
-                                  const size_t &sx,
-                                  const size_t &sy,
-                                  const Shape &shape,
-                                  const double &eps);
+    //     template <class T1, class T2>
+    //     friend bool equalSingleThread(const Matrix<T1> &a,
+    //                                   const Matrix<T2> &b,
+    //                                   const size_t &sx,
+    //                                   const size_t &sy,
+    //                                   const Shape &shape,
+    //                                   const double &eps);
     template <class T1, class T2>
     friend bool lessSingleThread(const Matrix<T1> &a,
                                  const Matrix<T2> &b,
@@ -388,13 +388,13 @@ private:
                                    const size_t &sx,
                                    const size_t &sy,
                                    const Shape &shape);
-    template <class Number, class T, class O>
-    friend void divideSingleThread(const Number &number,
-                                   const Matrix<T> &a,
-                                   Matrix<O> &output,
-                                   const size_t &sx,
-                                   const size_t &sy,
-                                   const Shape &shape);
+    //     template <class Number, class T, class O>
+    //     friend void divideSingleThread(const Number &number,
+    //                                    const Matrix<T> &a,
+    //                                    Matrix<O> &output,
+    //                                    const size_t &sx,
+    //                                    const size_t &sy,
+    //                                    const Shape &shape);
 
     template <class Number, class T, class O>
     friend void numberPowSingleThread(Number &&number,
@@ -411,23 +411,23 @@ private:
                                       const size_t &sy,
                                       const Shape &shape);
 
-    template <class T>
-    friend void transposeSingleThread(const Matrix<T> &a,
-                                      Matrix<T> &output,
-                                      const size_t &sx,
-                                      const size_t &sy,
-                                      const Shape &shape);
+    // template <class T>
+    // friend void transposeSingleThread(const Matrix<T> &a,
+    //                                   Matrix<T> &output,
+    //                                   const size_t &sx,
+    //                                   const size_t &sy,
+    //                                   const Shape &shape);
 
-    template <class T>
-    friend bool symmetricSingleThread(const Matrix<T> &a,
-                                      const size_t &sx,
-                                      const size_t rows,
-                                      const double &eps);
-    template <class T>
-    friend bool antisymmetricSingleThread(const Matrix<T> &a,
-                                          const size_t &sx,
-                                          const size_t rows,
-                                          const double &eps);
+    // template <class T>
+    // friend bool symmetricSingleThread(const Matrix<T> &a,
+    //                                   const size_t &sx,
+    //                                   const size_t rows,
+    //                                   const double &eps);
+    // template <class T>
+    // friend bool antisymmetricSingleThread(const Matrix<T> &a,
+    //                                       const size_t &sx,
+    //                                       const size_t rows,
+    //                                       const double &eps);
 };
 
 inline Shape::Shape(size_t rows, size_t columns) : rows(rows), columns(columns) {}
@@ -443,9 +443,9 @@ inline size_t Shape::size() const { return rows * columns; }
 template <class ELEMENT_TYPE>
 Matrix<ELEMENT_TYPE>::Matrix(const Shape &shape) {
     if (shape.size() == 0) { return; }
-    this->shape = shape;
-    capacity    = size();
-    data        = std::make_unique<ELEMENT_TYPE[]>(size());
+    _shape   = shape;
+    capacity = size();
+    data     = std::make_unique<ELEMENT_TYPE[]>(size());
     fill(ELEMENT_TYPE());
     size_t totalCalculation = std::min(rows(), columns());
     if (threadNum() == 0 || limit() > totalCalculation) {
@@ -482,18 +482,18 @@ inline Matrix<ELEMENT_TYPE>::Matrix(const Shape &shape,
                                     const ELEMENT_TYPE *data,
                                     const size_t &len) {
     if (shape.size() == 0) { return; }
-    capacity    = shape.size();
-    this->data  = std::make_unique<ELEMENT_TYPE[]>(shape.size());
-    this->shape = {std::min(len, shape.size()), 1};
-    *this       = data;
-    this->shape = shape;
+    capacity   = shape.size();
+    this->data = std::make_unique<ELEMENT_TYPE[]>(shape.size());
+    _shape     = {std::min(len, shape.size()), 1};
+    *this      = data;
+    _shape     = shape;
     if (size() <= len) { return; }
     fill(0, len);
 }
 
 template <class ELEMENT_TYPE>
 inline Matrix<ELEMENT_TYPE>::Matrix(const Shape &shape, const ELEMENT_TYPE &defaultValue) {
-    this->shape = shape;
+    _shape = shape;
     if (shape.size() != 0) {
         capacity = size();
         data     = std::make_unique<ELEMENT_TYPE[]>(size());
@@ -504,8 +504,8 @@ inline Matrix<ELEMENT_TYPE>::Matrix(const Shape &shape, const ELEMENT_TYPE &defa
 template <class ELEMENT_TYPE>
 Matrix<ELEMENT_TYPE>::Matrix(const std::initializer_list<ELEMENT_TYPE> &diag) {
     if (diag.size() == 0) { return; }
-    this->shape = {diag.size(), diag.size()};
-    data        = std::make_unique<ELEMENT_TYPE[]>(size());
+    _shape = {diag.size(), diag.size()};
+    data   = std::make_unique<ELEMENT_TYPE[]>(size());
     fill(ELEMENT_TYPE());
     if (threadNum() == 0 || limit() > rows()) {
         for (size_t i = 0; i < rows(); i++) { get(i, i) = std::data(diag)[i]; }
@@ -528,8 +528,8 @@ Matrix<ELEMENT_TYPE>::Matrix(const std::initializer_list<ELEMENT_TYPE> &diag) {
 template <class ELEMENT_TYPE>
 Matrix<ELEMENT_TYPE>::Matrix(const std::vector<ELEMENT_TYPE> &diag) {
     if (diag.size() == 0) { return; }
-    this->shape = {diag.size(), diag.size()};
-    data        = std::make_unique<ELEMENT_TYPE[]>(size());
+    _shape = {diag.size(), diag.size()};
+    data   = std::make_unique<ELEMENT_TYPE[]>(size());
     fill(ELEMENT_TYPE());
     if (threadNum() == 0 || limit() > rows()) {
         for (size_t i = 0; i < rows(); i++) { get(i, i) = diag[i]; }
@@ -560,8 +560,8 @@ inline Matrix<ELEMENT_TYPE>::Matrix(Matrix &&other) noexcept {
 
 template <class ELEMENT_TYPE>
 inline Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(Matrix &&other) noexcept {
-    shape = std::move(other.shape);
-    data  = std::move(other.data);
+    _shape = std::move(other._shape);
+    data   = std::move(other.data);
     return *this;
 }
 
@@ -569,10 +569,10 @@ template <class ELEMENT_TYPE>
 template <class T>
 Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(const Matrix<T> &other) {
     if (capacity < other.size()) {
-        capacity = shape.size();
+        capacity = _shape.size();
         data     = std::make_unique<ELEMENT_TYPE[]>(other.size());
     }
-    shape = other.getShape();
+    _shape = other.shape();
     if (threadNum() == 0 || limit() > size()) {
         for (size_t i = 0; i < size(); i++) {
             dataPtr()[i] = static_cast<ELEMENT_TYPE>(other.dataPtr()[i]);
@@ -605,19 +605,19 @@ template <class ELEMENT_TYPE>
 template <class T>
 Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(
     const std::initializer_list<std::initializer_list<T>> &init) {
-    shape.rows = init.size();
+    _shape.rows = init.size();
     if (init.size() == 0) {
-        shape.columns = 0;
-        data          = nullptr;
+        _shape.columns = 0;
+        data           = nullptr;
         return *this;
     }
-    shape.columns = init.begin()->size();
+    _shape.columns = init.begin()->size();
     if (size() == 0) {
         data = nullptr;
         return *this;
     }
     if (capacity < size()) {
-        capacity = shape.size();
+        capacity = _shape.size();
         data     = std::make_unique<ELEMENT_TYPE[]>(size());
     }
     if (threadNum() == 0 || limit() > size()) {
@@ -648,13 +648,13 @@ Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(
 template <class ELEMENT_TYPE>
 template <class T>
 Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(const std::vector<std::vector<T>> &init) {
-    shape.rows = init.size();
+    _shape.rows = init.size();
     if (init.size() == 0) {
-        shape.columns = 0;
-        data          = nullptr;
+        _shape.columns = 0;
+        data           = nullptr;
         return *this;
     }
-    shape.columns = init.begin()->size();
+    _shape.columns = init.begin()->size();
     if (size() == 0) {
         data = nullptr;
         return *this;
@@ -711,13 +711,13 @@ Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(const T *data) {
 
 template <class ELEMENT_TYPE>
 inline ELEMENT_TYPE &Matrix<ELEMENT_TYPE>::get(size_t i, size_t j) {
-    assert(i < shape.rows && j < shape.columns);
-    return data[i * shape.columns + j];
+    assert(i < rows() && j < columns());
+    return data[i * columns() + j];
 }
 template <class ELEMENT_TYPE>
 inline const ELEMENT_TYPE &Matrix<ELEMENT_TYPE>::get(size_t i, size_t j) const {
-    assert(i < shape.rows && j < shape.columns);
-    return data[i * shape.columns + j];
+    assert(i < rows() && j < columns());
+    return data[i * columns() + j];
 }
 template <class ELEMENT_TYPE>
 inline ELEMENT_TYPE *Matrix<ELEMENT_TYPE>::dataPtr() {
@@ -731,28 +731,28 @@ inline const ELEMENT_TYPE *Matrix<ELEMENT_TYPE>::dataPtr() const {
 
 template <class ELEMENT_TYPE>
 inline size_t Matrix<ELEMENT_TYPE>::rows() const {
-    return shape.rows;
+    return _shape.rows;
 }
 
 template <class ELEMENT_TYPE>
 inline size_t Matrix<ELEMENT_TYPE>::columns() const {
-    return shape.columns;
+    return _shape.columns;
 }
 
 template <class ELEMENT_TYPE>
 inline size_t Matrix<ELEMENT_TYPE>::size() const {
-    return shape.size();
+    return _shape.size();
 }
 
 template <class ELEMENT_TYPE>
-inline Shape Matrix<ELEMENT_TYPE>::getShape() const {
-    return shape;
+inline Shape Matrix<ELEMENT_TYPE>::shape() const {
+    return _shape;
 }
 
 template <class ELEMENT_TYPE>
 inline void Matrix<ELEMENT_TYPE>::reshape(const Shape &shape) {
-    assert(this->shape.size() == shape.size());
-    this->shape = shape;
+    assert(_shape.size() == shape.size());
+    _shape = shape;
 }
 
 template <class ELEMENT_TYPE>

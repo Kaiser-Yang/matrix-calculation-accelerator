@@ -119,7 +119,7 @@ Matrix<std::common_type_t<T1, T2>> operator*(const Matrix<T1> &a, const Matrix<T
 
 // Calculate a + number using multi-thread
 // return the result of a + number
-// this is same with a + Matrix(a.getShape(), number)
+// this is same with a + Matrix(a.shape(), number)
 // for example: a = [[1, 2],
 //                   [3, 4]]
 //              number = 1
@@ -132,7 +132,7 @@ Matrix<std::common_type_t<T, Number>> operator+(const Matrix<T> &a, const Number
 
 // Calculate number + a using multi-thread
 // return the result of number + a
-// this is same with Matrix(a.getShape(), number) + a
+// this is same with Matrix(a.shape(), number) + a
 // for example: number = 1
 //              a = [[1, 2],
 //                   [3, 4]]
@@ -145,7 +145,7 @@ Matrix<std::common_type_t<T, Number>> operator+(const Number &number, const Matr
 
 // Calculate a - number using multi-thread
 // return the result of a - number
-// this is same with a - Matrix(a.getShape(), number)
+// this is same with a - Matrix(a.shape(), number)
 // for example: a = [[1, 2],
 //                   [3, 4]]
 //              number = 1
@@ -158,7 +158,7 @@ Matrix<std::common_type_t<T, Number>> operator-(const Matrix<T> &a, const Number
 
 // Calculate number - a using multi-thread
 // return the result of number - a
-// this is same with Matrix(a.getShape(), number) - a
+// this is same with Matrix(a.shape(), number) - a
 // for example: a = [[1, 2],
 //                   [3, 4]]
 //              number = 1
@@ -207,7 +207,7 @@ Matrix<std::common_type_t<T, Number>> operator/(const Matrix<T> &a, const Number
 
 // Calculate number / a using multi-thread
 // return the result of number / a
-// this is same with Matrix(a.getShape(), number) / a
+// this is same with Matrix(a.shape(), number) / a
 // for example: a = [[1, 2],
 //                   [3, 4]]
 //              number = 1
