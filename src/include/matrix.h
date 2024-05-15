@@ -316,42 +316,42 @@ private:
                                     const size_t &sy,
                                     const Shape &shape,
                                     const double &eps);
-    template <class T1, class T2>
-    friend bool greaterEqualSingleThread(const Matrix<T1> &a,
-                                         const Matrix<T2> &b,
-                                         const size_t &sx,
-                                         const size_t &sy,
-                                         const Shape &shape,
-                                         const double &eps);
-    template <class T1, class T2>
-    friend bool notEqualSingleThread(const Matrix<T1> &a,
-                                     const Matrix<T2> &b,
-                                     const size_t &sx,
-                                     const size_t &sy,
-                                     const Shape &shape,
-                                     const double &eps);
+    //     template <class T1, class T2>
+    //     friend bool greaterEqualSingleThread(const Matrix<T1> &a,
+    //                                          const Matrix<T2> &b,
+    //                                          const size_t &sx,
+    //                                          const size_t &sy,
+    //                                          const Shape &shape,
+    //                                          const double &eps);
+    //     template <class T1, class T2>
+    //     friend bool notEqualSingleThread(const Matrix<T1> &a,
+    //                                      const Matrix<T2> &b,
+    //                                      const size_t &sx,
+    //                                      const size_t &sy,
+    //                                      const Shape &shape,
+    //                                      const double &eps);
 
-    template <class T1, class T2, class O>
-    friend void addSingleThread(const Matrix<T1> &a,
-                                const Matrix<T2> &b,
-                                Matrix<O> &output,
-                                const size_t &sx,
-                                const size_t &sy,
-                                const Shape &shape);
-    template <class T1, class T2, class O>
-    friend void subtractSingleThread(const Matrix<T1> &a,
-                                     const Matrix<T2> &b,
-                                     Matrix<O> &output,
-                                     const size_t &sx,
-                                     const size_t &sy,
-                                     const Shape &shape);
-    template <class T1, class T2, class O>
-    friend void multiplySingleThread(const Matrix<T1> &a,
-                                     const Matrix<T2> &b,
-                                     Matrix<O> &output,
-                                     const size_t &sx,
-                                     const size_t &sy,
-                                     const Shape &shape);
+    //     template <class T1, class T2, class O>
+    //     friend void addSingleThread(const Matrix<T1> &a,
+    //                                 const Matrix<T2> &b,
+    //                                 Matrix<O> &output,
+    //                                 const size_t &sx,
+    //                                 const size_t &sy,
+    //                                 const Shape &shape);
+    //     template <class T1, class T2, class O>
+    //     friend void subtractSingleThread(const Matrix<T1> &a,
+    //                                      const Matrix<T2> &b,
+    //                                      Matrix<O> &output,
+    //                                      const size_t &sx,
+    //                                      const size_t &sy,
+    //                                      const Shape &shape);
+    //     template <class T1, class T2, class O>
+    //     friend void multiplySingleThread(const Matrix<T1> &a,
+    //                                      const Matrix<T2> &b,
+    //                                      Matrix<O> &output,
+    //                                      const size_t &sx,
+    //                                      const size_t &sy,
+    //                                      const Shape &shape);
 
     template <class Number, class T, class O>
     friend void addSingleThread(const Number &number,
