@@ -353,41 +353,41 @@ private:
                                      const size_t &sy,
                                      const Shape &shape);
 
-    template <class Number, class T, class O>
-    friend void addSingleThread(const Number &number,
-                                const Matrix<T> &a,
-                                Matrix<O> &output,
-                                const size_t &sx,
-                                const size_t &sy,
-                                const Shape &shape);
-    template <class Number, class T, class O>
-    friend void subtractSingleThread(const Number &number,
-                                     const Matrix<T> &a,
-                                     Matrix<O> &output,
-                                     const size_t &sx,
-                                     const size_t &sy,
-                                     const Shape &shape);
-    template <class T, class Number, class O>
-    friend void subtractSingleThread(const Matrix<T> &a,
-                                     const Number &number,
-                                     Matrix<O> &output,
-                                     const size_t &sx,
-                                     const size_t &sy,
-                                     const Shape &shape);
-    template <class Number, class T, class O>
-    friend void multiplySingleThread(const Number &number,
-                                     const Matrix<T> &a,
-                                     Matrix<O> &output,
-                                     const size_t &sx,
-                                     const size_t &sy,
-                                     const Shape &shape);
-    template <class T, class Number, class O>
-    friend void divideSingleThread(const Matrix<T> &a,
-                                   const Number &number,
-                                   Matrix<O> &output,
-                                   const size_t &sx,
-                                   const size_t &sy,
-                                   const Shape &shape);
+    //     template <class Number, class T, class O>
+    //     friend void addSingleThread(const Number &number,
+    //                                 const Matrix<T> &a,
+    //                                 Matrix<O> &output,
+    //                                 const size_t &sx,
+    //                                 const size_t &sy,
+    //                                 const Shape &shape);
+    //     template <class Number, class T, class O>
+    //     friend void subtractSingleThread(const Number &number,
+    //                                      const Matrix<T> &a,
+    //                                      Matrix<O> &output,
+    //                                      const size_t &sx,
+    //                                      const size_t &sy,
+    //                                      const Shape &shape);
+    //     template <class T, class Number, class O>
+    //     friend void subtractSingleThread(const Matrix<T> &a,
+    //                                      const Number &number,
+    //                                      Matrix<O> &output,
+    //                                      const size_t &sx,
+    //                                      const size_t &sy,
+    //                                      const Shape &shape);
+    //     template <class Number, class T, class O>
+    //     friend void multiplySingleThread(const Number &number,
+    //                                      const Matrix<T> &a,
+    //                                      Matrix<O> &output,
+    //                                      const size_t &sx,
+    //                                      const size_t &sy,
+    //                                      const Shape &shape);
+    //     template <class T, class Number, class O>
+    //     friend void divideSingleThread(const Matrix<T> &a,
+    //                                    const Number &number,
+    //                                    Matrix<O> &output,
+    //                                    const size_t &sx,
+    //                                    const size_t &sy,
+    //                                    const Shape &shape);
     //     template <class Number, class T, class O>
     //     friend void divideSingleThread(const Number &number,
     //                                    const Matrix<T> &a,
