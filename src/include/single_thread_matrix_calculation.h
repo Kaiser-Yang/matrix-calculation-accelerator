@@ -1,13 +1,13 @@
 #ifndef SINGLE_THREAD_MATRIX_CALCULATION
 #define SINGLE_THREAD_MATRIX_CALCULATION
 
+#include <cassert>
 #include <cmath>
 #include <type_traits>
 
-#include "matrix.h"
+#include "matrix_declaration.h"
 
 namespace mca {
-
 // Calculate number ^ a, and store the result in output
 // This will only calculate the number^a[pos:pos+len] in the matrix
 // pos: one-demensional starting index of the matrix

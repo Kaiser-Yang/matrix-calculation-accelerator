@@ -11,7 +11,6 @@
 
 #include "matrix_declaration.h"
 #include "mca.h"
-#include "thread_pool.h"
 
 namespace mca {
 struct Shape {
@@ -173,7 +172,7 @@ public:
     template <class Number, class O>
     void powNumber(const Number &number, Matrix<O> &output);
     template <class Number>
-    void powNumber(const Number &number);
+    inline void powNumber(const Number &number);
 
     // Calculate (*this) ^ exponent, and store the result in output
     // This is different with powNumber or numberPow
@@ -656,13 +655,42 @@ template <class ELEMENT_TYPE>
 template <class Number>
 void Matrix<ELEMENT_TYPE>::numberPow(const Number &number) {}
 
-// TODO
 template <class ELEMENT_TYPE>
 template <class Number, class O>
-void Matrix<ELEMENT_TYPE>::powNumber(const Number &number, Matrix<O> &output) {}
+void Matrix<ELEMENT_TYPE>::powNumber(const Number &number, Matrix<O> &output) {
+    // single mode
+    if (threadNum() == 0 || limit() > size()) {
+        powNumberSingleThread(*this, number, output, 0, size());
+        return;
+    }
+    // threadCalculation and taskNum
+    auto res = threadCalculationTaskNum(size());
+
+    // the return value of every task, use this to make sure every task is finished
+    std::vector<std::future<void>> returnValue(res.second - 1);
+    // assign task for every sub-thread
+    for (size_t i = 0; i < res.second - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [this, start = i * res.first, len = res.first, &output, &number]() {
+                powNumberSingleThread(*this, number, output, start, len);
+            });
+    }
+    // let main thread calculate took
+    powNumberSingleThread(*this,
+                          number,
+                          output,
+                          (res.second - 1) * res.first,
+                          (size() - (res.second - 1) * res.first));
+
+    // make sure all the sub threads are finished
+    for (auto &item : returnValue) { item.get(); }
+}
+
 template <class ELEMENT_TYPE>
 template <class Number>
-void Matrix<ELEMENT_TYPE>::powNumber(const Number &number) {}
+inline void Matrix<ELEMENT_TYPE>::powNumber(const Number &number) {
+    powNumber(number, *this);
+}
 
 // TODO
 template <class ELEMENT_TYPE>
