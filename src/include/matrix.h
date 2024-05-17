@@ -225,76 +225,75 @@ private:
     Shape _shape;
     size_t capacity{0};
 
-    template <class T1, class T2>
-    friend bool operator==(const Matrix<T1> &a, const Matrix<T2> &b);
-    template <class T1, class T2>
-    friend bool operator!=(const Matrix<T1> &a, const Matrix<T2> &b);
-    template <class T1, class T2>
-    friend bool operator<(const Matrix<T1> &a, const Matrix<T2> &b);
-    template <class T1, class T2>
-    friend bool operator<=(const Matrix<T1> &a, const Matrix<T2> &b);
-    template <class T1, class T2>
-    friend bool operator>(const Matrix<T1> &a, const Matrix<T2> &b);
-    template <class T1, class T2>
-    friend bool operator>=(const Matrix<T1> &a, const Matrix<T2> &b);
-
-    template <class T1, class T2>
-    friend Matrix<std::common_type_t<T1, T2>> operator+(const Matrix<T1> &a, const Matrix<T2> &b);
-    template <class T1, class T2>
-    friend Matrix<std::common_type_t<T1, T2>> operator-(const Matrix<T1> &a, const Matrix<T2> &b);
-    template <class T1, class T2>
-    friend Matrix<std::common_type_t<T1, T2>> operator*(const Matrix<T1> &a, const Matrix<T2> &b);
-
-    template <class T, class Number>
-    friend Matrix<std::common_type_t<T, Number>> operator+(const Matrix<T> &a,
-                                                           const Number &number);
-    template <class Number, class T>
-    friend Matrix<std::common_type_t<T, Number>> operator+(const Number &number,
-                                                           const Matrix<T> &a);
-    template <class T, class Number>
-    friend Matrix<std::common_type_t<T, Number>> operator-(const Matrix<T> &a,
-                                                           const Number &number);
-    template <class Number, class T>
-    friend Matrix<std::common_type_t<T, Number>> operator-(const Number &number,
-                                                           const Matrix<T> &a);
-    template <class T, class Number>
-    friend Matrix<std::common_type_t<T, Number>> operator*(const Matrix<T> &a,
-                                                           const Number &number);
-    template <class Number, class T>
-    friend Matrix<std::common_type_t<T, Number>> operator*(const Number &number,
-                                                           const Matrix<T> &a);
-    template <class T, class Number>
-    friend Matrix<std::common_type_t<T, Number>> operator/(const Matrix<T> &a,
-                                                           const Number &number);
-    template <class Number, class T>
-    friend Matrix<std::common_type_t<T, Number>> operator/(const Number &number,
-                                                           const Matrix<T> &a);
-
-    template <class T1, class T2>
-    friend void operator+=(Matrix<T1> &a, const Matrix<T2> &b);
-    template <class T1, class T2>
-    friend void operator-=(Matrix<T1> &a, const Matrix<T2> &b);
-    template <class T1, class T2>
-    friend void operator*=(Matrix<T1> &a, const Matrix<T2> &b);
-    template <class T1, class T2>
-    friend void operator/=(Matrix<T1> &a, const Matrix<T2> &b);
-
-    template <class T, class Number>
-    friend void operator+=(Matrix<T> &a, const Number &number);
-    template <class Number, class T>
-    friend void operator+=(const Number &number, Matrix<T> &a);
-    template <class T, class Number>
-    friend void operator-=(Matrix<T> &a, const Number &number);
-    template <class Number, class T>
-    friend void operator-=(const Number &number, Matrix<T> &a);
-    template <class T, class Number>
-    friend void operator*=(Matrix<T> &a, const Number &number);
-    template <class Number, class T>
-    friend void operator*=(const Number &number, Matrix<T> &a);
-    template <class T, class Number>
-    friend void operator/=(Matrix<T> &a, const Number &number);
-    template <class Number, class T>
-    friend void operator/=(const Number &number, Matrix<T> &a);
+    //     template <class T1, class T2>
+    //     friend bool operator==(const Matrix<T1> &a, const Matrix<T2> &b);
+    //     template <class T1, class T2>
+    //     friend bool operator!=(const Matrix<T1> &a, const Matrix<T2> &b);
+    //     template <class T1, class T2>
+    //     friend bool operator<(const Matrix<T1> &a, const Matrix<T2> &b);
+    //     template <class T1, class T2>
+    //     friend bool operator<=(const Matrix<T1> &a, const Matrix<T2> &b);
+    //     template <class T1, class T2>
+    //     friend bool operator>(const Matrix<T1> &a, const Matrix<T2> &b);
+    //     template <class T1, class T2>
+    //     friend bool operator>=(const Matrix<T1> &a, const Matrix<T2> &b);
+    //
+    //     template <class T1, class T2>
+    //     friend Matrix<std::common_type_t<T1, T2>> operator+(const Matrix<T1> &a, const Matrix<T2>
+    //     &b); template <class T1, class T2> friend Matrix<std::common_type_t<T1, T2>>
+    //     operator-(const Matrix<T1> &a, const Matrix<T2> &b); template <class T1, class T2> friend
+    //     Matrix<std::common_type_t<T1, T2>> operator*(const Matrix<T1> &a, const Matrix<T2> &b);
+    //
+    //     template <class T, class Number>
+    //     friend Matrix<std::common_type_t<T, Number>> operator+(const Matrix<T> &a,
+    //                                                            const Number &number);
+    //     template <class Number, class T>
+    //     friend Matrix<std::common_type_t<T, Number>> operator+(const Number &number,
+    //                                                            const Matrix<T> &a);
+    //     template <class T, class Number>
+    //     friend Matrix<std::common_type_t<T, Number>> operator-(const Matrix<T> &a,
+    //                                                            const Number &number);
+    //     template <class Number, class T>
+    //     friend Matrix<std::common_type_t<T, Number>> operator-(const Number &number,
+    //                                                            const Matrix<T> &a);
+    //     template <class T, class Number>
+    //     friend Matrix<std::common_type_t<T, Number>> operator*(const Matrix<T> &a,
+    //                                                            const Number &number);
+    //     template <class Number, class T>
+    //     friend Matrix<std::common_type_t<T, Number>> operator*(const Number &number,
+    //                                                            const Matrix<T> &a);
+    //     template <class T, class Number>
+    //     friend Matrix<std::common_type_t<T, Number>> operator/(const Matrix<T> &a,
+    //                                                            const Number &number);
+    //     template <class Number, class T>
+    //     friend Matrix<std::common_type_t<T, Number>> operator/(const Number &number,
+    //                                                            const Matrix<T> &a);
+    //
+    //     template <class T1, class T2>
+    //     friend void operator+=(Matrix<T1> &a, const Matrix<T2> &b);
+    //     template <class T1, class T2>
+    //     friend void operator-=(Matrix<T1> &a, const Matrix<T2> &b);
+    //     template <class T1, class T2>
+    //     friend void operator*=(Matrix<T1> &a, const Matrix<T2> &b);
+    //     template <class T1, class T2>
+    //     friend void operator/=(Matrix<T1> &a, const Matrix<T2> &b);
+    //
+    //     template <class T, class Number>
+    //     friend void operator+=(Matrix<T> &a, const Number &number);
+    //     template <class Number, class T>
+    //     friend void operator+=(const Number &number, Matrix<T> &a);
+    //     template <class T, class Number>
+    //     friend void operator-=(Matrix<T> &a, const Number &number);
+    //     template <class Number, class T>
+    //     friend void operator-=(const Number &number, Matrix<T> &a);
+    //     template <class T, class Number>
+    //     friend void operator*=(Matrix<T> &a, const Number &number);
+    //     template <class Number, class T>
+    //     friend void operator*=(const Number &number, Matrix<T> &a);
+    //     template <class T, class Number>
+    //     friend void operator/=(Matrix<T> &a, const Number &number);
+    //     template <class Number, class T>
+    //     friend void operator/=(const Number &number, Matrix<T> &a);
 };
 
 inline Shape::Shape(size_t rows, size_t columns) : rows(rows), columns(columns) {}
