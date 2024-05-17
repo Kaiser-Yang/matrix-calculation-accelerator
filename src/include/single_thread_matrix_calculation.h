@@ -13,7 +13,6 @@ namespace mca {
 // pos: one-demensional starting index of the matrix
 // len: number of elements to be calculated
 // NOTE: a must have the same shape with output
-//       &a must not be equal with &output
 //       the matrix which will be calculated must in range
 // for example: number = 2,
 //              a = [[1, 2, 3],
@@ -23,7 +22,7 @@ namespace mca {
 //              output = [[origin, 2^2, 2^3],
 //                        [2^2,    2^3, origin]]
 template <class Number, class T, class O>
-void numberPowSingleThread(Number &&number,
+void numberPowSingleThread(const Number &number,
                            const Matrix<T> &a,
                            Matrix<O> &output,
                            const size_t &pos,
@@ -34,7 +33,6 @@ void numberPowSingleThread(Number &&number,
 // pos: one-demensional starting index of the matrix
 // len: number of elements to be calculated
 // NOTE: a must have the same shape with output
-//       &a must not be equal with &output
 //       the matrix which will be calculated must in range
 // for example: number = 2,
 //              a = [[1, 2, 3],
@@ -45,7 +43,7 @@ void numberPowSingleThread(Number &&number,
 //                        [2^2,    3^2, origin]]
 template <class T, class Number, class O>
 void powNumberSingleThread(const Matrix<T> &a,
-                           Number &&number,
+                           const Number &number,
                            Matrix<O> &output,
                            const size_t &pos,
                            const size_t &len);
@@ -123,7 +121,6 @@ bool notEqualSingleThread(const Matrix<T1> &a,
 // pos: start position
 // len: length of calculation
 // NOTE: a must have the same shape with output and b
-//       &a must not be equal with &output
 //       the matrix which will be calculated must in range
 // for example: a = [[-1, -2, -3],
 //                   [-1, -2, -3]]
@@ -145,7 +142,6 @@ void addSingleThread(const Matrix<T1> &a,
 // pos: start position
 // len: length of calculation
 // NOTE: a must have the same shape with output and b
-//       &a must not be equal with &output
 //       the matrix which will be calculated must in range
 // for example: a = [[-1, -2, -3],
 //                   [-1, -2, -3]]
@@ -181,7 +177,6 @@ void multiplySingleThread(const Matrix<T1> &a,
 // pos: one-demensional starting index of the matrix
 // len: number of elements to be calculated
 // NOTE: a must have the same shape with output
-//       &a must not be equal with &output
 //       the matrix which will be calculated must in range
 // for example: number = 2,
 //              a = [[1, 2, 3],
@@ -201,7 +196,6 @@ void addSingleThread(const Number &number,
 // pos: one-demensional starting index of the matrix
 // len: number of elements to be calculated
 // NOTE: a must have the same shape with output
-//       &a must not be equal with &output
 //       the matrix which will be calculated must in range
 // for example: number = 2,
 //              a = [[1, 2, 3],
@@ -221,7 +215,6 @@ void subtractSingleThread(const Number &number,
 // pos: one-demensional starting index of the matrix
 // len: number of elements to be calculated
 // NOTE: a must have the same shape with output
-//       &a must not be equal with &output
 //       the matrix which will be calculated must in range
 // for example: number = 2,
 //              a = [[1, 2, 3],
@@ -241,7 +234,6 @@ void subtractSingleThread(const Matrix<T> &a,
 // pos: one-demensional starting index of the matrix
 // len: number of elements to be calculated
 // NOTE: a must have the same shape with output
-//       &a must not be equal with &output
 //       the matrix which will be calculated must in range
 // for example: number = 2,
 //              a = [[1, 2, 3],
@@ -261,7 +253,6 @@ void multiplySingleThread(const Number &number,
 // pos: one-demensional starting index of the matrix
 // len: number of elements to be calculated
 // NOTE: a must have the same shape with output
-//       &a must not be equal with &output
 //       the matrix which will be calculated must in range
 // for example: number = 2,
 //              a = [[1, 2, 3],
@@ -281,7 +272,6 @@ void divideSingleThread(const Matrix<T> &a,
 // pos: the frist position of matrix a
 // len: length of elements
 // NOTE: a must have the same shape with output
-//       &a must not be equal with &output
 //       the matrix which will be calculated must in range
 // for example: number = 2,
 //              a = [[1, 2, 3],
@@ -302,7 +292,6 @@ void divideSingleThread(const Number &number,
 // pos: the frist position of output
 // len: length of elements
 // NOTE: a must have the same shape with output after transposition
-//       &a must not be equal with &output
 //       the matrix which will be calculated must in range
 // for example: number = 2,
 //              a = [[1, 2, 3],
@@ -354,12 +343,11 @@ bool antisymmetricSingleThread(const Matrix<T> &a,
 
 // Those below are the implementations
 template <class Number, class T, class O>
-void numberPowSingleThread(Number &&number,
+void numberPowSingleThread(const Number &number,
                            const Matrix<T> &a,
                            Matrix<O> &output,
                            const size_t &pos,
                            const size_t &len) {
-    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape() == output.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<Number, T, O>;
@@ -371,11 +359,10 @@ void numberPowSingleThread(Number &&number,
 
 template <class T, class Number, class O>
 void powNumberSingleThread(const Matrix<T> &a,
-                           Number &&number,
+                           const Number &number,
                            Matrix<O> &output,
                            const size_t &pos,
                            const size_t &len) {
-    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape() == output.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<Number, T, O>;
@@ -539,7 +526,6 @@ void multiplySingleThread(const Number &number,
                           Matrix<O> &output,
                           const size_t &pos,
                           const size_t &len) {
-    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape() == output.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<Number, T, O>;
@@ -554,7 +540,6 @@ void addSingleThread(const Matrix<T1> &a,
                      Matrix<O> &output,
                      const size_t &pos,
                      const size_t &len) {
-    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape() == b.shape());
     assert(a.shape() == output.shape());
     assert(pos + len <= a.size());
@@ -574,7 +559,6 @@ void subtractSingleThread(const Matrix<T1> &a,
                           Matrix<O> &output,
                           const size_t &pos,
                           const size_t &len) {
-    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape() == b.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<T1, T2, O>;
@@ -620,7 +604,6 @@ void addSingleThread(const Number &number,
                      Matrix<O> &output,
                      const size_t &pos,
                      const size_t &len) {
-    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape() == output.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<Number, T, O>;
@@ -635,7 +618,6 @@ void subtractSingleThread(const Number &number,
                           Matrix<O> &output,
                           const size_t &pos,
                           const size_t &len) {
-    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape() == output.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<Number, T, O>;
@@ -650,7 +632,6 @@ void subtractSingleThread(const Matrix<T> &a,
                           Matrix<O> &output,
                           const size_t &pos,
                           const size_t &len) {
-    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape() == output.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<Number, T, O>;
@@ -665,7 +646,6 @@ void divideSingleThread(const Matrix<T> &a,
                         Matrix<O> &output,
                         const size_t &pos,
                         const size_t &len) {
-    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape() == output.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<Number, T, O>;
@@ -680,7 +660,6 @@ void divideSingleThread(const Number &number,
                         Matrix<O> &output,
                         const size_t &pos,
                         const size_t &len) {
-    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.shape() == output.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<Number, T, O>;
@@ -698,7 +677,6 @@ void transposeSingleThread(const Matrix<T> &a,
                            Matrix<T> &output,
                            const size_t &pos,
                            const size_t &len) {
-    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.rows() == output.columns());
     assert(a.columns() == output.rows());
     assert(pos + len <= output.size());
