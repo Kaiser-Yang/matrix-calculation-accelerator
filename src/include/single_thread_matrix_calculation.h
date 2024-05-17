@@ -23,7 +23,7 @@ namespace mca {
 //              output = [[origin, 2^2, 2^3],
 //                        [2^2,    2^3, origin]]
 template <class Number, class T, class O>
-void numberPowSingleThread(Number &&number,
+void numberPowSingleThread(const Number &number,
                            const Matrix<T> &a,
                            Matrix<O> &output,
                            const size_t &pos,
@@ -45,7 +45,7 @@ void numberPowSingleThread(Number &&number,
 //                        [2^2,    3^2, origin]]
 template <class T, class Number, class O>
 void powNumberSingleThread(const Matrix<T> &a,
-                           Number &&number,
+                           const Number &number,
                            Matrix<O> &output,
                            const size_t &pos,
                            const size_t &len);
@@ -354,7 +354,7 @@ bool antisymmetricSingleThread(const Matrix<T> &a,
 
 // Those below are the implementations
 template <class Number, class T, class O>
-void numberPowSingleThread(Number &&number,
+void numberPowSingleThread(const Number &number,
                            const Matrix<T> &a,
                            Matrix<O> &output,
                            const size_t &pos,
@@ -371,7 +371,7 @@ void numberPowSingleThread(Number &&number,
 
 template <class T, class Number, class O>
 void powNumberSingleThread(const Matrix<T> &a,
-                           Number &&number,
+                           const Number &number,
                            Matrix<O> &output,
                            const size_t &pos,
                            const size_t &len) {

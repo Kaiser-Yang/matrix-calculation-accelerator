@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "matrix_declaration.h"
 #include "mca.h"
 #include "thread_pool.h"
 
@@ -28,7 +29,7 @@ struct Shape {
     size_t size() const;
 };
 
-template <class ELEMENT_TYPE = double>
+template <class ELEMENT_TYPE>
 class Matrix {
 public:
     using ElementType = ELEMENT_TYPE;
@@ -55,7 +56,7 @@ public:
     inline Matrix(const Shape &shape, const ELEMENT_TYPE &defaultValue);
 
     // Construct a diagonal matrix, the diag is the diagonal elements
-    // Matrix<>({1, 2, 3, 4}) will construct a matrix whose shape are 4 * 4,
+    // Matrix<>({1, 2, 3, 4}) will construct a matrix whose shape is 4 * 4,
     // and diagonal elements are 1, 2, 3, 4 other elements will be ELEMENT_TYPE()
     // In this case, double() will be 0
     Matrix(const std::initializer_list<ELEMENT_TYPE> &diag);
@@ -137,7 +138,7 @@ public:
     void fill(const ELEMENT_TYPE &value, const size_t &pos = 0);
 
     // Calculate number ^ (*this), and store the result in output
-    // If the output is nullptr, (*this) will be changed
+    // The function whose parameters do not include output will change (*this)
     // NOTE: (*this) must have the same shape with output
     //       If O and ELEMENT_TYPE are not same, all the elements will first be cast to
     //       std::common_type<O, ELEMENT_TYPE>, after calculation they will be cast into O
@@ -151,10 +152,12 @@ public:
     //              a: [[2^1, 2^2, 2^3],
     //                  [2^2, 2^3, 2^4]]
     template <class Number, class O>
-    void numberPow(Number &&number, const Matrix<O> &output = nullptr);
+    void numberPow(const Number &number, Matrix<O> &output);
+    template <class Number>
+    void numberPow(const Number &number);
 
     // Calculate (*this) ^ number, and store the result in output
-    // If the output is nullptr, (*this) will be changed
+    // The function whose parameters do not include output will change (*this)
     // NOTE: (*this) must have the same shape with output
     //       If O and ELEMENT_TYPE are not same, all the elements will first be cast to
     //       std::common_type<O, ELEMENT_TYPE>, after calculation they will be cast into O
@@ -168,12 +171,15 @@ public:
     //              a: [[1^2, 2^2, 3^2],
     //                  [2^2, 3^2, 4^2]]
     template <class Number, class O>
-    void powNumber(Number &&number, const Matrix<O> &output = nullptr);
+    void powNumber(const Number &number, Matrix<O> &output);
+    template <class Number>
+    void powNumber(const Number &number);
 
     // Calculate (*this) ^ exponent, and store the result in output
     // This is different with powNumber or numberPow
     // This will calculate the matrix exponentiation
     // This is only valid when (*this) is a square matrix
+    // The function whose parameters do not include output will change (*this)
     // NOTE: (*this) must be a square matrix
     //       (*this) must have the same shape with output
     //       If O and ELEMENT_TYPE are not same, all the elements will first be cast to
@@ -185,10 +191,11 @@ public:
     //              output = [[5, 8],
     //                        [8, 13]]
     template <class O>
-    void pow(size_t exponent, Matrix<O> &output = nullptr);
+    void pow(size_t exponent, Matrix<O> &output);
+    void pow(size_t exponent);
 
     // Transpose (*this), and store the result in output
-    // If the output is nullptr, (*this) will be changed
+    // The function whose parameters do not include output will change (*this)
     // NOTE: output must have the same shape with the current matrix after transposition
     //       If O and ELEMENT_TYPE are not same, all the elements will first be cast to
     //       std::common_type<O, ELEMENT_TYPE>, after calculation they will be cast into O
@@ -204,7 +211,8 @@ public:
     //                  [2, 3],
     //                  [3, 4]]
     template <class O>
-    void transpose(Matrix<O> &output = nullptr);
+    void transpose(Matrix<O> &output);
+    void transpose();
 
     // Check if the matrix is symmetric with multi-thread
     bool symmetric();
@@ -287,149 +295,6 @@ private:
     friend void operator/=(Matrix<T> &a, const Number &number);
     template <class Number, class T>
     friend void operator/=(const Number &number, Matrix<T> &a);
-
-    //     template <class T1, class T2>
-    //     friend bool equalSingleThread(const Matrix<T1> &a,
-    //                                   const Matrix<T2> &b,
-    //                                   const size_t &sx,
-    //                                   const size_t &sy,
-    //                                   const Shape &shape,
-    //                                   const double &eps);
-
-    //     template <class T1, class T2>
-    //     friend bool lessSingleThread(const Matrix<T1> &a,
-    //                                  const Matrix<T2> &b,
-    //                                  const size_t &sx,
-    //                                  const size_t &sy,
-    //                                  const Shape &shape,
-    //                                  const double &eps);
-    //     template <class T1, class T2>
-    //     friend bool lessEqualSingleThread(const Matrix<T1> &a,
-    //                                       const Matrix<T2> &b,
-    //                                       const size_t &sx,
-    //                                       const size_t &sy,
-    //                                       const Shape &shape,
-    //                                       const double &eps);
-    //     template <class T1, class T2>
-    //     friend bool greaterSingleThread(const Matrix<T1> &a,
-    //                                     const Matrix<T2> &b,
-    //                                     const size_t &sx,
-    //                                     const size_t &sy,
-    //                                     const Shape &shape,
-    //                                     const double &eps);
-
-    //     template <class T1, class T2>
-    //     friend bool greaterEqualSingleThread(const Matrix<T1> &a,
-    //                                          const Matrix<T2> &b,
-    //                                          const size_t &sx,
-    //                                          const size_t &sy,
-    //                                          const Shape &shape,
-    //                                          const double &eps);
-    //     template <class T1, class T2>
-    //     friend bool notEqualSingleThread(const Matrix<T1> &a,
-    //                                      const Matrix<T2> &b,
-    //                                      const size_t &sx,
-    //                                      const size_t &sy,
-    //                                      const Shape &shape,
-    //                                      const double &eps);
-
-    //     template <class T1, class T2, class O>
-    //     friend void addSingleThread(const Matrix<T1> &a,
-    //                                 const Matrix<T2> &b,
-    //                                 Matrix<O> &output,
-    //                                 const size_t &sx,
-    //                                 const size_t &sy,
-    //                                 const Shape &shape);
-    //     template <class T1, class T2, class O>
-    //     friend void subtractSingleThread(const Matrix<T1> &a,
-    //                                      const Matrix<T2> &b,
-    //                                      Matrix<O> &output,
-    //                                      const size_t &sx,
-    //                                      const size_t &sy,
-    //                                      const Shape &shape);
-    //     template <class T1, class T2, class O>
-    //     friend void multiplySingleThread(const Matrix<T1> &a,
-    //                                      const Matrix<T2> &b,
-    //                                      Matrix<O> &output,
-    //                                      const size_t &sx,
-    //                                      const size_t &sy,
-    //                                      const Shape &shape);
-
-    //     template <class Number, class T, class O>
-    //     friend void addSingleThread(const Number &number,
-    //                                 const Matrix<T> &a,
-    //                                 Matrix<O> &output,
-    //                                 const size_t &sx,
-    //                                 const size_t &sy,
-    //                                 const Shape &shape);
-    //     template <class Number, class T, class O>
-    //     friend void subtractSingleThread(const Number &number,
-    //                                      const Matrix<T> &a,
-    //                                      Matrix<O> &output,
-    //                                      const size_t &sx,
-    //                                      const size_t &sy,
-    //                                      const Shape &shape);
-    //     template <class T, class Number, class O>
-    //     friend void subtractSingleThread(const Matrix<T> &a,
-    //                                      const Number &number,
-    //                                      Matrix<O> &output,
-    //                                      const size_t &sx,
-    //                                      const size_t &sy,
-    //                                      const Shape &shape);
-    //     template <class Number, class T, class O>
-    //     friend void multiplySingleThread(const Number &number,
-    //                                      const Matrix<T> &a,
-    //                                      Matrix<O> &output,
-    //                                      const size_t &sx,
-    //                                      const size_t &sy,
-    //                                      const Shape &shape);
-    //     template <class T, class Number, class O>
-    //     friend void divideSingleThread(const Matrix<T> &a,
-    //                                    const Number &number,
-    //                                    Matrix<O> &output,
-    //                                    const size_t &sx,
-    //                                    const size_t &sy,
-    //                                    const Shape &shape);
-    //     template <class Number, class T, class O>
-    //     friend void divideSingleThread(const Number &number,
-    //                                    const Matrix<T> &a,
-    //                                    Matrix<O> &output,
-    //                                    const size_t &sx,
-    //                                    const size_t &sy,
-    //                                    const Shape &shape);
-
-    //     template <class Number, class T, class O>
-    //     friend void numberPowSingleThread(Number &&number,
-    //                                       const Matrix<T> &a,
-    //                                       Matrix<O> &output,
-    //                                       const size_t &sx,
-    //                                       const size_t &sy,
-    //                                       const Shape &shape);
-    //     template <class T, class Number, class O>
-    //     friend void powNumberSingleThread(const Matrix<T> &a,
-    //                                       Number &&number,
-    //                                       Matrix<O> &output,
-    //                                       const size_t &sx,
-    //                                       const size_t &sy,
-    //                                       const Shape &shape);
-
-    // template <class T>
-    // friend void transposeSingleThread(const Matrix<T> &a,
-    //                                   Matrix<T> &output,
-    //                                   const size_t &sx,
-    //                                   const size_t &sy,
-    //                                   const Shape &shape);
-
-    // template <class T>
-    // friend bool symmetricSingleThread(const Matrix<T> &a,
-    //                                   const size_t &sx,
-    //                                   const size_t rows,
-    //                                   const double &eps);
-    // template <class T>
-    // friend bool antisymmetricSingleThread(const Matrix<T> &a,
-    //                                       const size_t &sx,
-    //                                       const size_t rows,
-    //                                       const double &eps);
 };
 
 inline Shape::Shape(size_t rows, size_t columns) : rows(rows), columns(columns) {}
@@ -787,22 +652,32 @@ void Matrix<ELEMENT_TYPE>::fill(const ELEMENT_TYPE &value, const size_t &pos) {
 // TODO
 template <class ELEMENT_TYPE>
 template <class Number, class O>
-void Matrix<ELEMENT_TYPE>::numberPow(Number &&number, const Matrix<O> &output) {}
+void Matrix<ELEMENT_TYPE>::numberPow(const Number &number, Matrix<O> &output) {}
+template <class ELEMENT_TYPE>
+template <class Number>
+void Matrix<ELEMENT_TYPE>::numberPow(const Number &number) {}
 
 // TODO
 template <class ELEMENT_TYPE>
 template <class Number, class O>
-void Matrix<ELEMENT_TYPE>::powNumber(Number &&number, const Matrix<O> &output) {}
+void Matrix<ELEMENT_TYPE>::powNumber(const Number &number, Matrix<O> &output) {}
+template <class ELEMENT_TYPE>
+template <class Number>
+void Matrix<ELEMENT_TYPE>::powNumber(const Number &number) {}
 
 // TODO
 template <class ELEMENT_TYPE>
 template <class O>
 void Matrix<ELEMENT_TYPE>::pow(size_t exponent, Matrix<O> &output) {}
+template <class ELEMENT_TYPE>
+void Matrix<ELEMENT_TYPE>::pow(size_t exponent) {}
 
 // TODO
 template <class ELEMENT_TYPE>
 template <class O>
 void Matrix<ELEMENT_TYPE>::transpose(Matrix<O> &output) {}
+template <class ELEMENT_TYPE>
+void Matrix<ELEMENT_TYPE>::transpose() {}
 
 }  // namespace mca
 

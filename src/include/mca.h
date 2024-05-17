@@ -3,13 +3,10 @@
 
 #include <thread>
 
+#include "matrix_declaration.h"
 #include "thread_pool.h"
 
 namespace mca {
-// forward declaration to remove circular dependency
-template <class ELEMENT_TYPE>
-class Matrix;
-
 // Initialize the mca, before using mca, you must call init
 // If you don't call init, mca will run in single thread mode
 // threadNum is how many threads will be used when calculating
