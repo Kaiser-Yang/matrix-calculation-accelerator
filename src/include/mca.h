@@ -4,6 +4,7 @@
 #include <thread>
 
 #include "matrix_declaration.h"
+#include "single_thread_matrix_calculation.h"
 #include "thread_pool.h"
 
 namespace mca {
@@ -41,7 +42,7 @@ extern double epsilon();
 // return trhead pool object, this should not called by the usrs
 // this is for developers
 extern ThreadPool &threadPool();
-
+inline std::pair<size_t, size_t> threadCalculationTaskNum(const size_t &total);
 // Check if matrix a and matrix b are equal using multi-thread
 // return false when a's shape is not same with b's shape
 // NOTE: before comparison the elements will be converted to std::common_type<T1, T2>
@@ -138,7 +139,7 @@ Matrix<std::common_type_t<T, Number>> operator+(const Matrix<T> &a, const Number
 // NOTE: the calculation will first calculate as std::common_type<T1, T2>
 //       then use static_cast<T1>
 template <class Number, class T>
-Matrix<std::common_type_t<T, Number>> operator+(const Number &number, const Matrix<T> &a);
+inline Matrix<std::common_type_t<T, Number>> operator+(const Number &number, const Matrix<T> &a);
 
 // Calculate a - number using multi-thread
 // return the result of a - number
@@ -253,7 +254,7 @@ void operator+=(Matrix<T> &a, const Number &number);
 // NOTE: the calculation will first calculate as std::common_type<T1, T2>
 //       then use static_cast<T1>
 template <class Number, class T>
-void operator+=(const Number &number, Matrix<T> &a);
+inline void operator+=(const Number &number, Matrix<T> &a);
 
 // Calculate a -= number using multi-thread, the result will be stored in a
 // NOTE: the calculation will first calculate as std::common_type<T1, T2>
@@ -321,12 +322,37 @@ Matrix<std::common_type_t<T1, T2>> operator-(const Matrix<T1> &a, const Matrix<T
 template <class T1, class T2>
 Matrix<std::common_type_t<T1, T2>> operator*(const Matrix<T1> &a, const Matrix<T2> &b) {}
 
-// TODO
 template <class T, class Number>
-Matrix<std::common_type_t<T, Number>> operator+(const Matrix<T> &a, const Number &number) {}
-// TODO
+Matrix<std::common_type_t<T, Number>> operator+(const Matrix<T> &a, const Number &number) {
+    using CommonType = std::common_type_t<T, Number>;
+    Matrix<CommonType> result(a.shape(), CommonType(0));
+    // single mode
+    if (threadNum() == 0 || limit() > a.size()) {
+        addSingleThread(number, a, result, 0, a.size());
+        return result;
+    }
+    // threadCalculation and taskNum
+    auto res = threadCalculationTaskNum(a.size());
+    std::vector<std::future<void>> returnValue(res.second - 1);
+    for (size_t i = 0; i < res.second - 1; i++) {
+        returnValue[i] =
+            threadPool().addTask([&result, start = i * res.first, &a, &number, len = res.first]() {
+                addSingleThread(number, a, result, start, len);
+            });
+    }
+    // let main thread calculate too
+    addSingleThread(
+        number, a, result, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+    // make sure all the sub thread are finished
+    for (auto &item : returnValue) { item.get(); }
+    return result;
+}
+
 template <class Number, class T>
-Matrix<std::common_type_t<T, Number>> operator+(const Number &number, const Matrix<T> &a) {}
+inline Matrix<std::common_type_t<T, Number>> operator+(const Number &number, const Matrix<T> &a) {
+    return a + number;
+}
+
 // TODO
 template <class T, class Number>
 Matrix<std::common_type_t<T, Number>> operator-(const Matrix<T> &a, const Number &number) {}
@@ -357,12 +383,34 @@ void operator*=(Matrix<T1> &a, const Matrix<T2> &b) {}
 // TODO
 template <class T1, class T2>
 void operator/=(Matrix<T1> &a, const Matrix<T2> &b) {}
-// TODO
+
 template <class T, class Number>
-void operator+=(Matrix<T> &a, const Number &number) {}
-// TODO
+void operator+=(Matrix<T> &a, const Number &number) {
+    // single mode
+    if (threadNum() == 0 || limit() > a.size()) {
+        addSingleThread(number, a, a, 0, a.size());
+        return;
+    }
+    // threadCalculation and taskNum
+    auto res = threadCalculationTaskNum(a.size());
+    std::vector<std::future<void>> returnValue(res.second - 1);
+    for (size_t i = 0; i < res.second - 1; i++) {
+        returnValue[i] =
+            threadPool().addTask([start = i * res.first, &a, &number, len = res.first]() {
+                addSingleThread(number, a, a, start, len);
+            });
+    }
+    // let main thread calculate too
+    addSingleThread(
+        number, a, a, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+    // make sure all the sub thread are finished
+    for (auto &item : returnValue) { item.get(); }
+}
+
 template <class Number, class T>
-void operator+=(const Number &number, Matrix<T> &a) {}
+inline void operator+=(const Number &number, Matrix<T> &a) {
+    a += number;
+}
 // TODO
 template <class T, class Number>
 void operator-=(Matrix<T> &a, const Number &number) {}
