@@ -293,6 +293,7 @@ void divideSingleThread(const Number &number,
 // len: length of elements
 // NOTE: a must have the same shape with output after transposition
 //       the matrix which will be calculated must in range
+//       &a must not be equal with &output
 // for example: number = 2,
 //              a = [[1, 2, 3],
 //                   [2, 3, 4]]
@@ -677,6 +678,7 @@ void transposeSingleThread(const Matrix<T> &a,
                            Matrix<T> &output,
                            const size_t &pos,
                            const size_t &len) {
+    assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.rows() == output.columns());
     assert(a.columns() == output.rows());
     assert(pos + len <= output.size());
