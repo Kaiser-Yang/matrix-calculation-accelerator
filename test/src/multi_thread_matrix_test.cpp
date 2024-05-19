@@ -157,8 +157,6 @@ TEST_F(TestMatrixMultiThread, powNumber) {
 
     // get the multi-thread mode time
     startTime = high_resolution_clock::now();
-    // get multi-thread pownumber in multi_output
-    multiThread.powNumber(2, multiOutput);
     // get multi-thread pownumber in multiThread
     multiThread.powNumber(2);
     endTime       = high_resolution_clock::now();
@@ -168,8 +166,36 @@ TEST_F(TestMatrixMultiThread, powNumber) {
 
     // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(output, multiOutput, 0, output.size()));
     ASSERT_TRUE(equalSingleThread(output, multiThread, 0, output.size()));
+}
+
+TEST_F(TestMatrixMultiThread, powNumberToOutput) {
+    Matrix<int> output      = {shape, -1};
+    Matrix<int> multiOutput = {shape, -1};
+    // first use powNumberSingleThread to get the single mode time
+    auto startTime = high_resolution_clock::now();
+    powNumberSingleThread(singleThread, 2, output, 0, singleThread.size());
+    auto endTime       = high_resolution_clock::now();
+    auto executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+    // record time in gtest
+    testing::Test::RecordProperty("SingleTime", executionTime);
+
+    init();
+    // the expected time in multi thread
+    testing::Test::RecordProperty("BaseTime", executionTime / (threadNum() + 1));
+
+    // get the multi-thread mode time
+    startTime = high_resolution_clock::now();
+    // get multi-thread pownumber in multi_output
+    multiThread.powNumber(2, multiOutput);
+    endTime       = high_resolution_clock::now();
+    executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+    // record multi-thread time in gtest
+    testing::Test::RecordProperty("MultiTime", executionTime);
+
+    // TODO this should be updated with Matrix::operator== with multi-thread
+    // make sure they are equal
+    ASSERT_TRUE(equalSingleThread(output, multiOutput, 0, output.size()));
 }
 }  // namespace test
 }  // namespace mca
