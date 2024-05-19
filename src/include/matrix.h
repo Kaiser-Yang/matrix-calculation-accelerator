@@ -107,8 +107,12 @@ public:
     Matrix<ELEMENT_TYPE> &operator=(const T *data);
 
     // get the reference to the element of i-th row, j-th column
-    inline ELEMENT_TYPE &get(size_t i, size_t j);
-    inline const ELEMENT_TYPE &get(size_t i, size_t j) const;
+    inline ELEMENT_TYPE &get(const size_t &i, const size_t &j);
+    inline const ELEMENT_TYPE &get(const size_t &i, const size_t &j) const;
+    // Get the element at pos
+    // The elements are numbered sequentially from left to right and top to bottom.
+    inline ELEMENT_TYPE &operator[](const size_t &pos);
+    inline const ELEMENT_TYPE &operator[](const size_t &pos) const;
 
     // get the date pointer
     inline ELEMENT_TYPE *dataPtr();
@@ -439,9 +443,7 @@ Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(const Matrix<T> &other) {
     }
     _shape = other.shape();
     if (threadNum() == 0 || limit() > size()) {
-        for (size_t i = 0; i < size(); i++) {
-            dataPtr()[i] = static_cast<ELEMENT_TYPE>(other.dataPtr()[i]);
-        }
+        for (size_t i = 0; i < size(); i++) { (*this)[i] = static_cast<ELEMENT_TYPE>(other[i]); }
         return *this;
     }
     auto res = threadCalculationTaskNum(size());
@@ -450,12 +452,12 @@ Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(const Matrix<T> &other) {
         returnValue[i] = threadPool().addTask(
             [this, start = i * res.first, end = (i + 1) * res.first, &other]() {
                 for (size_t i = start; i < end; i++) {
-                    dataPtr()[i] = static_cast<ELEMENT_TYPE>(other.dataPtr()[i]);
+                    (*this)[i] = static_cast<ELEMENT_TYPE>(other[i]);
                 }
             });
     }
     for (size_t i = (res.second - 1) * res.first; i < res.second * res.first; i++) {
-        dataPtr()[i] = static_cast<ELEMENT_TYPE>(other.dataPtr()[i]);
+        (*this)[i] = static_cast<ELEMENT_TYPE>(other[i]);
     }
     for (auto &item : returnValue) { item.get(); }
     return *this;
@@ -496,14 +498,14 @@ Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(
         returnValue[i] = threadPool().addTask(
             [this, start = i * res.first, end = (i + 1) * res.second, &init]() {
                 for (size_t i = start; i < end; i++) {
-                    dataPtr()[i] = static_cast<ELEMENT_TYPE>(
+                    (*this)[i] = static_cast<ELEMENT_TYPE>(
                         std::data(std::data(init)[i / columns()])[i % columns()]);
                 }
             });
     }
 
     for (size_t i = (res.second - 1) * res.first; i < res.second * res.first; i++) {
-        dataPtr()[i] =
+        (*this)[i] =
             static_cast<ELEMENT_TYPE>(std::data(std::data(init)[i / columns()])[i % columns()]);
     }
     for (auto &item : returnValue) { item.get(); }
@@ -539,12 +541,12 @@ Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(const std::vector<std::vec
         returnValue[i] =
             threadPool().addTask([this, start = i * res.first, end = (i + 1) * res.first, &init]() {
                 for (size_t i = start; i < end; i++) {
-                    dataPtr()[i] = static_cast<ELEMENT_TYPE>(init[i / columns()][i % columns()]);
+                    (*this)[i] = static_cast<ELEMENT_TYPE>(init[i / columns()][i % columns()]);
                 }
             });
     }
     for (size_t i = (res.second - 1) * res.first; i < res.second * res.first; i++) {
-        dataPtr()[i] = static_cast<ELEMENT_TYPE>(init[i / columns()][i % columns()]);
+        (*this)[i] = static_cast<ELEMENT_TYPE>(init[i / columns()][i % columns()]);
     }
     for (auto &item : returnValue) { item.get(); }
     return *this;
@@ -554,7 +556,7 @@ template <class ELEMENT_TYPE>
 template <class T>
 Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(const T *data) {
     if (threadNum() == 0 || limit() > size()) {
-        for (size_t i = 0; i < size(); i++) { dataPtr()[i] = static_cast<ELEMENT_TYPE>(data[i]); }
+        for (size_t i = 0; i < size(); i++) { (*this)[i] = static_cast<ELEMENT_TYPE>(data[i]); }
         return *this;
     }
     auto res = threadCalculationTaskNum(size());
@@ -563,26 +565,37 @@ Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(const T *data) {
         returnValue[i] =
             threadPool().addTask([this, start = i * res.first, end = (i + 1) * res.first, data]() {
                 for (size_t i = start; i < end; i++) {
-                    dataPtr()[i] = static_cast<ELEMENT_TYPE>(data[i]);
+                    (*this)[i] = static_cast<ELEMENT_TYPE>(data[i]);
                 }
             });
     }
     for (size_t i = (res.second - 1) * res.first; i < res.second * res.first; i++) {
-        dataPtr()[i] = static_cast<ELEMENT_TYPE>(data[i]);
+        (*this)[i] = static_cast<ELEMENT_TYPE>(data[i]);
     }
     for (auto &item : returnValue) { item.get(); }
     return *this;
 }
 
 template <class ELEMENT_TYPE>
-inline ELEMENT_TYPE &Matrix<ELEMENT_TYPE>::get(size_t i, size_t j) {
+inline ELEMENT_TYPE &Matrix<ELEMENT_TYPE>::get(const size_t &i, const size_t &j) {
     assert(i < rows() && j < columns());
-    return data[i * columns() + j];
+    return (*this)[i * columns() + j];
+}
+
+template <class ELEMENT_TYPE>
+inline const ELEMENT_TYPE &Matrix<ELEMENT_TYPE>::get(const size_t &i, const size_t &j) const {
+    assert(i < rows() && j < columns());
+    return (*this)[i * columns() + j];
 }
 template <class ELEMENT_TYPE>
-inline const ELEMENT_TYPE &Matrix<ELEMENT_TYPE>::get(size_t i, size_t j) const {
-    assert(i < rows() && j < columns());
-    return data[i * columns() + j];
+inline ELEMENT_TYPE &Matrix<ELEMENT_TYPE>::operator[](const size_t &pos) {
+    assert(pos < size());
+    return dataPtr()[pos];
+}
+template <class ELEMENT_TYPE>
+inline const ELEMENT_TYPE &Matrix<ELEMENT_TYPE>::operator[](const size_t &pos) const {
+    assert(pos < size());
+    return dataPtr()[pos];
 }
 template <class ELEMENT_TYPE>
 inline ELEMENT_TYPE *Matrix<ELEMENT_TYPE>::dataPtr() {
@@ -629,7 +642,7 @@ void Matrix<ELEMENT_TYPE>::fill(const ELEMENT_TYPE &value, const size_t &pos) {
         return;
     }
     // threadCalculation and taskNum
-    auto res = threadCalculationTaskNum(size());
+    auto res = threadCalculationTaskNum(size() - pos);
 
     // the return value of every task, use this to make sure every task is finished
     std::vector<std::future<void>> returnValue(res.second - 1);
