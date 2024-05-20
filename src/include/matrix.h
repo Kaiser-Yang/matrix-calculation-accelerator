@@ -151,7 +151,7 @@ public:
     //              a: [[2^1, 2^2, 2^3],
     //                  [2^2, 2^3, 2^4]]
     template <class Number, class O>
-    void numberPow(const Number &number, Matrix<O> &output);
+    void numberPow(const Number &number, Matrix<O> &output) const;
     template <class Number>
     void numberPow(const Number &number);
 
@@ -170,7 +170,7 @@ public:
     //              a: [[1^2, 2^2, 3^2],
     //                  [2^2, 3^2, 4^2]]
     template <class Number, class O>
-    void powNumber(const Number &number, Matrix<O> &output);
+    void powNumber(const Number &number, Matrix<O> &output) const;
     template <class Number>
     inline void powNumber(const Number &number);
 
@@ -190,7 +190,7 @@ public:
     //              output = [[5, 8],
     //                        [8, 13]]
     template <class O>
-    void pow(size_t exponent, Matrix<O> &output);
+    void pow(size_t exponent, Matrix<O> &output) const;
     void pow(size_t exponent);
 
     // Transpose (*this), and store the result in output
@@ -210,14 +210,14 @@ public:
     //                  [2, 3],
     //                  [3, 4]]
     template <class O>
-    void transpose(Matrix<O> &output);
+    void transpose(Matrix<O> &output) const;
     void transpose();
 
     // Check if the matrix is symmetric with multi-thread
-    bool symmetric();
+    bool symmetric() const;
 
     // Check if the matrix is antisymmetric with multi-thread
-    bool antisymmetric();
+    bool antisymmetric() const;
 
 private:
     std::unique_ptr<ELEMENT_TYPE[]> data;
@@ -650,14 +650,14 @@ void Matrix<ELEMENT_TYPE>::fill(const ELEMENT_TYPE &value, const size_t &pos) {
 // TODO
 template <class ELEMENT_TYPE>
 template <class Number, class O>
-void Matrix<ELEMENT_TYPE>::numberPow(const Number &number, Matrix<O> &output) {}
+void Matrix<ELEMENT_TYPE>::numberPow(const Number &number, Matrix<O> &output) const {}
 template <class ELEMENT_TYPE>
 template <class Number>
 void Matrix<ELEMENT_TYPE>::numberPow(const Number &number) {}
 
 template <class ELEMENT_TYPE>
 template <class Number, class O>
-void Matrix<ELEMENT_TYPE>::powNumber(const Number &number, Matrix<O> &output) {
+void Matrix<ELEMENT_TYPE>::powNumber(const Number &number, Matrix<O> &output) const {
     // single mode
     if (threadNum() == 0 || limit() > size()) {
         powNumberSingleThread(*this, number, output, 0, size());
@@ -695,14 +695,14 @@ inline void Matrix<ELEMENT_TYPE>::powNumber(const Number &number) {
 // TODO
 template <class ELEMENT_TYPE>
 template <class O>
-void Matrix<ELEMENT_TYPE>::pow(size_t exponent, Matrix<O> &output) {}
+void Matrix<ELEMENT_TYPE>::pow(size_t exponent, Matrix<O> &output) const {}
 template <class ELEMENT_TYPE>
 void Matrix<ELEMENT_TYPE>::pow(size_t exponent) {}
 
 // TODO
 template <class ELEMENT_TYPE>
 template <class O>
-void Matrix<ELEMENT_TYPE>::transpose(Matrix<O> &output) {}
+void Matrix<ELEMENT_TYPE>::transpose(Matrix<O> &output) const {}
 template <class ELEMENT_TYPE>
 void Matrix<ELEMENT_TYPE>::transpose() {}
 
