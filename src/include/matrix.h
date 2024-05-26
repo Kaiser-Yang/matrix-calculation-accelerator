@@ -68,6 +68,7 @@ public:
      * matrix */
     template <class T>
     inline Matrix(const Matrix<T> &other);
+    inline Matrix(const Matrix &other);
 
     /* Move constructor
      * NOTE: only those which have the same ELEMENT_TYPE can use move constructor */
@@ -218,6 +219,9 @@ public:
     template <class O>
     void transpose(Matrix<O> &output) const;
     void transpose();
+
+    /* Check if the matrix is a square matrix */
+    inline bool isSquare() const;
 
     /* Check if the matrix is symmetric with multi-thread */
     bool symmetric() const;
@@ -421,6 +425,11 @@ Matrix<ELEMENT_TYPE>::Matrix(const std::vector<ELEMENT_TYPE> &diag) {
 template <class ELEMENT_TYPE>
 template <class T>
 inline Matrix<ELEMENT_TYPE>::Matrix(const Matrix<T> &other) {
+    *this = other;
+}
+
+template <class ELEMENT_TYPE>
+inline Matrix<ELEMENT_TYPE>::Matrix(const Matrix &other) {
     *this = other;
 }
 
@@ -750,6 +759,16 @@ void Matrix<ELEMENT_TYPE>::transpose(Matrix<O> &output) const {}
 template <class ELEMENT_TYPE>
 void Matrix<ELEMENT_TYPE>::transpose() {}
 
+template <class ELEMENT_TYPE>
+inline bool Matrix<ELEMENT_TYPE>::isSquare() const {
+    return rows() == columns();
+}
+
+// TODO
+template <class ELEMENT_TYPE>
+inline bool Matrix<ELEMENT_TYPE>::symmetric() const {}
+template <class ELEMENT_TYPE>
+inline bool Matrix<ELEMENT_TYPE>::antisymmetric() const {}
 }  // namespace mca
 
 #endif
