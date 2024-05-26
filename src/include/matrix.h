@@ -33,194 +33,195 @@ class Matrix {
 public:
     using ElementType = ELEMENT_TYPE;
 
-    // Construct an empty matrix
+    /* Construct an empty matrix */
     Matrix() = default;
 
-    // Construct an identity matrix
+    /* Construct an identity matrix */
     Matrix(const Shape &shape);
 
-    // Construct a matrix from a initializer_list
-    // You can use this like Matrix<>({{1, 2}, {3, 4}})
-    // NOTE: if you use Matrix({{1, 2}, {3, 4}}) the ELEMENT_TYPE will be int rather than double
+    /* Construct a matrix from a initializer_list
+     * You can use this like Matrix<>({{1, 2}, {3, 4}})
+     * NOTE: if you use Matrix({{1, 2}, {3, 4}}) the ELEMENT_TYPE will be int rather than double */
     inline Matrix(const std::initializer_list<std::initializer_list<ELEMENT_TYPE>> &init);
 
-    // Construct a matrix from a vector
+    /* Construct a matrix from a vector */
     inline Matrix(const std::vector<std::vector<ELEMENT_TYPE>> &init);
 
-    // Construct a matrix from a pointer
-    // when len is less than shape.size(), the rest part will be filled with ELEMENT_TYPE()
+    /* Construct a matrix from a pointer
+     * when len is less than shape.size(), the rest part will be filled with ELEMENT_TYPE() */
     inline Matrix(const Shape &shape, const ELEMENT_TYPE *data, const size_t &len);
 
-    // Construct a matrix with shape and defaultValue
+    /* Construct a matrix with shape and defaultValue */
     inline Matrix(const Shape &shape, const ELEMENT_TYPE &defaultValue);
 
-    // Construct a diagonal matrix, the diag is the diagonal elements
-    // Matrix<>({1, 2, 3, 4}) will construct a matrix whose shape is 4 * 4,
-    // and diagonal elements are 1, 2, 3, 4 other elements will be ELEMENT_TYPE()
-    // In this case, double() will be 0
+    /* Construct a diagonal matrix, the diag is the diagonal elements
+     * Matrix<>({1, 2, 3, 4}) will construct a matrix whose shape is 4 * 4,
+     * and diagonal elements are 1, 2, 3, 4 other elements will be ELEMENT_TYPE()
+     * In this case, double() will be 0 */
     Matrix(const std::initializer_list<ELEMENT_TYPE> &diag);
     Matrix(const std::vector<ELEMENT_TYPE> &diag);
 
-    // Copy constructor
-    // If the other matrix's ELEMENT_TYPE is not same with current matrix,
-    // the other matrix's data will use static_cast<> to convert its type the same with current
-    // matrix
+    /* Copy constructor
+     * If the other matrix's ELEMENT_TYPE is not same with current matrix,
+     * the other matrix's data will use static_cast<> to convert its type the same with current
+     * matrix */
     template <class T>
     inline Matrix(const Matrix<T> &other);
 
-    // Move constructor
-    // NOTE: only those which have the same ELEMENT_TYPE can use move constructor
+    /* Move constructor
+     * NOTE: only those which have the same ELEMENT_TYPE can use move constructor */
     inline Matrix(Matrix &&other) noexcept;
 
-    // Move assignment
-    // NOTE: only those which have the same ELEMENT_TYPE can use move assignment
+    /* Move assignment
+     * NOTE: only those which have the same ELEMENT_TYPE can use move assignment */
     inline Matrix &operator=(Matrix &&other) noexcept;
 
-    // Copy assignment
-    // If the other matrix's ELEMENT_TYPE is not same with current matrix,
-    // the other matrix's data will use static_cast<> to convert its type the same with current
-    // matrix
+    /* Copy assignment
+     * If the other matrix's ELEMENT_TYPE is not same with current matrix,
+     * the other matrix's data will use static_cast<> to convert its type the same with current
+     * matrix */
     template <class T>
     Matrix<ELEMENT_TYPE> &operator=(const Matrix<T> &other);
     Matrix<ELEMENT_TYPE> &operator=(const Matrix &other);
 
-    // Copy assignment from a initializer_list
-    // You can use this like: matrix = {{1, 2}, {3, 4}}
-    // If the initializer_list's T is not same with current matrix,
-    // the initializer_list's data will use static_cast<> to convert its type the same with current
-    // matrix
+    /* Copy assignment from a initializer_list
+     * You can use this like: matrix = {{1, 2}, {3, 4}}
+     * If the initializer_list's T is not same with current matrix,
+     * the initializer_list's data will use static_cast<> to convert its type the same with current
+     * matrix */
     template <class T>
     Matrix<ELEMENT_TYPE> &operator=(const std::initializer_list<std::initializer_list<T>> &init);
 
-    // Copy assignment from a vector
-    // If the vector's T is not same with current matrix,
-    // the vector's data will use static_cast<> to convert its type the same with current
-    // matrix
+    /* Copy assignment from a vector
+     * If the vector's T is not same with current matrix,
+     * the vector's data will use static_cast<> to convert its type the same with current
+     * matrix */
     template <class T>
     Matrix<ELEMENT_TYPE> &operator=(const std::vector<std::vector<T>> &init);
 
-    // Copy assignment from a pointer
-    // If the T is not same with current matrix,
-    // the data will use static_cast<> to convert its type the same with current
-    // size() should be less than or equal with the data's size
+    /* Copy assignment from a pointer
+     * If the T is not same with current matrix,
+     * the data will use static_cast<> to convert its type the same with current
+     * size() should be less than or equal with the data's size */
     template <class T>
     Matrix<ELEMENT_TYPE> &operator=(const T *data);
 
-    // get the reference to the element of i-th row, j-th column
+    /* get the reference to the element of i-th row, j-th column */
     inline ELEMENT_TYPE &get(const size_t &i, const size_t &j);
     inline const ELEMENT_TYPE &get(const size_t &i, const size_t &j) const;
-    // Get the element at pos
-    // The elements are numbered sequentially from left to right and top to bottom.
+
+    /* Get the element at pos
+     * The elements are numbered sequentially from left to right and top to bottom. */
     inline ELEMENT_TYPE &operator[](const size_t &pos);
     inline const ELEMENT_TYPE &operator[](const size_t &pos) const;
 
-    // get the date pointer
+    /* get the date pointer */
     inline ELEMENT_TYPE *dataPtr();
     inline const ELEMENT_TYPE *dataPtr() const;
 
-    // get the number of rows
+    /* get the number of rows */
     inline size_t rows() const;
 
-    // get the number of columns
+    /* get the number of columns */
     inline size_t columns() const;
 
-    // get the number of elements
+    /* get the number of elements */
     inline size_t size() const;
 
-    // get the matrix's shape
+    /* get the matrix's shape */
     inline Shape shape() const;
 
-    // Reshape the matrix
-    // NOTE: this is only valid, when the new shape has the same number of elements with the old
-    //       one
+    /* Reshape the matrix
+     * NOTE: this is only valid, when the new shape has the same number of elements with the old
+     *       one */
     inline void reshape(const Shape &shape);
 
-    // Make all the elements of the matrix be a new value, when pos = 0
-    // Otherwise, the elements before pos will not changed
-    // pos should be less than or equal with size()
+    /* Make all the elements of the matrix be a new value, when pos = 0
+     * Otherwise, the elements before pos will not changed
+     * pos should be less than or equal with size() */
     void fill(const ELEMENT_TYPE &value, const size_t &pos = 0);
 
-    // Calculate number ^ (*this), and store the result in output
-    // The function whose parameters do not include output will change (*this)
-    // NOTE: (*this) must have the same shape with output
-    //       If O and ELEMENT_TYPE are not same, all the elements will first be cast to
-    //       std::common_type<O, ELEMENT_TYPE>, after calculation they will be cast into O
-    //       by using static_cast
-    // for example: a = [[1, 2, 3],
-    //                   [2, 3, 4]]
-    //              a.numberPow(2, output)
-    //              output: [[2^1, 2^2, 2^3],
-    //                       [2^2, 2^3, 2^4]]
-    //              a.numberPow(2)
-    //              a: [[2^1, 2^2, 2^3],
-    //                  [2^2, 2^3, 2^4]]
+    /* Calculate number ^ (*this), and store the result in output
+     * The function whose parameters do not include output will change (*this)
+     * NOTE: (*this) must have the same shape with output
+     *       If O and ELEMENT_TYPE are not same, all the elements will first be cast to
+     *       std::common_type<O, ELEMENT_TYPE>, after calculation they will be cast into O
+     *       by using static_cast
+     * for example: a = [[1, 2, 3],
+     *                   [2, 3, 4]]
+     *              a.numberPow(2, output)
+     *              output: [[2^1, 2^2, 2^3],
+     *                       [2^2, 2^3, 2^4]]
+     *              a.numberPow(2)
+     *              a: [[2^1, 2^2, 2^3],
+     *                  [2^2, 2^3, 2^4]] */
     template <class Number, class O>
     void numberPow(const Number &number, Matrix<O> &output) const;
     template <class Number>
     void numberPow(const Number &number);
 
-    // Calculate (*this) ^ number, and store the result in output
-    // The function whose parameters do not include output will change (*this)
-    // NOTE: (*this) must have the same shape with output
-    //       If O and ELEMENT_TYPE are not same, all the elements will first be cast to
-    //       std::common_type<O, ELEMENT_TYPE>, after calculation they will be cast into O
-    //       by using static_cast
-    // for example: a = [[1, 2, 3],
-    //                   [2, 3, 4]]
-    //              a.powNumber(2, output)
-    //              output: [[1^2, 2^2, 3^2],
-    //                       [2^2, 3^2, 4^2]]
-    //              a.numberPow(2)
-    //              a: [[1^2, 2^2, 3^2],
-    //                  [2^2, 3^2, 4^2]]
+    /* Calculate (*this) ^ number, and store the result in output
+     * The function whose parameters do not include output will change (*this)
+     * NOTE: (*this) must have the same shape with output
+     *       If O and ELEMENT_TYPE are not same, all the elements will first be cast to
+     *       std::common_type<O, ELEMENT_TYPE>, after calculation they will be cast into O
+     *       by using static_cast
+     * for example: a = [[1, 2, 3],
+     *                   [2, 3, 4]]
+     *              a.powNumber(2, output)
+     *              output: [[1^2, 2^2, 3^2],
+     *                       [2^2, 3^2, 4^2]]
+     *              a.numberPow(2)
+     *              a: [[1^2, 2^2, 3^2],
+     *                  [2^2, 3^2, 4^2]] */
     template <class Number, class O>
     void powNumber(const Number &number, Matrix<O> &output) const;
     template <class Number>
     inline void powNumber(const Number &number);
 
-    // Calculate (*this) ^ exponent, and store the result in output
-    // This is different with powNumber or numberPow
-    // This will calculate the matrix exponentiation
-    // This is only valid when (*this) is a square matrix
-    // The function whose parameters do not include output will change (*this)
-    // NOTE: (*this) must be a square matrix
-    //       (*this) must have the same shape with output
-    //       If O and ELEMENT_TYPE are not same, all the elements will first be cast to
-    //       std::common_type<O, ELEMENT_TYPE>, after calculation they will be cast into O
-    //       by using static_cast
-    // for example: a = [[1, 2],
-    //                   [2, 3]]
-    //              a.pow(2, output)
-    //              output = [[5, 8],
-    //                        [8, 13]]
+    /* Calculate (*this) ^ exponent, and store the result in output
+     * This is different with powNumber or numberPow
+     * This will calculate the matrix exponentiation
+     * This is only valid when (*this) is a square matrix
+     * The function whose parameters do not include output will change (*this)
+     * NOTE: (*this) must be a square matrix
+     *       (*this) must have the same shape with output
+     *       If O and ELEMENT_TYPE are not same, all the elements will first be cast to
+     *       std::common_type<O, ELEMENT_TYPE>, after calculation they will be cast into O
+     *       by using static_cast
+     * for example: a = [[1, 2],
+     *                   [2, 3]]
+     *              a.pow(2, output)
+     *              output = [[5, 8],
+     *                        [8, 13]] */
     template <class O>
     void pow(size_t exponent, Matrix<O> &output) const;
     void pow(size_t exponent);
 
-    // Transpose (*this), and store the result in output
-    // The function whose parameters do not include output will change (*this)
-    // NOTE: output must have the same shape with the current matrix after transposition
-    //       If O and ELEMENT_TYPE are not same, all the elements will first be cast to
-    //       std::common_type<O, ELEMENT_TYPE>, after calculation they will be cast into O
-    //       by using static_cast
-    // for example: a = [[1, 2, 3],
-    //                   [2, 3, 4]]
-    //              a.powNumber(2, output)
-    //              output: [[1, 2],
-    //                       [2, 3],
-    //                       [3, 4]]
-    //              a.numberPow(2)
-    //              a: [[1, 2],
-    //                  [2, 3],
-    //                  [3, 4]]
+    /* Transpose (*this), and store the result in output
+     * The function whose parameters do not include output will change (*this)
+     * NOTE: output must have the same shape with the current matrix after transposition
+     *       If O and ELEMENT_TYPE are not same, all the elements will first be cast to
+     *       std::common_type<O, ELEMENT_TYPE>, after calculation they will be cast into O
+     *       by using static_cast
+     * for example: a = [[1, 2, 3],
+     *                   [2, 3, 4]]
+     *              a.powNumber(2, output)
+     *              output: [[1, 2],
+     *                       [2, 3],
+     *                       [3, 4]]
+     *              a.numberPow(2)
+     *              a: [[1, 2],
+     *                  [2, 3],
+     *                  [3, 4]] */
     template <class O>
     void transpose(Matrix<O> &output) const;
     void transpose();
 
-    // Check if the matrix is symmetric with multi-thread
+    /* Check if the matrix is symmetric with multi-thread */
     bool symmetric() const;
 
-    // Check if the matrix is antisymmetric with multi-thread
+    /* Check if the matrix is antisymmetric with multi-thread */
     bool antisymmetric() const;
 
 private:

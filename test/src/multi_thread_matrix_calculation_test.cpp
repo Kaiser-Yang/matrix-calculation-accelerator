@@ -12,8 +12,11 @@ namespace test {
 class TestMultiThreadCalculation : public testing::Test {
 protected:
     Shape shape{9000, 9000};
-    Matrix<> output, a;
-    void SetUp() override { a = Matrix<>(shape, 123); }
+    Matrix<> output, a, b;
+    void SetUp() override { 
+        a = Matrix<>(shape, 123);
+        b = Matrix<>(shape, 456);
+    }
     void TearDown() override {}
 };
 
@@ -129,5 +132,27 @@ TEST_F(TestMultiThreadCalculation, numSelfAddMatrix) {
     ASSERT_TRUE(equalSingleThread(output, a, 0, a.size()));
 }
 
+TEST_F(TestMultiThreadCalculation, matrixGreaterEqualMatrix) {
+    bool flag = false;
+
+    // use the singleThread to get the time of single mode
+    auto startTime = high_resolution_clock::now();
+    greaterEqualSingleThread(a, b, 0, a.size());
+    auto endTime = high_resolution_clock::now();
+    auto executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+    testing::Test::RecordProperty("SingleTime", executionTime);
+
+    init();
+
+    // record the expected time in multi thread
+    testing::Test::RecordProperty("BaseTime", executionTime / (threadNum() + 1));
+
+    // use the multiThread to get the time of mutli mode
+    startTime = high_resolution_clock::now();
+    flag = greater
+    endTime = high_resolution_clock::now();
+    executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+    testing::Test::RecordProperty("MultiTime", executionTime);
+}
 }  // namespace test
 }  // namespace mca
