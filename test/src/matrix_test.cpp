@@ -78,6 +78,13 @@ TEST(TestMatrix, constructors) {
     Matrix<int> m7(std::vector<int>{1, 2, 3});
     result = Matrix<int>({{1, 0, 0}, {0, 2, 0}, {0, 0, 3}});
     ASSERT_TRUE(equalSingleThread(m6, result, 0, m6.size()));
+
+    // copy constructor
+    // NOLINTNEXTLINE(performance-unnecessary-copy-initialization): allow tests to copy
+    Matrix<int> m8(m7);
+    ASSERT_TRUE(equalSingleThread(m7, m8, 0, m7.size()));
+    Matrix<> m9(m8);
+    ASSERT_TRUE(equalSingleThread(m8, m9, 0, m8.size()));
 }
 
 TEST(TestMatrix, assignments) {
@@ -147,6 +154,13 @@ TEST(TestMatrix, reshape) {
     ASSERT_EQ(m.shape(), Shape(1, 6));
     m.reshape({2, 3});
     ASSERT_EQ(m.shape(), Shape(2, 3));
+}
+
+TEST(TestMatrix, isSquare) {
+    Matrix<int> m(Shape{3, 3});
+    ASSERT_TRUE(m.isSquare());
+    m.reshape({1, 9});
+    ASSERT_FALSE(m.isSquare());
 }
 }  // namespace test
 }  // namespace mca

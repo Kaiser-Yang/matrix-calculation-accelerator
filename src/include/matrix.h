@@ -68,6 +68,7 @@ public:
      * matrix */
     template <class T>
     inline Matrix(const Matrix<T> &other);
+    inline Matrix(const Matrix &other);
 
     /* Move constructor
      * NOTE: only those which have the same ELEMENT_TYPE can use move constructor */
@@ -196,8 +197,8 @@ public:
      *              output = [[5, 8],
      *                        [8, 13]] */
     template <class O>
-    void pow(size_t exponent, Matrix<O> &output) const;
-    void pow(size_t exponent);
+    void pow(const size_t &exponent, Matrix<O> &output) const;
+    inline void pow(const size_t &exponent);
 
     /* Transpose (*this), and store the result in output
      * The function whose parameters do not include output will change (*this)
@@ -218,6 +219,9 @@ public:
     template <class O>
     void transpose(Matrix<O> &output) const;
     void transpose();
+
+    /* Check if the matrix is a square matrix */
+    inline bool isSquare() const;
 
     /* Check if the matrix is symmetric with multi-thread */
     bool symmetric() const;
@@ -421,6 +425,11 @@ Matrix<ELEMENT_TYPE>::Matrix(const std::vector<ELEMENT_TYPE> &diag) {
 template <class ELEMENT_TYPE>
 template <class T>
 inline Matrix<ELEMENT_TYPE>::Matrix(const Matrix<T> &other) {
+    *this = other;
+}
+
+template <class ELEMENT_TYPE>
+inline Matrix<ELEMENT_TYPE>::Matrix(const Matrix &other) {
     *this = other;
 }
 
@@ -736,12 +745,27 @@ inline void Matrix<ELEMENT_TYPE>::powNumber(const Number &number) {
     powNumber(number, *this);
 }
 
-// TODO
 template <class ELEMENT_TYPE>
 template <class O>
-void Matrix<ELEMENT_TYPE>::pow(size_t exponent, Matrix<O> &output) const {}
+void Matrix<ELEMENT_TYPE>::pow(const size_t &exponent, Matrix<O> &output) const {
+    assert(isSquare());
+    assert(shape() == output.shape());
+    size_t b = exponent;
+    Matrix<ELEMENT_TYPE> a(*this);
+    // make output an identity matrix
+    output = Matrix<O>(output.shape());
+    while (b > 0) {
+        if (b & 1) { output *= a; }
+        if ((b >> 1) == 0) { break; }
+        a *= a;
+        b >>= 1;
+    }
+}
+
 template <class ELEMENT_TYPE>
-void Matrix<ELEMENT_TYPE>::pow(size_t exponent) {}
+inline void Matrix<ELEMENT_TYPE>::pow(const size_t &exponent) {
+    pow(exponent, *this);
+}
 
 // TODO
 template <class ELEMENT_TYPE>
@@ -750,6 +774,16 @@ void Matrix<ELEMENT_TYPE>::transpose(Matrix<O> &output) const {}
 template <class ELEMENT_TYPE>
 void Matrix<ELEMENT_TYPE>::transpose() {}
 
+template <class ELEMENT_TYPE>
+inline bool Matrix<ELEMENT_TYPE>::isSquare() const {
+    return rows() == columns();
+}
+
+// TODO
+template <class ELEMENT_TYPE>
+inline bool Matrix<ELEMENT_TYPE>::symmetric() const {}
+template <class ELEMENT_TYPE>
+inline bool Matrix<ELEMENT_TYPE>::antisymmetric() const {}
 }  // namespace mca
 
 #endif
