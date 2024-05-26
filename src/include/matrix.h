@@ -11,6 +11,7 @@
 
 #include "matrix_declaration.h"
 #include "mca.h"
+#include "single_thread_matrix_calculation.h"
 
 namespace mca {
 struct Shape {
@@ -158,7 +159,7 @@ public:
     template <class Number, class O>
     void numberPow(const Number &number, Matrix<O> &output) const;
     template <class Number>
-    void numberPow(const Number &number);
+    inline void numberPow(const Number &number);
 
     /* Calculate (*this) ^ number, and store the result in output
      * The function whose parameters do not include output will change (*this)
@@ -661,13 +662,42 @@ void Matrix<ELEMENT_TYPE>::fill(const ELEMENT_TYPE &value, const size_t &pos) {
     for (auto &item : returnValue) { item.get(); }
 }
 
-// TODO
 template <class ELEMENT_TYPE>
 template <class Number, class O>
-void Matrix<ELEMENT_TYPE>::numberPow(const Number &number, Matrix<O> &output) const {}
+void Matrix<ELEMENT_TYPE>::numberPow(const Number &number, Matrix<O> &output) const {
+    // single mode
+    if (threadNum() == 0 || limit() > size()) {
+        numberPowSingleThread(number, *this, output, 0, size());
+        return;
+    }
+    // threadCalculation and taskNum
+    auto res = threadCalculationTaskNum(size());
+
+    // the return value of every task, use this to make sure every task is finished
+    std::vector<std::future<void>> returnValue(res.second - 1);
+    // assign task for every sub-thread
+    for (size_t i = 0; i < res.second - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [this, start = i * res.first, len = res.first, &output, &number]() {
+                numberPowSingleThread(number, *this, output, start, len);
+            });
+    }
+    // let main thread calculate took
+    numberPowSingleThread(number,
+                          *this,
+                          output,
+                          (res.second - 1) * res.first,
+                          (size() - (res.second - 1) * res.first));
+
+    // make sure all the sub threads are finished
+    for (auto &item : returnValue) { item.get(); }
+}
+
 template <class ELEMENT_TYPE>
 template <class Number>
-void Matrix<ELEMENT_TYPE>::numberPow(const Number &number) {}
+inline void Matrix<ELEMENT_TYPE>::numberPow(const Number &number) {
+    numberPow(number, *this);
+}
 
 template <class ELEMENT_TYPE>
 template <class Number, class O>
