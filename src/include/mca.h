@@ -406,7 +406,7 @@ Matrix<std::common_type_t<T, Number>> operator+(const Matrix<T> &a, const Number
     // let main thread calculate too
     addSingleThread(
         number, a, result, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
-    // make sure all the sub thread are finished
+    // make sure all the sub threads are finished
     for (auto &item : returnValue) { item.get(); }
     return result;
 }
@@ -437,7 +437,10 @@ Matrix<std::common_type_t<T, Number>> operator/(const Number &number, const Matr
 template <class T1, class T2>
 void operator+=(Matrix<T1> &a, const Matrix<T2> &b) {
     assert(a.shape() == b.shape());
-    if (threadNum() == 0 || limit() > a.size()) { addSingleThread(a, b, a, 0, a.size()); }
+    if (threadNum() == 0 || limit() > a.size()) {
+        addSingleThread(a, b, a, 0, a.size());
+        return;
+    }
     auto res = threadCalculationTaskNum(a.size());
     std::vector<std::future<void>> returnValue(res.second - 1);
     for (size_t i = 0; i < res.second - 1; i++) {
@@ -452,7 +455,10 @@ void operator+=(Matrix<T1> &a, const Matrix<T2> &b) {
 template <class T1, class T2>
 void operator-=(Matrix<T1> &a, const Matrix<T2> &b) {
     assert(a.shape() == b.shape());
-    if (threadNum() == 0 || limit() > a.size()) { addSingleThread(a, b, a, 0, a.size()); }
+    if (threadNum() == 0 || limit() > a.size()) {
+        subtractSingleThread(a, b, a, 0, a.size());
+        return;
+    }
     auto res = threadCalculationTaskNum(a.size());
     std::vector<std::future<void>> returnValue(res.second - 1);
     for (size_t i = 0; i < res.second - 1; i++) {
@@ -511,7 +517,7 @@ void operator+=(Matrix<T> &a, const Number &number) {
     // let main thread calculate too
     addSingleThread(
         number, a, a, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
-    // make sure all the sub thread are finished
+    // make sure all the sub threads are finished
     for (auto &item : returnValue) { item.get(); }
 }
 

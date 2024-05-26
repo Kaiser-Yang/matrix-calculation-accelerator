@@ -26,7 +26,6 @@ TEST(TestThreadPool, addTask) {
         resultVector.emplace_back(
             tp.addTask([](size_t a, size_t b) -> size_t { return a + b; }, (size_t)2, (size_t)3));
     }
-    tp.resize(5);
     for (size_t i = 0; i < taskNum; i++) {
         ASSERT_EQ(resultVector[i].get(), (size_t)2 + (size_t)3);
     }

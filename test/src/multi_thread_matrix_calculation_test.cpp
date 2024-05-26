@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 
 #include <chrono>
+#include <ctime>
+#include <random>
 
 #include "matrix.h"
 #include "mca.h"
@@ -12,94 +14,98 @@ namespace mca {
 namespace test {
 class TestMultiThreadCalculation : public testing::Test {
 protected:
-    Shape shape{9000, 9000};
-    Shape mulAShape{300, 900};
-    Shape mulBShape{900, 300};
-    Shape mulOutputShape{300, 300};
-    Matrix<> output, a, b, mulA, mulB;
-    void SetUp() override {
-        a    = Matrix<>(shape, 123);
-        b    = Matrix<>(shape, 10.911);
-        mulA = Matrix<>(mulAShape, 1);
-        mulB = Matrix<>(mulBShape, 2);
-    }
-    void TearDown() override {}
+    static constexpr int MAX_VALUE  = 1000;
+    static constexpr int THREAD_NUM = 10;
+    Shape squareShape{9000, 9000};
+    Shape mul1Shape{500, 300};
+    Shape mul2Shape{300, 500};
+    std::default_random_engine generator;
+    Matrix<> singleOutput, multiOutput, a, b, mulA, mulB;
+
+    void SetUp() override { generator.seed(time(nullptr)); }
+
+    void TearDown() override { init(0); }
 };
 
 TEST_F(TestMultiThreadCalculation, numAddMatrix) {
-    output = Matrix<>{shape, -1};
-    // first use addSingleThread to get the single mode time
-    auto startTime = high_resolution_clock::now();
-    addSingleThread(3, a, output, 0, a.size());
+    auto value = generator() % MAX_VALUE, number = generator() % MAX_VALUE;
+    a = Matrix<>(squareShape, value);
+
+    auto startTime     = high_resolution_clock::now();
+    singleOutput       = number + a;
     auto endTime       = high_resolution_clock::now();
     auto executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     // record time in gtest
     testing::Test::RecordProperty("SingleTime", executionTime);
 
-    init();
+    init(THREAD_NUM);
 
     // the expected time in multi thread
     testing::Test::RecordProperty("BaseTime", executionTime / (threadNum() + 1));
 
     // get the multi-thread mode time
-    startTime              = high_resolution_clock::now();
-    auto multiThreadOutput = 3 + a;
-    endTime                = high_resolution_clock::now();
-    executionTime          = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+    startTime     = high_resolution_clock::now();
+    multiOutput   = number + a;
+    endTime       = high_resolution_clock::now();
+    executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
 
     // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(output, multiThreadOutput, 0, output.size()));
+    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
 }
 
 TEST_F(TestMultiThreadCalculation, matrixAddNum) {
-    output = Matrix<>{shape, -1};
-    // first use addSingleThread to get the single mode time
-    auto startTime = high_resolution_clock::now();
-    addSingleThread(3, a, output, 0, a.size());
+    auto value = generator() % MAX_VALUE, number = generator() % MAX_VALUE;
+    a = Matrix<>(squareShape, value);
+
+    auto startTime     = high_resolution_clock::now();
+    singleOutput       = a + number;
     auto endTime       = high_resolution_clock::now();
     auto executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     // record time in gtest
     testing::Test::RecordProperty("SingleTime", executionTime);
 
-    init();
+    init(THREAD_NUM);
 
     // the expected time in multi thread
     testing::Test::RecordProperty("BaseTime", executionTime / (threadNum() + 1));
 
     // get the multi-thread mode time
-    startTime              = high_resolution_clock::now();
-    auto multiThreadOutput = a + 3;
-    endTime                = high_resolution_clock::now();
-    executionTime          = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+    startTime     = high_resolution_clock::now();
+    multiOutput   = a + number;
+    endTime       = high_resolution_clock::now();
+    executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
 
     // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(output, multiThreadOutput, 0, output.size()));
+    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
 }
 
 TEST_F(TestMultiThreadCalculation, matrixSelfAddNum) {
-    output = Matrix<>{shape, -1};
+    auto value = generator() % MAX_VALUE, number = generator() % MAX_VALUE;
+
+    singleOutput = multiOutput = Matrix<>(squareShape, value);
+
     // first use addSingleThread to get the single mode time
     auto startTime = high_resolution_clock::now();
-    addSingleThread(3, a, output, 0, a.size());
+    singleOutput += number;
     auto endTime       = high_resolution_clock::now();
     auto executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     // record time in gtest
     testing::Test::RecordProperty("SingleTime", executionTime);
 
-    init();
+    init(THREAD_NUM);
 
     // the expected time in multi thread
     testing::Test::RecordProperty("BaseTime", executionTime / (threadNum() + 1));
 
     // get the multi-thread mode time
     startTime = high_resolution_clock::now();
-    a += 3;
+    multiOutput += number;
     endTime       = high_resolution_clock::now();
     executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     // record multi-thread time in gtest
@@ -107,27 +113,30 @@ TEST_F(TestMultiThreadCalculation, matrixSelfAddNum) {
 
     // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(output, a, 0, a.size()));
+    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
 }
 
 TEST_F(TestMultiThreadCalculation, numSelfAddMatrix) {
-    output = Matrix<>{shape, -1};
+    auto value = generator() % MAX_VALUE, number = generator() % MAX_VALUE;
+
+    singleOutput = multiOutput = Matrix<>(squareShape, value);
+
     // first use addSingleThread to get the single mode time
     auto startTime = high_resolution_clock::now();
-    addSingleThread(3, a, output, 0, a.size());
+    number += singleOutput;
     auto endTime       = high_resolution_clock::now();
     auto executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     // record time in gtest
     testing::Test::RecordProperty("SingleTime", executionTime);
 
-    init();
+    init(THREAD_NUM);
 
     // the expected time in multi thread
     testing::Test::RecordProperty("BaseTime", executionTime / (threadNum() + 1));
 
     // get the multi-thread mode time
     startTime = high_resolution_clock::now();
-    3 += a;
+    number += multiOutput;
     endTime       = high_resolution_clock::now();
     executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     // record multi-thread time in gtest
@@ -135,53 +144,62 @@ TEST_F(TestMultiThreadCalculation, numSelfAddMatrix) {
 
     // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(output, a, 0, a.size()));
+    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
 }
 
 TEST_F(TestMultiThreadCalculation, matrixSubtractMatrix) {
-    output         = Matrix<>{shape, -1};
-    auto startTime = high_resolution_clock::now();
-    subtractSingleThread(a, b, output, 0, a.size());
+    auto value1 = generator() % MAX_VALUE, value2 = generator() % MAX_VALUE;
+
+    a = Matrix<>(squareShape, value1);
+    b = Matrix<>(squareShape, value2);
+
+    auto startTime     = high_resolution_clock::now();
+    singleOutput       = a - b;
     auto endTime       = high_resolution_clock::now();
     auto executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     // record time in gtest
     testing::Test::RecordProperty("SingleTime", executionTime);
 
-    init();
+    init(THREAD_NUM);
 
     // the expected time in multi thread
     testing::Test::RecordProperty("BaseTime", executionTime / (threadNum() + 1));
 
     // get the multi-thread mode time
-    startTime              = high_resolution_clock::now();
-    auto multiThreadOutput = a - b;
-    endTime                = high_resolution_clock::now();
-    executionTime          = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+    startTime     = high_resolution_clock::now();
+    multiOutput   = a - b;
+    endTime       = high_resolution_clock::now();
+    executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
 
     // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(output, multiThreadOutput, 0, output.size()));
+    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
 }
 
 TEST_F(TestMultiThreadCalculation, matrixSelfSubtractMatrix) {
-    output         = Matrix<>{shape, -1};
+    auto value1 = generator() % MAX_VALUE, value2 = generator() % MAX_VALUE;
+
+    singleOutput = multiOutput = Matrix<>(squareShape, value1);
+
+    a = Matrix<>(squareShape, value2);
+
     auto startTime = high_resolution_clock::now();
-    subtractSingleThread(a, b, output, 0, a.size());
+    singleOutput -= a;
     auto endTime       = high_resolution_clock::now();
     auto executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     // record time in gtest
     testing::Test::RecordProperty("SingleTime", executionTime);
 
-    init();
+    init(THREAD_NUM);
 
     // the expected time in multi thread
     testing::Test::RecordProperty("BaseTime", executionTime / (threadNum() + 1));
 
     // get the multi-thread mode time
     startTime = high_resolution_clock::now();
-    a -= b;
+    multiOutput -= a;
     endTime       = high_resolution_clock::now();
     executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     // record multi-thread time in gtest
@@ -189,53 +207,62 @@ TEST_F(TestMultiThreadCalculation, matrixSelfSubtractMatrix) {
 
     // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(output, a, 0, a.size()));
+    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
 }
 
 TEST_F(TestMultiThreadCalculation, matrixAddMatrix) {
-    output         = Matrix<>{shape, -1};
-    auto startTime = high_resolution_clock::now();
-    addSingleThread(a, b, output, 0, a.size());
+    auto value1 = generator() % MAX_VALUE, value2 = generator() % MAX_VALUE;
+
+    a = Matrix<>(squareShape, value1);
+    b = Matrix<>(squareShape, value2);
+
+    auto startTime     = high_resolution_clock::now();
+    singleOutput       = a + b;
     auto endTime       = high_resolution_clock::now();
     auto executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     // record time in gtest
     testing::Test::RecordProperty("SingleTime", executionTime);
 
-    init();
+    init(THREAD_NUM);
 
     // the expected time in multi thread
     testing::Test::RecordProperty("BaseTime", executionTime / (threadNum() + 1));
 
     // get the multi-thread mode time
-    startTime              = high_resolution_clock::now();
-    auto multiThreadOutput = a + b;
-    endTime                = high_resolution_clock::now();
-    executionTime          = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+    startTime     = high_resolution_clock::now();
+    multiOutput   = a + b;
+    endTime       = high_resolution_clock::now();
+    executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
 
     // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(output, multiThreadOutput, 0, output.size()));
+    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
 }
 
 TEST_F(TestMultiThreadCalculation, matrixSelfAddMatrix) {
-    output         = Matrix<>{shape, -1};
+    auto value1 = generator() % MAX_VALUE, value2 = generator() % MAX_VALUE;
+
+    singleOutput = multiOutput = Matrix<>(squareShape, value1);
+
+    a = Matrix<>(squareShape, value2);
+
     auto startTime = high_resolution_clock::now();
-    addSingleThread(a, b, output, 0, a.size());
+    singleOutput += a;
     auto endTime       = high_resolution_clock::now();
     auto executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     // record time in gtest
     testing::Test::RecordProperty("SingleTime", executionTime);
 
-    init();
+    init(THREAD_NUM);
 
     // the expected time in multi thread
     testing::Test::RecordProperty("BaseTime", executionTime / (threadNum() + 1));
 
     // get the multi-thread mode time
     startTime = high_resolution_clock::now();
-    a += b;
+    multiOutput += a;
     endTime       = high_resolution_clock::now();
     executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     // record multi-thread time in gtest
@@ -243,53 +270,30 @@ TEST_F(TestMultiThreadCalculation, matrixSelfAddMatrix) {
 
     // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(output, a, 0, a.size()));
+    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
 }
 
 TEST_F(TestMultiThreadCalculation, matrixMultiplyMatrix) {
-    output         = Matrix<>{mulOutputShape, -1};
-    auto startTime = high_resolution_clock::now();
-    multiplySingleThread(mulA, mulB, output, 0, mulOutputShape.size());
+    auto value1 = generator() % MAX_VALUE, value2 = generator() % MAX_VALUE;
+
+    mulA = Matrix<>(mul1Shape, value1);
+    mulB = Matrix<>(mul2Shape, value2);
+
+    auto startTime     = high_resolution_clock::now();
+    singleOutput       = mulA * mulB;
     auto endTime       = high_resolution_clock::now();
     auto executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     // record time in gtest
     testing::Test::RecordProperty("SingleTime", executionTime);
 
-    init();
+    init(THREAD_NUM);
 
     // the expected time in multi thread
     testing::Test::RecordProperty("BaseTime", executionTime / (threadNum() + 1));
 
     // get the multi-thread mode time
-    startTime              = high_resolution_clock::now();
-    auto multiThreadOutput = mulA * mulB;
-    endTime                = high_resolution_clock::now();
-    executionTime          = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
-    // record multi-thread time in gtest
-    testing::Test::RecordProperty("MultiTime", executionTime);
-
-    // TODO this should be updated with Matrix::operator== with multi-thread
-    // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(output, multiThreadOutput, 0, output.size()));
-}
-
-TEST_F(TestMultiThreadCalculation, matrixSelfMultiplyMatrix) {
-    output         = Matrix<>{mulOutputShape, -1};
-    auto startTime = high_resolution_clock::now();
-    multiplySingleThread(mulA, mulB, output, 0, mulOutputShape.size());
-    auto endTime       = high_resolution_clock::now();
-    auto executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
-    // record time in gtest
-    testing::Test::RecordProperty("SingleTime", executionTime);
-
-    init();
-
-    // the expected time in multi thread
-    testing::Test::RecordProperty("BaseTime", executionTime / (threadNum() + 1));
-
-    // get the multi-thread mode time
-    startTime = high_resolution_clock::now();
-    mulA *= mulB;
+    startTime     = high_resolution_clock::now();
+    multiOutput   = mulA * mulB;
     endTime       = high_resolution_clock::now();
     executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     // record multi-thread time in gtest
@@ -297,7 +301,39 @@ TEST_F(TestMultiThreadCalculation, matrixSelfMultiplyMatrix) {
 
     // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(output, mulA, 0, mulA.size()));
+    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
+}
+
+TEST_F(TestMultiThreadCalculation, matrixSelfMultiplyMatrix) {
+    auto value1 = generator() % MAX_VALUE, value2 = generator() % MAX_VALUE;
+
+    singleOutput = multiOutput = Matrix<>(mul1Shape, value1);
+
+    mulA = Matrix<>(mul2Shape, value2);
+
+    auto startTime = high_resolution_clock::now();
+    singleOutput *= mulA;
+    auto endTime       = high_resolution_clock::now();
+    auto executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+    // record time in gtest
+    testing::Test::RecordProperty("SingleTime", executionTime);
+
+    init(THREAD_NUM);
+
+    // the expected time in multi thread
+    testing::Test::RecordProperty("BaseTime", executionTime / (threadNum() + 1));
+
+    // get the multi-thread mode time
+    startTime = high_resolution_clock::now();
+    multiOutput *= mulA;
+    endTime       = high_resolution_clock::now();
+    executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+    // record multi-thread time in gtest
+    testing::Test::RecordProperty("MultiTime", executionTime);
+
+    // TODO this should be updated with Matrix::operator== with multi-thread
+    // make sure they are equal
+    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
 }
 }  // namespace test
 }  // namespace mca

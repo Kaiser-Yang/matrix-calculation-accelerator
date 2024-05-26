@@ -4,6 +4,8 @@ namespace mca {
 void ThreadPool::resize(size_t newSize) {
     clear();
     stopped.store(false, std::memory_order_relaxed);
+    assert(taskQueue.size() == 0);
+    taskQueue.reserve(newSize);
     while (taskQueue.size() < newSize) {
         taskQueue.emplace_back(std::queue<std::function<void()>>());
     }
@@ -30,5 +32,6 @@ void ThreadPool::clear() {
         threadQueue.front().join();
         threadQueue.pop();
     }
+    std::vector<std::queue<std::function<void()>>>().swap(taskQueue);
 }
 }  // namespace mca
