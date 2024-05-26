@@ -197,8 +197,8 @@ public:
      *              output = [[5, 8],
      *                        [8, 13]] */
     template <class O>
-    void pow(size_t exponent, Matrix<O> &output) const;
-    void pow(size_t exponent);
+    void pow(const size_t &exponent, Matrix<O> &output) const;
+    inline void pow(const size_t &exponent);
 
     /* Transpose (*this), and store the result in output
      * The function whose parameters do not include output will change (*this)
@@ -745,12 +745,27 @@ inline void Matrix<ELEMENT_TYPE>::powNumber(const Number &number) {
     powNumber(number, *this);
 }
 
-// TODO
 template <class ELEMENT_TYPE>
 template <class O>
-void Matrix<ELEMENT_TYPE>::pow(size_t exponent, Matrix<O> &output) const {}
+void Matrix<ELEMENT_TYPE>::pow(const size_t &exponent, Matrix<O> &output) const {
+    assert(isSquare());
+    assert(shape() == output.shape());
+    size_t b = exponent;
+    Matrix<ELEMENT_TYPE> a(*this);
+    // make output an identity matrix
+    output = Matrix<O>(output.shape());
+    while (b > 0) {
+        if (b & 1) { output *= a; }
+        if ((b >> 1) == 0) { break; }
+        a *= a;
+        b >>= 1;
+    }
+}
+
 template <class ELEMENT_TYPE>
-void Matrix<ELEMENT_TYPE>::pow(size_t exponent) {}
+inline void Matrix<ELEMENT_TYPE>::pow(const size_t &exponent) {
+    pow(exponent, *this);
+}
 
 // TODO
 template <class ELEMENT_TYPE>
