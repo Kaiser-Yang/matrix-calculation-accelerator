@@ -27,13 +27,5 @@ TEST(TestConfiguration, setEpsilon) {
     setEpsilon(1e-7);
     ASSERT_EQ(epsilon(), 1e-7);
 }
-
-class TestMultiThreadCalculation : public testing::Test {
-protected:
-    void SetUp() override {}
-
-    void TearDown() override {}
-};
-// class Test
 }  // namespace test
 }  // namespace mca

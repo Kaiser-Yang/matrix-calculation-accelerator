@@ -1,9 +1,13 @@
 #ifndef MCA_PRIVATE_H
 #define MCA_PRIVATE_H
 
+#include <future>
 #include <thread>
+#include <type_traits>
+#include <vector>
 
 #include "matrix_declaration.h"
+#include "mca_utility.h"
 #include "single_thread_matrix_calculation.h"
 #include "thread_pool.h"
 
@@ -126,7 +130,7 @@ Matrix<std::common_type_t<T1, T2>> operator*(const Matrix<T1> &a, const Matrix<T
  *                       [3+1, 4+1]]
  * NOTE: the calculation will first calculate as std::common_type<T1, T2>
  *       then use static_cast<T1> */
-template <class T, class Number>
+template <class T, class Number, class = std::enable_if_t<!is_matrix_v<Number>>>
 Matrix<std::common_type_t<T, Number>> operator+(const Matrix<T> &a, const Number &number);
 
 /* Calculate number + a using multi-thread
@@ -139,7 +143,7 @@ Matrix<std::common_type_t<T, Number>> operator+(const Matrix<T> &a, const Number
  *                       [1+3, 1+4]]
  * NOTE: the calculation will first calculate as std::common_type<T1, T2>
  *       then use static_cast<T1> */
-template <class Number, class T>
+template <class Number, class T, class = std::enable_if_t<!is_matrix_v<Number>>>
 inline Matrix<std::common_type_t<T, Number>> operator+(const Number &number, const Matrix<T> &a);
 
 /* Calculate a - number using multi-thread
@@ -152,7 +156,7 @@ inline Matrix<std::common_type_t<T, Number>> operator+(const Number &number, con
  *                       [3-1, 4-1]]
  * NOTE: the calculation will first calculate as std::common_type<T1, T2>
  *       then use static_cast<T1> */
-template <class T, class Number>
+template <class T, class Number, class = std::enable_if_t<!is_matrix_v<Number>>>
 Matrix<std::common_type_t<T, Number>> operator-(const Matrix<T> &a, const Number &number);
 
 /* Calculate number - a using multi-thread
@@ -165,7 +169,7 @@ Matrix<std::common_type_t<T, Number>> operator-(const Matrix<T> &a, const Number
  *                       [1-3, 1-4]]
  * NOTE: the calculation will first calculate as std::common_type<T1, T2>
  *       then use static_cast<T1> */
-template <class Number, class T>
+template <class Number, class T, class = std::enable_if_t<!is_matrix_v<Number>>>
 Matrix<std::common_type_t<T, Number>> operator-(const Number &number, const Matrix<T> &a);
 
 /* Calculate a * number using multi-thread
@@ -177,7 +181,7 @@ Matrix<std::common_type_t<T, Number>> operator-(const Number &number, const Matr
  *                       [3*1, 4*1]]
  * NOTE: the calculation will first calculate as std::common_type<T1, T2>
  *       then use static_cast<T1> */
-template <class T, class Number>
+template <class T, class Number, class = std::enable_if_t<!is_matrix_v<Number>>>
 Matrix<std::common_type_t<T, Number>> operator*(const Matrix<T> &a, const Number &number);
 
 /* Calculate number * a using multi-thread
@@ -189,7 +193,7 @@ Matrix<std::common_type_t<T, Number>> operator*(const Matrix<T> &a, const Number
  *                       [1*3, 1*4]]
  * NOTE: the calculation will first calculate as std::common_type<T1, T2>
  *       then use static_cast<T1> */
-template <class Number, class T>
+template <class Number, class T, class = std::enable_if_t<!is_matrix_v<Number>>>
 Matrix<std::common_type_t<T, Number>> operator*(const Number &number, const Matrix<T> &a);
 
 /* Calculate a / number using multi-thread
@@ -201,7 +205,7 @@ Matrix<std::common_type_t<T, Number>> operator*(const Number &number, const Matr
  *                       [3/1, 4/1]]
  * NOTE: the calculation will first calculate as std::common_type<T1, T2>
  *       then use static_cast<T1> */
-template <class T, class Number>
+template <class T, class Number, class = std::enable_if_t<!is_matrix_v<Number>>>
 Matrix<std::common_type_t<T, Number>> operator/(const Matrix<T> &a, const Number &number);
 
 /* Calculate number / a using multi-thread
@@ -214,7 +218,7 @@ Matrix<std::common_type_t<T, Number>> operator/(const Matrix<T> &a, const Number
  *                       [1/3, 1/4]]
  * NOTE: the calculation will first calculate as std::common_type<T1, T2>
  *       then use static_cast<T1> */
-template <class Number, class T>
+template <class Number, class T, class = std::enable_if_t<!is_matrix_v<Number>>>
 Matrix<std::common_type_t<T, Number>> operator/(const Number &number, const Matrix<T> &a);
 
 /* Calculate a += b using multi-thread, the result will be stored in a
@@ -248,49 +252,49 @@ void operator/=(Matrix<T1> &a, const Matrix<T2> &b);
 /* Calculate a += number using multi-thread, the result will be stored in a
  * NOTE: the calculation will first calculate as std::common_type<T1, T2>
  *       then use static_cast<T1> */
-template <class T, class Number>
+template <class T, class Number, class = std::enable_if_t<!is_matrix_v<Number>>>
 void operator+=(Matrix<T> &a, const Number &number);
 
 /* Calculate number += a using multi-thread, the result will be stored in a
  * NOTE: the calculation will first calculate as std::common_type<T1, T2>
  *       then use static_cast<T1> */
-template <class Number, class T>
+template <class Number, class T, class = std::enable_if_t<!is_matrix_v<Number>>>
 inline void operator+=(const Number &number, Matrix<T> &a);
 
 /* Calculate a -= number using multi-thread, the result will be stored in a
  * NOTE: the calculation will first calculate as std::common_type<T1, T2>
  *       then use static_cast<T1> */
-template <class T, class Number>
+template <class T, class Number, class = std::enable_if_t<!is_matrix_v<Number>>>
 void operator-=(Matrix<T> &a, const Number &number);
 
 /* Calculate number -= a using multi-thread, the result will be stored in a
  * NOTE: the calculation will first calculate as std::common_type<T1, T2>
  *       then use static_cast<T1> */
-template <class Number, class T>
+template <class Number, class T, class = std::enable_if_t<!is_matrix_v<Number>>>
 void operator-=(const Number &number, Matrix<T> &a);
 
 /* Calculate a *= number using multi-thread, the result will be stored in a
  * NOTE: the calculation will first calculate as std::common_type<T1, T2>
  *       then use static_cast<T1> */
-template <class T, class Number>
+template <class T, class Number, class = std::enable_if_t<!is_matrix_v<Number>>>
 void operator*=(Matrix<T> &a, const Number &number);
 
 /* Calculate number *= a using multi-thread, the result will be stored in a
  * NOTE: the calculation will first calculate as std::common_type<T1, T2>
  *       then use static_cast<T1> */
-template <class Number, class T>
+template <class Number, class T, class = std::enable_if_t<!is_matrix_v<Number>>>
 void operator*=(const Number &number, Matrix<T> &a);
 
 /* Calculate a /= number using multi-thread, the result will be stored in a
  * NOTE: the calculation will first calculate as std::common_type<T1, T2>
  *       then use static_cast<T1> */
-template <class T, class Number>
+template <class T, class Number, class = std::enable_if_t<!is_matrix_v<Number>>>
 void operator/=(Matrix<T> &a, const Number &number);
 
 /* Calculate number /= a using multi-thread, the result will be stored in a
  * NOTE: the calculation will first calculate as std::common_type<T1, T2>
  *       then use static_cast<T1> */
-template <class Number, class T>
+template <class Number, class T, class = std::enable_if_t<!is_matrix_v<Number>>>
 void operator/=(const Number &number, Matrix<T> &a);
 
 // TODO
@@ -322,7 +326,7 @@ Matrix<std::common_type_t<T1, T2>> operator-(const Matrix<T1> &a, const Matrix<T
 template <class T1, class T2>
 Matrix<std::common_type_t<T1, T2>> operator*(const Matrix<T1> &a, const Matrix<T2> &b) {}
 
-template <class T, class Number>
+template <class T, class Number, class>
 Matrix<std::common_type_t<T, Number>> operator+(const Matrix<T> &a, const Number &number) {
     using CommonType = std::common_type_t<T, Number>;
     Matrix<CommonType> result(a.shape(), CommonType(0));
@@ -348,27 +352,27 @@ Matrix<std::common_type_t<T, Number>> operator+(const Matrix<T> &a, const Number
     return result;
 }
 
-template <class Number, class T>
+template <class Number, class T, class>
 inline Matrix<std::common_type_t<T, Number>> operator+(const Number &number, const Matrix<T> &a) {
     return a + number;
 }
 
 // TODO
-template <class T, class Number>
+template <class T, class Number, class>
 Matrix<std::common_type_t<T, Number>> operator-(const Matrix<T> &a, const Number &number) {}
 // TODO
-template <class Number, class T>
+template <class Number, class T, class>
 Matrix<std::common_type_t<T, Number>> operator-(const Number &number, const Matrix<T> &a) {}
 // TODO
-template <class T, class Number>
+template <class T, class Number, class>
 Matrix<std::common_type_t<T, Number>> operator*(const Matrix<T> &a, const Number &number) {}
-template <class Number, class T>
+template <class Number, class T, class>
 Matrix<std::common_type_t<T, Number>> operator*(const Number &number, const Matrix<T> &a) {}
 // TODO
-template <class T, class Number>
+template <class T, class Number, class>
 Matrix<std::common_type_t<T, Number>> operator/(const Matrix<T> &a, const Number &number) {}
 // TODO
-template <class Number, class T>
+template <class Number, class T, class>
 Matrix<std::common_type_t<T, Number>> operator/(const Number &number, const Matrix<T> &a) {}
 
 // TODO
@@ -384,7 +388,7 @@ void operator*=(Matrix<T1> &a, const Matrix<T2> &b) {}
 template <class T1, class T2>
 void operator/=(Matrix<T1> &a, const Matrix<T2> &b) {}
 
-template <class T, class Number>
+template <class T, class Number, class>
 void operator+=(Matrix<T> &a, const Number &number) {
     // single mode
     if (threadNum() == 0 || limit() > a.size()) {
@@ -407,27 +411,27 @@ void operator+=(Matrix<T> &a, const Number &number) {
     for (auto &item : returnValue) { item.get(); }
 }
 
-template <class Number, class T>
+template <class Number, class T, class>
 inline void operator+=(const Number &number, Matrix<T> &a) {
     a += number;
 }
 // TODO
-template <class T, class Number>
+template <class T, class Number, class>
 void operator-=(Matrix<T> &a, const Number &number) {}
 // TODO
-template <class Number, class T>
+template <class Number, class T, class>
 void operator-=(const Number &number, Matrix<T> &a) {}
 // TODO
-template <class T, class Number>
+template <class T, class Number, class>
 void operator*=(Matrix<T> &a, const Number &number) {}
 // TODO
-template <class Number, class T>
+template <class Number, class T, class>
 void operator*=(const Number &number, Matrix<T> &a) {}
 // TODO
-template <class T, class Number>
+template <class T, class Number, class>
 void operator/=(Matrix<T> &a, const Number &number) {}
 // TODO
-template <class Number, class T>
+template <class Number, class T, class>
 void operator/=(const Number &number, Matrix<T> &a) {}
 
 inline std::pair<size_t, size_t> threadCalculationTaskNum(const size_t &total) {

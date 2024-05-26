@@ -6,6 +6,7 @@
 #include <type_traits>
 
 #include "matrix_declaration.h"
+#include "mca_utility.h"
 
 namespace mca {
 /* Calculate number ^ a, and store the result in output
@@ -21,7 +22,7 @@ namespace mca {
  *              len = 4
  *              output = [[origin, 2^2, 2^3],
  *                        [2^2,    2^3, origin]] */
-template <class Number, class T, class O>
+template <class Number, class T, class O, class = std::enable_if_t<!is_matrix_v<Number>>>
 void numberPowSingleThread(const Number &number,
                            const Matrix<T> &a,
                            Matrix<O> &output,
@@ -41,7 +42,7 @@ void numberPowSingleThread(const Number &number,
  *              len = 4
  *              output = [[origin, 2^2, 3^2],
  *                        [2^2,    3^2, origin]] */
-template <class T, class Number, class O>
+template <class T, class Number, class O, class = std::enable_if_t<!is_matrix_v<Number>>>
 void powNumberSingleThread(const Matrix<T> &a,
                            const Number &number,
                            Matrix<O> &output,
@@ -184,7 +185,7 @@ void multiplySingleThread(const Matrix<T1> &a,
  *              pos = 0, len = 4
  *              output = [[2+1, 2+2,    2+3],
  *                        [2+2, origin, origin]] */
-template <class Number, class T, class O>
+template <class Number, class T, class O, class = std::enable_if_t<!is_matrix_v<Number>>>
 void addSingleThread(const Number &number,
                      const Matrix<T> &a,
                      Matrix<O> &output,
@@ -203,7 +204,7 @@ void addSingleThread(const Number &number,
  *              pos = 0, len = 4
  *              output = [[2-1, 2-2,    2-3],
  *                        [2-2, origin, origin]] */
-template <class Number, class T, class O>
+template <class Number, class T, class O, class = std::enable_if_t<!is_matrix_v<Number>>>
 void subtractSingleThread(const Number &number,
                           const Matrix<T> &a,
                           Matrix<O> &output,
@@ -222,7 +223,7 @@ void subtractSingleThread(const Number &number,
  *              pos = 0, len = 4
  *              output = [[1-2, 2-2,    3-2],
  *                        [2-2, origin, origin]] */
-template <class T, class Number, class O>
+template <class T, class Number, class O, class = std::enable_if_t<!is_matrix_v<Number>>>
 void subtractSingleThread(const Matrix<T> &a,
                           const Number &number,
                           Matrix<O> &output,
@@ -241,7 +242,7 @@ void subtractSingleThread(const Matrix<T> &a,
  *              pos = 0, len = 4
  *              output = [[2*1, 2*2,    2*3],
  *                        [2*2, origin, origin]] */
-template <class Number, class T, class O>
+template <class Number, class T, class O, class = std::enable_if_t<!is_matrix_v<Number>>>
 void multiplySingleThread(const Number &number,
                           const Matrix<T> &a,
                           Matrix<O> &output,
@@ -260,7 +261,7 @@ void multiplySingleThread(const Number &number,
  *              pos = 0, len = 4
  *              output = [[1/2, 2/2, 3/2],
  *                        [2/2, origin, origin]] */
-template <class T, class Number, class O>
+template <class T, class Number, class O, class = std::enable_if_t<!is_matrix_v<Number>>>
 void divideSingleThread(const Matrix<T> &a,
                         const Number &number,
                         Matrix<O> &output,
@@ -280,7 +281,7 @@ void divideSingleThread(const Matrix<T> &a,
  *              len = 4
  *              output = [[origin, origin, 2/3],
  *                        [2/2,    2/3,    2/4]] */
-template <class Number, class T, class O>
+template <class Number, class T, class O, class = std::enable_if_t<!is_matrix_v<Number>>>
 void divideSingleThread(const Number &number,
                         const Matrix<T> &a,
                         Matrix<O> &output,
@@ -343,7 +344,7 @@ bool antisymmetricSingleThread(const Matrix<T> &a,
                                const double &eps = 1e-100);
 
 // Those below are the implementations
-template <class Number, class T, class O>
+template <class Number, class T, class O, class>
 void numberPowSingleThread(const Number &number,
                            const Matrix<T> &a,
                            Matrix<O> &output,
@@ -358,7 +359,7 @@ void numberPowSingleThread(const Number &number,
     }
 }
 
-template <class T, class Number, class O>
+template <class T, class Number, class O, class>
 void powNumberSingleThread(const Matrix<T> &a,
                            const Number &number,
                            Matrix<O> &output,
@@ -506,7 +507,7 @@ bool notEqualSingleThread(const Matrix<T1> &a,
     return true;
 }
 
-template <class Number, class T, class O>
+template <class Number, class T, class O, class>
 void multiplySingleThread(const Number &number,
                           const Matrix<T> &a,
                           Matrix<O> &output,
@@ -575,7 +576,7 @@ void multiplySingleThread(const Matrix<T1> &a,
     }
 }
 
-template <class Number, class T, class O>
+template <class Number, class T, class O, class>
 void addSingleThread(const Number &number,
                      const Matrix<T> &a,
                      Matrix<O> &output,
@@ -588,7 +589,7 @@ void addSingleThread(const Number &number,
         output[i] = static_cast<O>(static_cast<CommonType>(number) + static_cast<CommonType>(a[i]));
 }
 
-template <class Number, class T, class O>
+template <class Number, class T, class O, class>
 void subtractSingleThread(const Number &number,
                           const Matrix<T> &a,
                           Matrix<O> &output,
@@ -601,7 +602,7 @@ void subtractSingleThread(const Number &number,
         output[i] = static_cast<O>(static_cast<CommonType>(number) - static_cast<CommonType>(a[i]));
 }
 
-template <class T, class Number, class O>
+template <class T, class Number, class O, class>
 void subtractSingleThread(const Matrix<T> &a,
                           const Number &number,
                           Matrix<O> &output,
@@ -614,7 +615,7 @@ void subtractSingleThread(const Matrix<T> &a,
         output[i] = static_cast<O>(static_cast<CommonType>(a[i]) - static_cast<CommonType>(number));
 }
 
-template <class T, class Number, class O>
+template <class T, class Number, class O, class>
 void divideSingleThread(const Matrix<T> &a,
                         const Number &number,
                         Matrix<O> &output,
@@ -627,7 +628,7 @@ void divideSingleThread(const Matrix<T> &a,
         output[i] = static_cast<O>(static_cast<CommonType>(a[i]) / static_cast<CommonType>(number));
 }
 
-template <class Number, class T, class O>
+template <class Number, class T, class O, class>
 void divideSingleThread(const Number &number,
                         const Matrix<T> &a,
                         Matrix<O> &output,
