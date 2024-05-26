@@ -8,19 +8,19 @@
 #include "matrix_declaration.h"
 
 namespace mca {
-// Calculate number ^ a, and store the result in output
-// This will only calculate the number^a[pos:pos+len] in the matrix
-// pos: one-demensional starting index of the matrix
-// len: number of elements to be calculated
-// NOTE: a must have the same shape with output
-//       the matrix which will be calculated must in range
-// for example: number = 2,
-//              a = [[1, 2, 3],
-//                   [2, 3, 4]]
-//              pos = 1
-//              len = 4
-//              output = [[origin, 2^2, 2^3],
-//                        [2^2,    2^3, origin]]
+/* Calculate number ^ a, and store the result in output
+ * This will only calculate the number^a[pos:pos+len] in the matrix
+ * pos: one-demensional starting index of the matrix
+ * len: number of elements to be calculated
+ * NOTE: a must have the same shape with output
+ *       the matrix which will be calculated must in range
+ * for example: number = 2,
+ *              a = [[1, 2, 3],
+ *                   [2, 3, 4]]
+ *              pos = 1
+ *              len = 4
+ *              output = [[origin, 2^2, 2^3],
+ *                        [2^2,    2^3, origin]] */
 template <class Number, class T, class O>
 void numberPowSingleThread(const Number &number,
                            const Matrix<T> &a,
@@ -28,19 +28,19 @@ void numberPowSingleThread(const Number &number,
                            const size_t &pos,
                            const size_t &len);
 
-// Calculate a ^ number, and store the result in output
-// This will only calculate the a^number[pos: pos + len] in the matrix
-// pos: one-demensional starting index of the matrix
-// len: number of elements to be calculated
-// NOTE: a must have the same shape with output
-//       the matrix which will be calculated must in range
-// for example: number = 2,
-//              a = [[1, 2, 3],
-//                   [2, 3, 4]]
-//              pos = 1
-//              len = 4
-//              output = [[origin, 2^2, 3^2],
-//                        [2^2,    3^2, origin]]
+/* Calculate a ^ number, and store the result in output
+ * This will only calculate the a^number[pos: pos + len] in the matrix
+ * pos: one-demensional starting index of the matrix
+ * len: number of elements to be calculated
+ * NOTE: a must have the same shape with output
+ *       the matrix which will be calculated must in range
+ * for example: number = 2,
+ *              a = [[1, 2, 3],
+ *                   [2, 3, 4]]
+ *              pos = 1
+ *              len = 4
+ *              output = [[origin, 2^2, 3^2],
+ *                        [2^2,    3^2, origin]] */
 template <class T, class Number, class O>
 void powNumberSingleThread(const Matrix<T> &a,
                            const Number &number,
@@ -48,11 +48,11 @@ void powNumberSingleThread(const Matrix<T> &a,
                            const size_t &pos,
                            const size_t &len);
 
-// Check if the elements of the sub-matrix of a are all less than the sub-matrix of b's
-// This will only check the a[pos:pos+len] with b[pos:pos+len]
-// pos: one-demensional starting index of the matrix
-// len: number of elements to be checked
-// NOTE: eps will be used when T1 or T2 is floating number
+/* Check if the elements of the sub-matrix of a are all less than the sub-matrix of b's
+ * This will only check the a[pos:pos+len] with b[pos:pos+len]
+ * pos: one-demensional starting index of the matrix
+ * len: number of elements to be checked
+ * NOTE: eps will be used when T1 or T2 is floating number */
 template <class T1, class T2>
 bool lessSingleThread(const Matrix<T1> &a,
                       const Matrix<T2> &b,
@@ -60,9 +60,9 @@ bool lessSingleThread(const Matrix<T1> &a,
                       const size_t &len,
                       const double &eps = 1e-100);
 
-// Check if the elements of the sub-matrix of a are all equal with the sub-matrix of b's
-// This will only check the a[pos:pos+len] with b[pos:pos+len]
-// NOTE: eps will be used when T1 or T2 is floating number
+/* Check if the elements of the sub-matrix of a are all equal with the sub-matrix of b's
+ * This will only check the a[pos:pos+len] with b[pos:pos+len]
+ * NOTE: eps will be used when T1 or T2 is floating number */
 template <class T1, class T2>
 bool equalSingleThread(const Matrix<T1> &a,
                        const Matrix<T2> &b,
@@ -70,11 +70,11 @@ bool equalSingleThread(const Matrix<T1> &a,
                        const size_t &len,
                        const double &eps = 1e-100);
 
-// Check if the elements of the sub-matrix of a are all less than or equal with the sub-matrix of
-// This will only check the a[pos:pos+len] with b[pos:pos+len]
-// pos: one-demensional starting index of the matrix
-// len: number of elements to be checked
-// NOTE: eps will be used when T1 or T2 is floating number
+/* Check if the elements of the sub-matrix of a are all less than or equal with the sub-matrix of
+ * This will only check the a[pos:pos+len] with b[pos:pos+len]
+ * pos: one-demensional starting index of the matrix
+ * len: number of elements to be checked
+ * NOTE: eps will be used when T1 or T2 is floating number */
 template <class T1, class T2>
 bool lessEqualSingleThread(const Matrix<T1> &a,
                            const Matrix<T2> &b,
@@ -82,11 +82,11 @@ bool lessEqualSingleThread(const Matrix<T1> &a,
                            const size_t &len,
                            const double &eps = 1e-100);
 
-// Check if the elements of the sub-matrix of a are all greater than the sub-matrix of b's
-// This will only check the a[pos:pos+len] with b[pos:pos+len]
-// pos: one-demensional starting index of the matrix
-// len: number of elements to be checked
-// NOTE: eps will be used when T1 or T2 is floating number
+/* Check if the elements of the sub-matrix of a are all greater than the sub-matrix of b's
+ * This will only check the a[pos:pos+len] with b[pos:pos+len]
+ * pos: one-demensional starting index of the matrix
+ * len: number of elements to be checked
+ * NOTE: eps will be used when T1 or T2 is floating number */
 template <class T1, class T2>
 bool greaterSingleThread(const Matrix<T1> &a,
                          const Matrix<T2> &b,
@@ -94,10 +94,10 @@ bool greaterSingleThread(const Matrix<T1> &a,
                          const size_t &len,
                          const double &eps = 1e-100);
 
-// Check if the elements of the sub-matrix of a are all greater than or equal with the sub-matrix of
-// b's This will only check the a[pos:pos+len] with
-// b[pos:pos+len]
-// NOTE: eps will be used when T1 or T2 is floating number
+/* Check if the elements of the sub-matrix of a are all greater than or equal with the sub-matrix of
+ * b's This will only check the a[pos:pos+len] with
+ * b[pos:pos+len]
+ * NOTE: eps will be used when T1 or T2 is floating number */
 template <class T1, class T2>
 bool greaterEqualSingleThread(const Matrix<T1> &a,
                               const Matrix<T2> &b,
@@ -105,10 +105,10 @@ bool greaterEqualSingleThread(const Matrix<T1> &a,
                               const size_t &len,
                               const double &eps = 1e-100);
 
-// Check if any element of the sub-matrix of a is not equal with the sub-matrix of b's
-// This will only check the a[pos:pos+len] with
-// b[pos:pos+len]
-// NOTE: eps will be used when T1 or T2 is floating number
+/* Check if any element of the sub-matrix of a is not equal with the sub-matrix of b's
+ * This will only check the a[pos:pos+len] with
+ * b[pos:pos+len]
+ * NOTE: eps will be used when T1 or T2 is floating number */
 template <class T1, class T2>
 bool notEqualSingleThread(const Matrix<T1> &a,
                           const Matrix<T2> &b,
@@ -116,20 +116,20 @@ bool notEqualSingleThread(const Matrix<T1> &a,
                           const size_t &len,
                           const double &eps = 1e-100);
 
-// Calculate a + b, and store the result in output
-// This will only calculate the a+b[pos:pos+len]
-// pos: start position
-// len: length of calculation
-// NOTE: a must have the same shape with output and b
-//       the matrix which will be calculated must in range
-// for example: a = [[-1, -2, -3],
-//                   [-1, -2, -3]]
-//              b = [[1, 2, 3],
-//                   [2, 3, 4]]
-//              pos = 1
-//              len = 5
-//              output = [[origin, -2+2, -3+3],
-//                        [-1+2,   -2+3, -3+4]]
+/* Calculate a + b, and store the result in output
+ * This will only calculate the a+b[pos:pos+len]
+ * pos: start position
+ * len: length of calculation
+ * NOTE: a must have the same shape with output and b
+ *       the matrix which will be calculated must in range
+ * for example: a = [[-1, -2, -3],
+ *                   [-1, -2, -3]]
+ *              b = [[1, 2, 3],
+ *                   [2, 3, 4]]
+ *              pos = 1
+ *              len = 5
+ *              output = [[origin, -2+2, -3+3],
+ *                        [-1+2,   -2+3, -3+4]] */
 template <class T1, class T2, class O>
 void addSingleThread(const Matrix<T1> &a,
                      const Matrix<T2> &b,
@@ -137,20 +137,20 @@ void addSingleThread(const Matrix<T1> &a,
                      const size_t &pos,
                      const size_t &len);
 
-// Calculate a - b, and store the result in output
-// This will only calculate the a-b[pos:pos+len]
-// pos: start position
-// len: length of calculation
-// NOTE: a must have the same shape with output and b
-//       the matrix which will be calculated must in range
-// for example: a = [[-1, -2, -3],
-//                   [-1, -2, -3]]
-//              b = [[1, 2, 3],
-//                   [2, 3, 4]]
-//              pos = 1
-//              len = 5
-//              output = [[origin, -2-2, -3-3],
-//                        [-1-2,   -2-3, -3-4]]
+/* Calculate a - b, and store the result in output
+ * This will only calculate the a-b[pos:pos+len]
+ * pos: start position
+ * len: length of calculation
+ * NOTE: a must have the same shape with output and b
+ *       the matrix which will be calculated must in range
+ * for example: a = [[-1, -2, -3],
+ *                   [-1, -2, -3]]
+ *              b = [[1, 2, 3],
+ *                   [2, 3, 4]]
+ *              pos = 1
+ *              len = 5
+ *              output = [[origin, -2-2, -3-3],
+ *                        [-1-2,   -2-3, -3-4]] */
 template <class T1, class T2, class O>
 void subtractSingleThread(const Matrix<T1> &a,
                           const Matrix<T2> &b,
@@ -158,13 +158,13 @@ void subtractSingleThread(const Matrix<T1> &a,
                           const size_t &pos,
                           const size_t &len);
 
-// Calculate a * b, and store the result in output
-// This will only calculate the a*b[pos:pos+len]
-// pos: start position
-// len: length of calculation
-// NOTE: a must have the same shape with output and b
-//       &a must not be equal with &output
-//       the matrix which will be calculated must in range
+/* Calculate a * b, and store the result in output
+ * This will only calculate the a*b[pos:pos+len]
+ * pos: start position
+ * len: length of calculation
+ * NOTE: a must have the same shape with output and b
+ *       &a must not be equal with &output
+ *       the matrix which will be calculated must in range */
 template <class T1, class T2, class O>
 void multiplySingleThread(const Matrix<T1> &a,
                           const Matrix<T2> &b,
@@ -172,18 +172,18 @@ void multiplySingleThread(const Matrix<T1> &a,
                           const size_t &pos,
                           const size_t &len);
 
-// Calculate number + a, and store the result in output
-// This will only calculate the number+a[pos:pos+len]
-// pos: one-demensional starting index of the matrix
-// len: number of elements to be calculated
-// NOTE: a must have the same shape with output
-//       the matrix which will be calculated must in range
-// for example: number = 2,
-//              a = [[1, 2, 3],
-//                   [2, 3, 4]]
-//              pos = 0, len = 4
-//              output = [[2+1, 2+2,    2+3],
-//                        [2+2, origin, origin]]
+/* Calculate number + a, and store the result in output
+ * This will only calculate the number+a[pos:pos+len]
+ * pos: one-demensional starting index of the matrix
+ * len: number of elements to be calculated
+ * NOTE: a must have the same shape with output
+ *       the matrix which will be calculated must in range
+ * for example: number = 2,
+ *              a = [[1, 2, 3],
+ *                   [2, 3, 4]]
+ *              pos = 0, len = 4
+ *              output = [[2+1, 2+2,    2+3],
+ *                        [2+2, origin, origin]] */
 template <class Number, class T, class O>
 void addSingleThread(const Number &number,
                      const Matrix<T> &a,
@@ -191,18 +191,18 @@ void addSingleThread(const Number &number,
                      const size_t &pos,
                      const size_t &len);
 
-// Calculate number - a, and store the result in output
-// This will only calculate the number-a[pos:pos+len]
-// pos: one-demensional starting index of the matrix
-// len: number of elements to be calculated
-// NOTE: a must have the same shape with output
-//       the matrix which will be calculated must in range
-// for example: number = 2,
-//              a = [[1, 2, 3],
-//                   [2, 3, 4]]
-//              pos = 0, len = 4
-//              output = [[2-1, 2-2,    2-3],
-//                        [2-2, origin, origin]]
+/* Calculate number - a, and store the result in output
+ * This will only calculate the number-a[pos:pos+len]
+ * pos: one-demensional starting index of the matrix
+ * len: number of elements to be calculated
+ * NOTE: a must have the same shape with output
+ *       the matrix which will be calculated must in range
+ * for example: number = 2,
+ *              a = [[1, 2, 3],
+ *                   [2, 3, 4]]
+ *              pos = 0, len = 4
+ *              output = [[2-1, 2-2,    2-3],
+ *                        [2-2, origin, origin]] */
 template <class Number, class T, class O>
 void subtractSingleThread(const Number &number,
                           const Matrix<T> &a,
@@ -210,18 +210,18 @@ void subtractSingleThread(const Number &number,
                           const size_t &pos,
                           const size_t &len);
 
-// Calculate a - number, and store the result in output
-// This will only calculate the a[pos:pos+len]-number
-// pos: one-demensional starting index of the matrix
-// len: number of elements to be calculated
-// NOTE: a must have the same shape with output
-//       the matrix which will be calculated must in range
-// for example: number = 2,
-//              a = [[1, 2, 3],
-//                   [2, 3, 4]]
-//              pos = 0, len = 4
-//              output = [[1-2, 2-2,    3-2],
-//                        [2-2, origin, origin]]
+/* Calculate a - number, and store the result in output
+ * This will only calculate the a[pos:pos+len]-number
+ * pos: one-demensional starting index of the matrix
+ * len: number of elements to be calculated
+ * NOTE: a must have the same shape with output
+ *       the matrix which will be calculated must in range
+ * for example: number = 2,
+ *              a = [[1, 2, 3],
+ *                   [2, 3, 4]]
+ *              pos = 0, len = 4
+ *              output = [[1-2, 2-2,    3-2],
+ *                        [2-2, origin, origin]] */
 template <class T, class Number, class O>
 void subtractSingleThread(const Matrix<T> &a,
                           const Number &number,
@@ -229,18 +229,18 @@ void subtractSingleThread(const Matrix<T> &a,
                           const size_t &pos,
                           const size_t &len);
 
-// Calculate number * a, and store the result in output
-// This will only calculate the number*a[pos:pos+len]
-// pos: one-demensional starting index of the matrix
-// len: number of elements to be calculated
-// NOTE: a must have the same shape with output
-//       the matrix which will be calculated must in range
-// for example: number = 2,
-//              a = [[1, 2, 3],
-//                   [2, 3, 4]]
-//              pos = 0, len = 4
-//              output = [[2*1, 2*2,    2*3],
-//                        [2*2, origin, origin]]
+/* Calculate number * a, and store the result in output
+ * This will only calculate the number*a[pos:pos+len]
+ * pos: one-demensional starting index of the matrix
+ * len: number of elements to be calculated
+ * NOTE: a must have the same shape with output
+ *       the matrix which will be calculated must in range
+ * for example: number = 2,
+ *              a = [[1, 2, 3],
+ *                   [2, 3, 4]]
+ *              pos = 0, len = 4
+ *              output = [[2*1, 2*2,    2*3],
+ *                        [2*2, origin, origin]] */
 template <class Number, class T, class O>
 void multiplySingleThread(const Number &number,
                           const Matrix<T> &a,
@@ -248,18 +248,18 @@ void multiplySingleThread(const Number &number,
                           const size_t &pos,
                           const size_t &len);
 
-// Calculate a / number, and store the result in output
-// This will only calculate the a[pos:pos+len]/number
-// pos: one-demensional starting index of the matrix
-// len: number of elements to be calculated
-// NOTE: a must have the same shape with output
-//       the matrix which will be calculated must in range
-// for example: number = 2,
-//              a = [[1, 2, 3],
-//                   [2, 3, 4]]
-//              pos = 0, len = 4
-//              output = [[1/2, 2/2, 3/2],
-//                        [2/2, origin, origin]]
+/* Calculate a / number, and store the result in output
+ * This will only calculate the a[pos:pos+len]/number
+ * pos: one-demensional starting index of the matrix
+ * len: number of elements to be calculated
+ * NOTE: a must have the same shape with output
+ *       the matrix which will be calculated must in range
+ * for example: number = 2,
+ *              a = [[1, 2, 3],
+ *                   [2, 3, 4]]
+ *              pos = 0, len = 4
+ *              output = [[1/2, 2/2, 3/2],
+ *                        [2/2, origin, origin]] */
 template <class T, class Number, class O>
 void divideSingleThread(const Matrix<T> &a,
                         const Number &number,
@@ -267,19 +267,19 @@ void divideSingleThread(const Matrix<T> &a,
                         const size_t &pos,
                         const size_t &len);
 
-// Calculate number / a, and store the result in output
-// This will only calculate the number+a[sx:sx+shape.rows][sy:sy+shape+shape.columns]
-// pos: the frist position of matrix a
-// len: length of elements
-// NOTE: a must have the same shape with output
-//       the matrix which will be calculated must in range
-// for example: number = 2,
-//              a = [[1, 2, 3],
-//                   [2, 3, 4]]
-//              pos = 2
-//              len = 4
-//              output = [[origin, origin, 2/3],
-//                        [2/2,    2/3,    2/4]]
+/* Calculate number / a, and store the result in output
+ * This will only calculate the number+a[sx:sx+shape.rows][sy:sy+shape+shape.columns]
+ * pos: the frist position of matrix a
+ * len: length of elements
+ * NOTE: a must have the same shape with output
+ *       the matrix which will be calculated must in range
+ * for example: number = 2,
+ *              a = [[1, 2, 3],
+ *                   [2, 3, 4]]
+ *              pos = 2
+ *              len = 4
+ *              output = [[origin, origin, 2/3],
+ *                        [2/2,    2/3,    2/4]] */
 template <class Number, class T, class O>
 void divideSingleThread(const Number &number,
                         const Matrix<T> &a,
@@ -287,55 +287,55 @@ void divideSingleThread(const Number &number,
                         const size_t &pos,
                         const size_t &len);
 
-// Transpose a matrix, and store the result in output
-// This will only get the transposed output[pos:pos+len]
-// pos: the frist position of output
-// len: length of elements
-// NOTE: a must have the same shape with output after transposition
-//       the matrix which will be calculated must in range
-//       &a must not be equal with &output
-// for example: number = 2,
-//              a = [[1, 2, 3],
-//                   [2, 3, 4]]
-//              pos = 2
-//              len = 4
-//              output = [[origin, origin],
-//                        [2, 3],
-//                        [3, 4]]
+/* Transpose a matrix, and store the result in output
+ * This will only get the transposed output[pos:pos+len]
+ * pos: the frist position of output
+ * len: length of elements
+ * NOTE: a must have the same shape with output after transposition
+ *       the matrix which will be calculated must in range
+ *       &a must not be equal with &output
+ * for example: number = 2,
+ *              a = [[1, 2, 3],
+ *                   [2, 3, 4]]
+ *              pos = 2
+ *              len = 4
+ *              output = [[origin, origin],
+ *                        [2, 3],
+ *                        [3, 4]] */
 template <class T>
 void transposeSingleThread(const Matrix<T> &a,
                            Matrix<T> &output,
                            const size_t &pos,
                            const size_t &len);
 
-// Check whether or not rows of matrix are symmetric
-// pos: start position from the first element which will be used
-// len: length of elements
-// NOTE: a must be a square matrix
-//       pos + len must less than or equal with (a.size() - a.rows())/2
-// for example: a = [[1, 2, 3],
-//                   [2, 3, 4],
-//                   [3, 6, 5]]
-//              pos = 0
-//              len = 2
-//              return: true
+/* Check whether or not rows of matrix are symmetric
+ * pos: start position from the first element which will be used
+ * len: length of elements
+ * NOTE: a must be a square matrix
+ *       pos + len must less than or equal with (a.size() - a.rows())/2
+ * for example: a = [[1, 2, 3],
+ *                   [2, 3, 4],
+ *                   [3, 6, 5]]
+ *              pos = 0
+ *              len = 2
+ *              return: true */
 template <class T>
 bool symmetricSingleThread(const Matrix<T> &a,
                            const size_t &pos,
                            const size_t &len,
                            const double &eps = 1e-100);
 
-// Check whether or not rows of matrix are antisymmetric
-// pos: start pos from the first element which will be used
-// len: length of elements
-// NOTE: a must be a square matrix
-//       pos + len must less than or equal with (a.size() - a.rows())/2
-// for example: a = [[1,  2, 3],
-//                   [2,  3, 4],
-//                   [3, -4, 5]]
-//              pos = 2 (pos 2's element is 4)
-//              len = 1
-//              return: true
+/* Check whether or not rows of matrix are antisymmetric
+ * pos: start pos from the first element which will be used
+ * len: length of elements
+ * NOTE: a must be a square matrix
+ *       pos + len must less than or equal with (a.size() - a.rows())/2
+ * for example: a = [[1,  2, 3],
+ *                   [2,  3, 4],
+ *                   [3, -4, 5]]
+ *              pos = 2 (pos 2's element is 4)
+ *              len = 1
+ *              return: true */
 template <class T>
 bool antisymmetricSingleThread(const Matrix<T> &a,
                                const size_t &pos,
