@@ -16,9 +16,9 @@ class TestMultiThreadCalculation : public testing::Test {
 protected:
     static constexpr int MAX_VALUE  = 1000;
     static constexpr int THREAD_NUM = 10;
-    Shape squareShape{9000, 9000};
-    Shape mul1Shape{500, 300};
-    Shape mul2Shape{300, 500};
+    Shape squareShape{1000, 1000};
+    Shape mul1Shape{100, 121};
+    Shape mul2Shape{121, 100};
     std::default_random_engine generator;
     Matrix<> singleOutput, multiOutput, a, b, mulA, mulB;
 

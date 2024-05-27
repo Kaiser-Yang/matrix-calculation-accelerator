@@ -17,11 +17,11 @@ protected:
     static constexpr int MAX_VALUE  = 9;
     static constexpr int THREAD_NUM = 10;
     std::default_random_engine generator;
-    Shape squareShape{9000, 9000};
+    Shape squareShape{1000, 1000};
     std::vector<std::vector<double>> vec;
     std::vector<double> array;
     std::vector<double> diag;
-    Matrix<> a;
+    Matrix<> a, b;
     Matrix<> singleOutput, multiOutput;
     size_t exponent;
     Shape powShape{200, 200};
@@ -382,6 +382,92 @@ TEST_F(TestMatrixMultiThread, powToOutput) {
     // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
     ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
+}
+
+TEST_F(TestMatrixMultiThread, constructorFromDiag) {
+    // single assignment thread mode
+    auto startTime = high_resolution_clock::now();
+    Matrix<int> n1({0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+    auto endTime       = high_resolution_clock::now();
+    auto executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+    // record time in gtest
+    testing::Test::RecordProperty("SingleTime", executionTime);
+
+    // multi thread mode  set limit = 1
+    init(THREAD_NUM, 1);
+    // the expected time in multi thread
+    testing::Test::RecordProperty("BaseTime", executionTime / (threadNum() + 1));
+    startTime = high_resolution_clock::now();
+    Matrix<int> m1({0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+    endTime       = high_resolution_clock::now();
+    executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+    // record time in gtest
+    testing::Test::RecordProperty("MultiTime", executionTime);
+
+    // TODO use operator== to check if they are equal
+    ASSERT_TRUE(equalSingleThread(m1, n1, 0, m1.size()));
+}
+
+TEST_F(TestMatrixMultiThread, assignmentFromInitializerList) {
+    // create a null matrix
+    a = std::initializer_list<std::initializer_list<double>>{};
+    // create a column null matirx
+    b = std::initializer_list<std::initializer_list<double>>{{}, {}};
+
+    auto startTime     = high_resolution_clock::now();
+    singleOutput       = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                          {0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
+                          {0, 0, 2, 0, 0, 0, 0, 0, 0, 0},
+                          {0, 0, 0, 3, 0, 0, 0, 0, 0, 0},
+                          {0, 0, 0, 0, 4, 0, 0, 0, 0, 0},
+                          {0, 0, 0, 0, 0, 5, 0, 0, 0, 0},
+                          {0, 0, 0, 0, 0, 0, 6, 0, 0, 0},
+                          {0, 0, 0, 0, 0, 0, 0, 7, 0, 0},
+                          {0, 0, 0, 0, 0, 0, 0, 0, 8, 0},
+                          {0, 0, 0, 0, 0, 0, 0, 0, 0, 9}};
+    auto endTime       = high_resolution_clock::now();
+    auto executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+    // record time in gtest
+    testing::Test::RecordProperty("SingleTime", executionTime);
+
+    // multi thread mode
+    init(THREAD_NUM, 1);
+    // the expected time in multi thread
+    testing::Test::RecordProperty("BaseTime", executionTime / (threadNum() + 1));
+    startTime     = high_resolution_clock::now();
+    multiOutput   = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                     {0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
+                     {0, 0, 2, 0, 0, 0, 0, 0, 0, 0},
+                     {0, 0, 0, 3, 0, 0, 0, 0, 0, 0},
+                     {0, 0, 0, 0, 4, 0, 0, 0, 0, 0},
+                     {0, 0, 0, 0, 0, 5, 0, 0, 0, 0},
+                     {0, 0, 0, 0, 0, 0, 6, 0, 0, 0},
+                     {0, 0, 0, 0, 0, 0, 0, 7, 0, 0},
+                     {0, 0, 0, 0, 0, 0, 0, 0, 8, 0},
+                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 9}};
+    endTime       = high_resolution_clock::now();
+    executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+    // record time in gtest
+    testing::Test::RecordProperty("MultiTime", executionTime);
+
+    // TODO use operator== to check they are equal
+    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
+    ASSERT_EQ(a.shape(), Shape(0, 0));
+    ASSERT_EQ(b.shape(), Shape(2, 0));
+    ASSERT_EQ(a.dataPtr(), nullptr);
+    ASSERT_EQ(b.dataPtr(), nullptr);
+}
+
+TEST_F(TestMatrixMultiThread, assignmentFromVector) {
+    // create a null matrix
+    a = std::vector<std::vector<double>>{};
+    // create a column null matirx
+    b = std::vector<std::vector<double>>{{}, {}};
+
+    ASSERT_EQ(a.shape(), Shape(0, 0));
+    ASSERT_EQ(b.shape(), Shape(2, 0));
+    ASSERT_EQ(a.dataPtr(), nullptr);
+    ASSERT_EQ(b.dataPtr(), nullptr);
 }
 }  // namespace test
 }  // namespace mca

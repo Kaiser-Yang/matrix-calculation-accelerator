@@ -504,10 +504,10 @@ Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(
         return *this;
     }
     auto res = threadCalculationTaskNum(size());
-    std::vector<std::future<void>> returnValue;
+    std::vector<std::future<void>> returnValue(res.second - 1);
     for (size_t i = 0; i < res.second - 1; i++) {
-        returnValue[i] = threadPool().addTask(
-            [this, start = i * res.first, end = (i + 1) * res.second, &init]() {
+        returnValue[i] =
+            threadPool().addTask([this, start = i * res.first, end = (i + 1) * res.first, &init]() {
                 for (size_t i = start; i < end; i++) {
                     (*this)[i] = static_cast<ELEMENT_TYPE>(
                         std::data(std::data(init)[i / columns()])[i % columns()]);

@@ -11,7 +11,7 @@ namespace test {
 class TestSingleThreadCalculation : public testing::Test {
 protected:
     Matrix<> one, negOne, output, a, b, c, d, sym, antisym;
-    Matrix<int> e;
+    Matrix<int> e, f;
 
     void SetUp() override {
         one     = Matrix<>({3, 3}, 1);
@@ -21,6 +21,7 @@ protected:
         c       = Matrix<>({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
         d       = Matrix<>({{0, 0, 0}, {1, 1, 1}, {2, 2, 2}});
         e       = Matrix<int>({{1, 2, 3}, {2, 3, 4}, {6, 6, 6}});
+        f       = Matrix<int>({{3, 2, 1}, {2, 3, 4}, {6, 6, 6}});
         sym     = Matrix<>({{1, 2. / 3, 3. / 5}, {4. / 6, 3, 8. / 6}, {1.5 / 2.5, 4. / 3, 5}});
         antisym = Matrix<>({{1, -2. / 3, -3. / 5}, {4. / 6, 3, -8. / 6}, {1.5 / 2.5, 4. / 3, 5}});
     }
@@ -69,6 +70,7 @@ TEST_F(TestSingleThreadCalculation, lessSubMatrix) {
 TEST_F(TestSingleThreadCalculation, equalWholeMatrix) {
     ASSERT_TRUE(equalSingleThread(a, d, 0, a.size()));
     ASSERT_FALSE(equalSingleThread(a, b, 0, a.size()));
+    ASSERT_FALSE(equalSingleThread(e, f, 0, e.size()));
 }
 
 TEST_F(TestSingleThreadCalculation, equalSubMatrix) {
