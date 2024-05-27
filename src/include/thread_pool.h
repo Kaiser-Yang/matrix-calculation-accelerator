@@ -13,35 +13,35 @@
 #include <utility>
 
 namespace mca {
-// the class is not thread-safe
-// synchronizations are needed when more than one thread operate the same object of the class
+/* the class is not thread-safe
+ * synchronizations are needed when more than one thread operate the same object of the class */
 class ThreadPool {
 public:
-    // size is the size of the thread pool
+    /* size is the size of the thread pool */
     inline ThreadPool(size_t size = 0);
 
-    // set a new size, this will not clear the task queue
-    // this will wait for all the running threads finish their current tasks, then stop them
-    // and create new threads
+    /* set a new size, and this will clear the task queue
+     * this will wait for all the running threads finish their current tasks, then stop them
+     * and create new threads */
     void resize(size_t newSize);
 
-    // the size of the thread pool
+    /* the size of the thread pool */
     inline size_t size();
 
-    // add a task to the thread pool
-    // this will return a std::future
-    // you can use the object's get() to get the return value of your task
-    // NOTE: you can not add a task to a thread pool whose size is 0
+    /* add a task to the thread pool
+     * this will return a std::future
+     * you can use the object's get() to get the return value of your task
+     * NOTE: you can not add a task to a thread pool whose size is 0 */
     template <class Function, class... Args>
     auto addTask(Function &&func, Args &&...args)
         -> std::future<std::invoke_result_t<Function, Args...>>;
 
-    // stop all threads
-    // if a thread is running
-    // this will wait for the thread to finish
+    /* stop all threads and clear the task queue
+     * if a thread is running
+     * this will wait for the thread to finish */
     void clear();
 
-    // the destructor will stop all the threads
+    /* the destructor will stop all the threads */
     inline ~ThreadPool();
 
 private:

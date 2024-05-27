@@ -7,10 +7,12 @@
 namespace mca {
 namespace test {
 TEST(TestConfiguration, init) {
-    init();
-    ASSERT_EQ(threadNum(), std::thread::hardware_concurrency() - 1);
+    constexpr size_t THREAD_NUM = 10;
+    init(THREAD_NUM);
+    ASSERT_EQ(threadNum(), THREAD_NUM);
     ASSERT_EQ(limit(), 623);
     ASSERT_EQ(epsilon(), 1e-100);
+    init(0);
 }
 
 TEST(TestConfiguration, setThreadNum) {

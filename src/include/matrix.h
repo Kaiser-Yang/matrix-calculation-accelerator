@@ -449,7 +449,7 @@ template <class ELEMENT_TYPE>
 template <class T>
 Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(const Matrix<T> &other) {
     if (capacity < other.size()) {
-        capacity = _shape.size();
+        capacity = other.size();
         data     = std::make_unique<ELEMENT_TYPE[]>(other.size());
     }
     _shape = other.shape();
@@ -467,7 +467,7 @@ Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(const Matrix<T> &other) {
                 }
             });
     }
-    for (size_t i = (res.second - 1) * res.first; i < res.second * res.first; i++) {
+    for (size_t i = (res.second - 1) * res.first; i < size(); i++) {
         (*this)[i] = static_cast<ELEMENT_TYPE>(other[i]);
     }
     for (auto &item : returnValue) { item.get(); }
@@ -515,7 +515,7 @@ Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(
             });
     }
 
-    for (size_t i = (res.second - 1) * res.first; i < res.second * res.first; i++) {
+    for (size_t i = (res.second - 1) * res.first; i < size(); i++) {
         (*this)[i] =
             static_cast<ELEMENT_TYPE>(std::data(std::data(init)[i / columns()])[i % columns()]);
     }
@@ -556,7 +556,7 @@ Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(const std::vector<std::vec
                 }
             });
     }
-    for (size_t i = (res.second - 1) * res.first; i < res.second * res.first; i++) {
+    for (size_t i = (res.second - 1) * res.first; i < size(); i++) {
         (*this)[i] = static_cast<ELEMENT_TYPE>(init[i / columns()][i % columns()]);
     }
     for (auto &item : returnValue) { item.get(); }
@@ -580,7 +580,7 @@ Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(const T *data) {
                 }
             });
     }
-    for (size_t i = (res.second - 1) * res.first; i < res.second * res.first; i++) {
+    for (size_t i = (res.second - 1) * res.first; i < size(); i++) {
         (*this)[i] = static_cast<ELEMENT_TYPE>(data[i]);
     }
     for (auto &item : returnValue) { item.get(); }
@@ -665,7 +665,7 @@ void Matrix<ELEMENT_TYPE>::fill(const ELEMENT_TYPE &value, const size_t &pos) {
             });
     }
     // let main thread calculate too
-    std::fill(dataPtr() + (res.second - 1) * res.first, dataPtr() + size(), value);
+    std::fill(dataPtr() + (res.second - 1) * res.first + pos, dataPtr() + size(), value);
 
     // make sure all the sub threads are finished
     for (auto &item : returnValue) { item.get(); }
