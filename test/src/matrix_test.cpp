@@ -42,8 +42,8 @@ TEST(TestMatrix, constructors) {
     Matrix<int> m1(Shape{3, 3}, -1);
     ASSERT_EQ(m1.shape(), Shape(3, 3));
     ASSERT_NE(m1.dataPtr(), nullptr);
-    for (size_t i = 0; i < m.rows(); i++) {
-        for (size_t j = 0; j < m.columns(); j++) { ASSERT_EQ(m.get(i, j), -1); }
+    for (size_t i = 0; i < m1.rows(); i++) {
+        for (size_t j = 0; j < m1.columns(); j++) { ASSERT_EQ(m1.get(i, j), -1); }
     }
 
     // construct from a std::initializer_list
