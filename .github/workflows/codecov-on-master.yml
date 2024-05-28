@@ -16,7 +16,7 @@ jobs:
         run: |
           git fetch origin master:master
           git checkout master
-          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -Dmca_GENERATE_COVERAGE=on
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -Dmca_GENERATE_COVERAGE=on
           cmake --build build
 
       - name: Install LCOV
