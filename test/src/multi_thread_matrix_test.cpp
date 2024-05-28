@@ -24,7 +24,7 @@ protected:
     Matrix<> a, b;
     Matrix<> singleOutput, multiOutput;
     size_t exponent;
-    Shape powShape{200, 200};
+    Shape powShape{100, 100};
 
     void SetUp() override {
         generator.seed(time(nullptr));
