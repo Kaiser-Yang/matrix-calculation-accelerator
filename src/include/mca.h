@@ -316,25 +316,23 @@ bool operator>(const Matrix<T1> &a, const Matrix<T2> &b) {}
 template <class T1, class T2>
 bool operator>=(const Matrix<T1> &a, const Matrix<T2> &b) {
     if (a.shape() != b.shape()) { return false; }
-    if (threadNum() == 0 || limit() > a.size()) { 
-        return greaterEqualSingleThread(a, b, 0, a.size()); 
+    if (threadNum() == 0 || limit() > a.size()) {
+        return greaterEqualSingleThread(a, b, 0, a.size());
     }
     auto res = threadCalculationTaskNum(a.size());
     std::vector<std::future<void>> returnValue(res.second - 1);
     std::atomic<bool> flag(true);
-    for (size_t i = 0; i < res.second - 1; i ++) {
-        returnValue[i] = threadPool().addTask([start = i * res.first, &a, &b, len = res.first, &flag]() {
-            if (!greaterEqualSingleThread(a, b, start, len)) { 
-                flag.store(false);
-            } 
-        });
+    for (size_t i = 0; i < res.second - 1; i++) {
+        returnValue[i] =
+            threadPool().addTask([start = i * res.first, &a, &b, len = res.first, &flag]() {
+                if (!greaterEqualSingleThread(a, b, start, len)) { flag.store(false); }
+            });
     }
-    if (!greaterEqualSingleThread(a, b, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first)) {
+    if (!greaterEqualSingleThread(
+            a, b, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first)) {
         flag.store(false);
     }
-    for (auto &item : returnValue) {
-        item.get();
-    }
+    for (auto &item : returnValue) { item.get(); }
     return flag.load();
 }
 
