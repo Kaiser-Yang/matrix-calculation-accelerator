@@ -242,13 +242,6 @@ void operator-=(Matrix<T1> &a, const Matrix<T2> &b);
 template <class T1, class T2>
 void operator*=(Matrix<T1> &a, const Matrix<T2> &b);
 
-/* Calculate a /= b using multi-thread, the result will be stored in a
- * NOTE: a's shape must be same with b'shape
- *       the calculation will first calculate as std::common_type<T1, T2>
- *       then use static_cast<T1> */
-template <class T1, class T2>
-void operator/=(Matrix<T1> &a, const Matrix<T2> &b);
-
 /* Calculate a += number using multi-thread, the result will be stored in a
  * NOTE: the calculation will first calculate as std::common_type<T1, T2>
  *       then use static_cast<T1> */
@@ -306,9 +299,25 @@ bool operator!=(const Matrix<T1> &a, const Matrix<T2> &b) {}
 // TODO
 template <class T1, class T2>
 bool operator<(const Matrix<T1> &a, const Matrix<T2> &b) {}
-// TODO
+
 template <class T1, class T2>
-bool operator<=(const Matrix<T1> &a, const Matrix<T2> &b) {}
+bool operator<=(const Matrix<T1> &a, const Matrix<T2> &b) {
+    if (a.shape() != b.shape()) { return false; }
+    if (threadNum() == 0 || limit() > a.size()) { return lessEqualSingleThread(a, b, 0, a.size()); }
+    auto res = threadCalculationTaskNum(a.size());
+    std::vector<std::future<bool>> returnValue(res.second - 1);
+    for (size_t i = 0; i < res.second - 1; i++) {
+        returnValue[i] =
+            threadPool().addTask([start = i * res.first, &a, &b, len = res.first]() -> bool {
+                return lessEqualSingleThread(a, b, start, len);
+            });
+    }
+    bool result = lessEqualSingleThread(
+        a, b, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+    for (auto &item : returnValue) { result &= item.get(); }
+    return result;
+}
+
 // TODO
 template <class T1, class T2>
 bool operator>(const Matrix<T1> &a, const Matrix<T2> &b) {}
@@ -419,17 +428,64 @@ inline Matrix<std::common_type_t<T, Number>> operator+(const Number &number, con
 // TODO
 template <class T, class Number, class>
 Matrix<std::common_type_t<T, Number>> operator-(const Matrix<T> &a, const Number &number) {}
-// TODO
+
 template <class Number, class T, class>
-Matrix<std::common_type_t<T, Number>> operator-(const Number &number, const Matrix<T> &a) {}
+Matrix<std::common_type_t<T, Number>> operator-(const Number &number, const Matrix<T> &a) {
+    using CommonType = std::common_type_t<T, Number>;
+    Matrix<CommonType> result(a.shape(), CommonType(0));
+    // single mode
+    if (threadNum() == 0 || limit() > a.size()) {
+        subtractSingleThread(number, a, result, 0, a.size());
+        return result;
+    }
+    // threadCalculation and taskNum
+    auto res = threadCalculationTaskNum(a.size());
+    std::vector<std::future<void>> returnValue(res.second - 1);
+    for (size_t i = 0; i < res.second - 1; i++) {
+        returnValue[i] =
+            threadPool().addTask([&result, start = i * res.first, &a, &number, len = res.first]() {
+                subtractSingleThread(number, a, result, start, len);
+            });
+    }
+    // let main thread calculate too
+    subtractSingleThread(
+        number, a, result, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+    // make sure all the sub threads are finished
+    for (auto &item : returnValue) { item.get(); }
+    return result;
+}
 // TODO
 template <class T, class Number, class>
 Matrix<std::common_type_t<T, Number>> operator*(const Matrix<T> &a, const Number &number) {}
 template <class Number, class T, class>
 Matrix<std::common_type_t<T, Number>> operator*(const Number &number, const Matrix<T> &a) {}
-// TODO
+
 template <class T, class Number, class>
-Matrix<std::common_type_t<T, Number>> operator/(const Matrix<T> &a, const Number &number) {}
+Matrix<std::common_type_t<T, Number>> operator/(const Matrix<T> &a, const Number &number) {
+    using CommonType = std::common_type_t<T, Number>;
+    Matrix<CommonType> result(a.shape(), CommonType(0));
+    // single mode
+    if (threadNum() == 0 || limit() > a.size()) {
+        divideSingleThread(a, number, result, 0, a.size());
+        return result;
+    }
+    // threadCalculation and taskNum
+    auto res = threadCalculationTaskNum(a.size());
+    std::vector<std::future<void>> returnValue(res.second - 1);
+    for (size_t i = 0; i < res.second - 1; i++) {
+        returnValue[i] =
+            threadPool().addTask([&result, start = i * res.first, &a, &number, len = res.first]() {
+                divideSingleThread(a, number, result, start, len);
+            });
+    }
+    // let main thread calculate too
+    divideSingleThread(
+        a, number, result, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+    // make sure all the sub threads are finished
+    for (auto &item : returnValue) { item.get(); }
+    return result;
+}
+
 // TODO
 template <class Number, class T, class>
 Matrix<std::common_type_t<T, Number>> operator/(const Number &number, const Matrix<T> &a) {}
@@ -494,10 +550,6 @@ void operator*=(Matrix<T1> &a, const Matrix<T2> &b) {
     a = std::move(result);
 }
 
-// TODO
-template <class T1, class T2>
-void operator/=(Matrix<T1> &a, const Matrix<T2> &b) {}
-
 template <class T, class Number, class>
 void operator+=(Matrix<T> &a, const Number &number) {
     // single mode
@@ -528,18 +580,60 @@ inline void operator+=(const Number &number, Matrix<T> &a) {
 // TODO
 template <class T, class Number, class>
 void operator-=(Matrix<T> &a, const Number &number) {}
-// TODO
+
 template <class Number, class T, class>
-void operator-=(const Number &number, Matrix<T> &a) {}
+void operator-=(const Number &number, Matrix<T> &a) {
+    // single mode
+    if (threadNum() == 0 || limit() > a.size()) {
+        subtractSingleThread(number, a, a, 0, a.size());
+        return;
+    }
+    // threadCalculation and taskNum
+    auto res = threadCalculationTaskNum(a.size());
+    std::vector<std::future<void>> returnValue(res.second - 1);
+    for (size_t i = 0; i < res.second - 1; i++) {
+        returnValue[i] =
+            threadPool().addTask([start = i * res.first, &a, &number, len = res.first]() {
+                subtractSingleThread(number, a, a, start, len);
+            });
+    }
+    // let main thread calculate too
+    subtractSingleThread(
+        number, a, a, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+    // make sure all the sub threads are finished
+    for (auto &item : returnValue) { item.get(); }
+}
+
 // TODO
 template <class T, class Number, class>
 void operator*=(Matrix<T> &a, const Number &number) {}
 // TODO
 template <class Number, class T, class>
 void operator*=(const Number &number, Matrix<T> &a) {}
-// TODO
+
 template <class T, class Number, class>
-void operator/=(Matrix<T> &a, const Number &number) {}
+void operator/=(Matrix<T> &a, const Number &number) {
+    // single mode
+    if (threadNum() == 0 || limit() > a.size()) {
+        divideSingleThread(a, number, a, 0, a.size());
+        return;
+    }
+    // threadCalculation and taskNum
+    auto res = threadCalculationTaskNum(a.size());
+    std::vector<std::future<void>> returnValue(res.second - 1);
+    for (size_t i = 0; i < res.second - 1; i++) {
+        returnValue[i] =
+            threadPool().addTask([start = i * res.first, &a, &number, len = res.first]() {
+                divideSingleThread(a, number, a, start, len);
+            });
+    }
+    // let main thread calculate too
+    divideSingleThread(
+        a, number, a, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+    // make sure all the sub threads are finished
+    for (auto &item : returnValue) { item.get(); }
+}
+
 // TODO
 template <class Number, class T, class>
 void operator/=(const Number &number, Matrix<T> &a) {}
