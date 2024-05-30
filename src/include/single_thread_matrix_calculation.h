@@ -565,7 +565,7 @@ void multiplySingleThread(const Matrix<T1> &a,
     for (size_t t = pos; t < pos + len; t++) {
         i                = t / output.columns();
         j                = t % output.columns();
-        output.get(i, j) = O(0);
+        output.get(i, j) = O();
         for (size_t k = 0; k < a.columns(); k++) {
             // clang-format off
             output.get(i, j) = static_cast<O>(static_cast<CommonType>(output.get(i, j)) +

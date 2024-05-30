@@ -6,8 +6,10 @@
 #include <type_traits>
 #include <vector>
 
+#include "identity_matrix.h"
 #include "matrix_declaration.h"
 #include "mca_utility.h"
+#include "shape.h"
 #include "single_thread_matrix_calculation.h"
 #include "thread_pool.h"
 
@@ -397,7 +399,7 @@ Matrix<std::common_type_t<T1, T2>> operator*(const Matrix<T1> &a, const Matrix<T
 template <class T, class Number, class>
 Matrix<std::common_type_t<T, Number>> operator+(const Matrix<T> &a, const Number &number) {
     using CommonType = std::common_type_t<T, Number>;
-    Matrix<CommonType> result(a.shape(), CommonType(0));
+    Matrix<CommonType> result(a.shape());
     // single mode
     if (threadNum() == 0 || limit() > a.size()) {
         addSingleThread(number, a, result, 0, a.size());
@@ -432,7 +434,7 @@ Matrix<std::common_type_t<T, Number>> operator-(const Matrix<T> &a, const Number
 template <class Number, class T, class>
 Matrix<std::common_type_t<T, Number>> operator-(const Number &number, const Matrix<T> &a) {
     using CommonType = std::common_type_t<T, Number>;
-    Matrix<CommonType> result(a.shape(), CommonType(0));
+    Matrix<CommonType> result(a.shape());
     // single mode
     if (threadNum() == 0 || limit() > a.size()) {
         subtractSingleThread(number, a, result, 0, a.size());
@@ -463,7 +465,7 @@ Matrix<std::common_type_t<T, Number>> operator*(const Number &number, const Matr
 template <class T, class Number, class>
 Matrix<std::common_type_t<T, Number>> operator/(const Matrix<T> &a, const Number &number) {
     using CommonType = std::common_type_t<T, Number>;
-    Matrix<CommonType> result(a.shape(), CommonType(0));
+    Matrix<CommonType> result(a.shape());
     // single mode
     if (threadNum() == 0 || limit() > a.size()) {
         divideSingleThread(a, number, result, 0, a.size());
@@ -530,7 +532,7 @@ void operator-=(Matrix<T1> &a, const Matrix<T2> &b) {
 template <class T1, class T2>
 void operator*=(Matrix<T1> &a, const Matrix<T2> &b) {
     assert(a.columns() == b.rows());
-    Matrix<T1> result(Shape{a.rows(), b.columns()});
+    Matrix<T1> result(Shape{a.rows(), b.columns()}, IdentityMatrix());
     if (threadNum() == 0 || limit() > result.size()) {
         multiplySingleThread(a, b, result, 0, result.size());
         a = std::move(result);

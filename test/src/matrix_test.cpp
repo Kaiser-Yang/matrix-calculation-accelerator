@@ -55,7 +55,7 @@ TEST(TestMatrix, constructors) {
     }
 
     // construct an identity matrix
-    Matrix<int> m3(Shape{3, 3});
+    Matrix<int> m3(Shape{3, 3}, IdentityMatrix());
     Matrix<int> result({{1, 0, 0}, {0, 1, 0}, {0, 0, 1}});
     ASSERT_TRUE(equalSingleThread(m3, result, 0, m3.size()));
 
