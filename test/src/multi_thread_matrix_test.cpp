@@ -4,6 +4,7 @@
 #include <ctime>
 #include <random>
 
+#include "identity_matrix.h"
 #include "matrix.h"
 #include "mca.h"
 #include "single_thread_matrix_calculation.h"
@@ -78,7 +79,7 @@ TEST_F(TestMatrixMultiThread, constructors) {
     Matrix<> m1(squareShape, value);
 
     // construct an identity matrix
-    Matrix<> m2(squareShape);
+    Matrix<> m2(squareShape, IdentityMatrix());
 
     // construct from a pointer
     Matrix<> m3(squareShape, array.data(), array.size());
@@ -108,7 +109,7 @@ TEST_F(TestMatrixMultiThread, constructors) {
     Matrix<> n1(squareShape, value);
 
     // construct an identity matrix
-    Matrix<> n2(squareShape);
+    Matrix<> n2(squareShape, IdentityMatrix());
 
     // construct from a pointer
     Matrix<> n3(squareShape, array.data(), array.size());

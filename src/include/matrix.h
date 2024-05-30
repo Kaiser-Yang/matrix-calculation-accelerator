@@ -9,36 +9,23 @@
 #include <utility>
 #include <vector>
 
+#include "identity_matrix.h"
 #include "matrix_declaration.h"
 #include "mca.h"
+#include "shape.h"
 #include "single_thread_matrix_calculation.h"
 
 namespace mca {
-struct Shape {
-    size_t rows    = 0;
-    size_t columns = 0;
-
-    explicit Shape() = default;
-
-    explicit Shape(size_t rows, size_t columns);
-
-    bool operator==(const Shape &other) const;
-
-    bool operator!=(const Shape &other) const;
-
-    size_t size() const;
-};
-
 template <class ELEMENT_TYPE>
 class Matrix {
 public:
     using ElementType = ELEMENT_TYPE;
 
     /* Construct an empty matrix */
-    explicit Matrix() = default;
+    explicit inline Matrix() = default;
 
     /* Construct an identity matrix */
-    explicit Matrix(const Shape &shape);
+    explicit Matrix(const Shape &shape, const IdentityMatrix &);
 
     /* Construct a matrix from a initializer_list
      * You can use this like Matrix<>({{1, 2}, {3, 4}})
@@ -53,7 +40,7 @@ public:
     explicit inline Matrix(const Shape &shape, const ELEMENT_TYPE *data, const size_t &len);
 
     /* Construct a matrix with shape and defaultValue */
-    explicit inline Matrix(const Shape &shape, const ELEMENT_TYPE &defaultValue);
+    explicit inline Matrix(const Shape &shape, const ELEMENT_TYPE &defaultValue = ELEMENT_TYPE());
 
     /* Construct a diagonal matrix, the diag is the diagonal elements
      * Matrix<>({1, 2, 3, 4}) will construct a matrix whose shape is 4 * 4,
@@ -305,18 +292,8 @@ private:
     //     friend void operator/=(const Number &number, Matrix<T> &a);
 };
 
-inline Shape::Shape(size_t rows, size_t columns) : rows(rows), columns(columns) {}
-
-inline bool Shape::operator==(const Shape &other) const {
-    return rows == other.rows && columns == other.columns;
-}
-
-inline bool Shape::operator!=(const Shape &other) const { return !(*this == other); }
-
-inline size_t Shape::size() const { return rows * columns; }
-
 template <class ELEMENT_TYPE>
-Matrix<ELEMENT_TYPE>::Matrix(const Shape &shape) {
+Matrix<ELEMENT_TYPE>::Matrix(const Shape &shape, const IdentityMatrix &) {
     if (shape.size() == 0) { return; }
     _shape   = shape;
     capacity = size();
@@ -753,7 +730,7 @@ void Matrix<ELEMENT_TYPE>::pow(const size_t &exponent, Matrix<O> &output) const 
     size_t b = exponent;
     Matrix<ELEMENT_TYPE> a(*this);
     // make output an identity matrix
-    output = Matrix<O>(output.shape());
+    output = Matrix<O>(output.shape(), IdentityMatrix());
     while (b > 0) {
         if (b & 1) { output *= a; }
         if ((b >> 1) == 0) { break; }
