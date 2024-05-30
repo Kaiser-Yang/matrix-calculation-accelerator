@@ -305,17 +305,19 @@ bool operator<(const Matrix<T1> &a, const Matrix<T2> &b) {}
 template <class T1, class T2>
 bool operator<=(const Matrix<T1> &a, const Matrix<T2> &b) {
     if (a.shape() != b.shape()) { return false; }
-    if (threadNum() == 0 || limit() > a.size()) { return lessEqualSingleThread(a, b, 0, a.size()); }
+    if (threadNum() == 0 || limit() > a.size()) {
+        return lessEqualSingleThread(a, b, 0, a.size(), epsilon());
+    }
     auto res = threadCalculationTaskNum(a.size());
     std::vector<std::future<bool>> returnValue(res.second - 1);
     for (size_t i = 0; i < res.second - 1; i++) {
         returnValue[i] =
             threadPool().addTask([start = i * res.first, &a, &b, len = res.first]() -> bool {
-                return lessEqualSingleThread(a, b, start, len);
+                return lessEqualSingleThread(a, b, start, len, epsilon());
             });
     }
     bool result = lessEqualSingleThread(
-        a, b, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+        a, b, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first, epsilon());
     for (auto &item : returnValue) { result &= item.get(); }
     return result;
 }
@@ -328,18 +330,18 @@ template <class T1, class T2>
 bool operator>=(const Matrix<T1> &a, const Matrix<T2> &b) {
     if (a.shape() != b.shape()) { return false; }
     if (threadNum() == 0 || limit() > a.size()) {
-        return greaterEqualSingleThread(a, b, 0, a.size());
+        return greaterEqualSingleThread(a, b, 0, a.size(), epsilon());
     }
     auto res = threadCalculationTaskNum(a.size());
     std::vector<std::future<bool>> returnValue(res.second - 1);
     for (size_t i = 0; i < res.second - 1; i++) {
         returnValue[i] =
             threadPool().addTask([start = i * res.first, &a, &b, len = res.first]() -> bool {
-                return greaterEqualSingleThread(a, b, start, len);
+                return greaterEqualSingleThread(a, b, start, len, epsilon());
             });
     }
     bool result = greaterEqualSingleThread(
-        a, b, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+        a, b, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first, epsilon());
     for (auto &item : returnValue) { result &= item.get(); }
     return result;
 }
