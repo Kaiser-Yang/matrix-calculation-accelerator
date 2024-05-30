@@ -61,7 +61,7 @@ TEST(TestMatrix, constructors) {
 
     // construct from a pointer
     int data[] = {1, 2, 3};
-    Matrix<int> m4({3, 3}, &data[0], 3);
+    Matrix<int> m4(Shape{3, 3}, &data[0], 3);
     result = Matrix<int>({{1, 2, 3}, {0, 0, 0}, {0, 0, 0}});
     ASSERT_TRUE(equalSingleThread(m4, result, 0, m4.size()));
 
@@ -93,7 +93,7 @@ TEST(TestMatrix, assignments) {
     ASSERT_EQ(m.dataPtr(), nullptr);
 
     // move assignment from Matrix<int>
-    m = Matrix<int>({3, 3}, 1);
+    m = Matrix<int>(Shape{3, 3}, 1);
     ASSERT_EQ(m.shape(), Shape(3, 3));
     ASSERT_NE(m.dataPtr(), nullptr);
     for (size_t i = 0; i < m.rows(); i++) {
@@ -101,12 +101,12 @@ TEST(TestMatrix, assignments) {
     }
 
     // copy assignment from Matrix<double>
-    m = Matrix<>({3, 3}, 1.5);
-    Matrix<int> result({3, 3}, 1);
+    m = Matrix<>(Shape{3, 3}, 1.5);
+    Matrix<int> result(Shape{3, 3}, 1);
     ASSERT_TRUE(equalSingleThread(m, result, 0, m.size()));
 
     // copy assignment from Matrix<int>
-    Matrix<int> newN({3, 3}, 1);
+    Matrix<int> newN(Shape{3, 3}, 1);
     m = newN;
     ASSERT_EQ(m.shape(), Shape(3, 3));
     ASSERT_NE(m.dataPtr(), nullptr);
@@ -115,14 +115,14 @@ TEST(TestMatrix, assignments) {
     }
 
     // copy assignment from Matrix<double>
-    Matrix<double> newM = Matrix<>({3, 3}, 1.5);
+    Matrix<double> newM = Matrix<>(Shape{3, 3}, 1.5);
     result              = newM;
     ASSERT_TRUE(equalSingleThread(m, result, 0, m.size()));
 
     // copy assignment from a pointer
     double data[9] = {1.5, 2.5, 3.5};
     m              = &data[0];
-    result         = Matrix<>({3, 3}, &data[0], 3);
+    result         = Matrix<>(Shape{3, 3}, &data[0], 3);
     ASSERT_TRUE(equalSingleThread(m, result, 0, m.size()));
 
     // copy assignment from std::initializer_list
@@ -152,14 +152,14 @@ TEST(TestMatrix, geter) {
 TEST(TestMatrix, reshape) {
     Matrix<int> m({{1, 2, 3, 4, 5, 6}});
     ASSERT_EQ(m.shape(), Shape(1, 6));
-    m.reshape({2, 3});
+    m.reshape(Shape{2, 3});
     ASSERT_EQ(m.shape(), Shape(2, 3));
 }
 
 TEST(TestMatrix, isSquare) {
     Matrix<int> m(Shape{3, 3});
     ASSERT_TRUE(m.isSquare());
-    m.reshape({1, 9});
+    m.reshape(Shape{1, 9});
     ASSERT_FALSE(m.isSquare());
 }
 }  // namespace test

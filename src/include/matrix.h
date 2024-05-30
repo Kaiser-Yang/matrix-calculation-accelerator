@@ -18,9 +18,9 @@ struct Shape {
     size_t rows    = 0;
     size_t columns = 0;
 
-    Shape() = default;
+    explicit Shape() = default;
 
-    Shape(size_t rows, size_t columns);
+    explicit Shape(size_t rows, size_t columns);
 
     bool operator==(const Shape &other) const;
 
@@ -35,32 +35,32 @@ public:
     using ElementType = ELEMENT_TYPE;
 
     /* Construct an empty matrix */
-    Matrix() = default;
+    explicit Matrix() = default;
 
     /* Construct an identity matrix */
-    Matrix(const Shape &shape);
+    explicit Matrix(const Shape &shape);
 
     /* Construct a matrix from a initializer_list
      * You can use this like Matrix<>({{1, 2}, {3, 4}})
      * NOTE: if you use Matrix({{1, 2}, {3, 4}}) the ELEMENT_TYPE will be int rather than double */
-    inline Matrix(const std::initializer_list<std::initializer_list<ELEMENT_TYPE>> &init);
+    explicit inline Matrix(const std::initializer_list<std::initializer_list<ELEMENT_TYPE>> &init);
 
     /* Construct a matrix from a vector */
-    inline Matrix(const std::vector<std::vector<ELEMENT_TYPE>> &init);
+    explicit inline Matrix(const std::vector<std::vector<ELEMENT_TYPE>> &init);
 
     /* Construct a matrix from a pointer
      * when len is less than shape.size(), the rest part will be filled with ELEMENT_TYPE() */
-    inline Matrix(const Shape &shape, const ELEMENT_TYPE *data, const size_t &len);
+    explicit inline Matrix(const Shape &shape, const ELEMENT_TYPE *data, const size_t &len);
 
     /* Construct a matrix with shape and defaultValue */
-    inline Matrix(const Shape &shape, const ELEMENT_TYPE &defaultValue);
+    explicit inline Matrix(const Shape &shape, const ELEMENT_TYPE &defaultValue);
 
     /* Construct a diagonal matrix, the diag is the diagonal elements
      * Matrix<>({1, 2, 3, 4}) will construct a matrix whose shape is 4 * 4,
      * and diagonal elements are 1, 2, 3, 4 other elements will be ELEMENT_TYPE()
      * In this case, double() will be 0 */
-    Matrix(const std::initializer_list<ELEMENT_TYPE> &diag);
-    Matrix(const std::vector<ELEMENT_TYPE> &diag);
+    explicit Matrix(const std::initializer_list<ELEMENT_TYPE> &diag);
+    explicit Matrix(const std::vector<ELEMENT_TYPE> &diag);
 
     /* Copy constructor
      * If the other matrix's ELEMENT_TYPE is not same with current matrix,
@@ -359,7 +359,7 @@ inline Matrix<ELEMENT_TYPE>::Matrix(const Shape &shape,
     if (shape.size() == 0) { return; }
     capacity   = shape.size();
     this->data = std::make_unique<ELEMENT_TYPE[]>(shape.size());
-    _shape     = {std::min(len, shape.size()), 1};
+    _shape     = Shape{std::min(len, shape.size()), 1};
     *this      = data;
     _shape     = shape;
     if (size() <= len) { return; }
@@ -379,7 +379,7 @@ inline Matrix<ELEMENT_TYPE>::Matrix(const Shape &shape, const ELEMENT_TYPE &defa
 template <class ELEMENT_TYPE>
 Matrix<ELEMENT_TYPE>::Matrix(const std::initializer_list<ELEMENT_TYPE> &diag) {
     if (diag.size() == 0) { return; }
-    _shape = {diag.size(), diag.size()};
+    _shape = Shape{diag.size(), diag.size()};
     data   = std::make_unique<ELEMENT_TYPE[]>(size());
     fill(ELEMENT_TYPE());
     if (threadNum() == 0 || limit() > rows()) {
@@ -403,7 +403,7 @@ Matrix<ELEMENT_TYPE>::Matrix(const std::initializer_list<ELEMENT_TYPE> &diag) {
 template <class ELEMENT_TYPE>
 Matrix<ELEMENT_TYPE>::Matrix(const std::vector<ELEMENT_TYPE> &diag) {
     if (diag.size() == 0) { return; }
-    _shape = {diag.size(), diag.size()};
+    _shape = Shape{diag.size(), diag.size()};
     data   = std::make_unique<ELEMENT_TYPE[]>(size());
     fill(ELEMENT_TYPE());
     if (threadNum() == 0 || limit() > rows()) {
