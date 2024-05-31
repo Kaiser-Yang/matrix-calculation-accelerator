@@ -166,25 +166,16 @@ public:
     void pow(const size_t &exponent, Matrix<O> &output) const;
     inline void pow(const size_t &exponent);
 
-    /* Transpose (*this), and store the result in output
-     * The function whose parameters do not include output will change (*this)
-     * NOTE: output must have the same shape with the current matrix after transposition
-     *       If O and ELEMENT_TYPE are not same, all the elements will first be cast to
-     *       std::common_type<O, ELEMENT_TYPE>, after calculation they will be cast into O
-     *       by using static_cast
+    /* Return the transposed matrix of (*this)
      * for example: a = [[1, 2, 3],
      *                   [2, 3, 4]]
-     *              a.powNumber(2, output)
-     *              output: [[1, 2],
+     *              a.transpose()
+     *              a: [[1, 2, 3],
+     *                  [2, 3, 4]]
+     *              return: [[1, 2],
      *                       [2, 3],
-     *                       [3, 4]]
-     *              a.numberPow(2)
-     *              a: [[1, 2],
-     *                  [2, 3],
-     *                  [3, 4]] */
-    template <class O>
-    void transpose(Matrix<O> &output) const;
-    void transpose();
+     *                       [3, 4]] */
+    Matrix transpose() const;
 
     /* Check if the matrix is a square matrix */
     inline bool isSquare() const;
@@ -676,12 +667,12 @@ inline void Matrix<ELEMENT_TYPE>::pow(const size_t &exponent) {
     pow(exponent, *this);
 }
 
-// TODO
 template <class ELEMENT_TYPE>
-template <class O>
-void Matrix<ELEMENT_TYPE>::transpose(Matrix<O> &output) const {}
-template <class ELEMENT_TYPE>
-void Matrix<ELEMENT_TYPE>::transpose() {}
+Matrix<ELEMENT_TYPE> Matrix<ELEMENT_TYPE>::transpose() const {
+    Matrix<ELEMENT_TYPE> output(Shape{columns(), rows()});
+    mca::transpose(*this, output);
+    return output;
+}
 
 template <class ELEMENT_TYPE>
 inline bool Matrix<ELEMENT_TYPE>::isSquare() const {
