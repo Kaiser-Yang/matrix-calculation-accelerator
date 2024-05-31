@@ -1,6 +1,8 @@
-#ifndef MCA_SHAP_H
-#define MCA_SHAP_H
+#ifndef MCA_SHAPE_H
+#define MCA_SHAPE_H
+
 #include <cstddef>
+
 namespace mca {
 struct Shape {
     size_t rows    = 0;

@@ -1,4 +1,4 @@
-#include "thread_pool.h"
+#include "mca/__mca_internal/thread_pool.h"
 
 #include <gtest/gtest.h>
 

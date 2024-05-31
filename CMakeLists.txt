@@ -12,7 +12,7 @@ if (WIN32)
 endif()
 
 option(mca_BUILD_SHARE_LIB "Build shared libraries rather than static libraries" on)
-option(mca_BUILD_TEST "Whether or not to build unit test" on)
+option(mca_BUILD_TEST "Whether or not to build unit test" off)
 option(mca_GENERATE_COVERAGE "Whether or not to generate codes coverage report" off)
 
 if (mca_GENERATE_COVERAGE)
@@ -27,6 +27,9 @@ if (mca_BUILD_SHARE_LIB)
 else()
     add_library(mca STATIC ${mca_SOURCE})
 endif()
+
+install(TARGETS mca DESTINATION lib)
+install(DIRECTORY src/include/mca DESTINATION include)
 
 find_package(Threads REQUIRED)
 target_link_libraries(mca PUBLIC Threads::Threads)

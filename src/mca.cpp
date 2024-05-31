@@ -1,8 +1,8 @@
-#include "mca.h"
+#include "mca/mca.h"
 
 #include <algorithm>
 
-#include "thread_pool.h"
+#include "mca/__mca_internal/thread_pool.h"
 
 namespace mca {
 

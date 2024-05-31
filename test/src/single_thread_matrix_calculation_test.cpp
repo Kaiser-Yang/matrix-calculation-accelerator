@@ -1,10 +1,10 @@
-#include "single_thread_matrix_calculation.h"
+#include "mca/__mca_internal/single_thread_matrix_calculation.h"
 
 #include <gtest/gtest.h>
 
 #include <cmath>
 
-#include "matrix.h"
+#include "mca/matrix.h"
 
 namespace mca {
 namespace test {

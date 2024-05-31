@@ -1,12 +1,12 @@
-#ifndef SINGLE_THREAD_MATRIX_CALCULATION
-#define SINGLE_THREAD_MATRIX_CALCULATION
+#ifndef MCA_SINGLE_THREAD_MATRIX_CALCULATION
+#define MCA_SINGLE_THREAD_MATRIX_CALCULATION
 
 #include <cassert>
 #include <cmath>
 #include <type_traits>
 
 #include "matrix_declaration.h"
-#include "mca_utility.h"
+#include "utility.h"
 
 namespace mca {
 /* Calculate number ^ a, and store the result in output

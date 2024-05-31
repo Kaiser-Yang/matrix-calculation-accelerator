@@ -1,5 +1,5 @@
-#ifndef MATRIX_H
-#define MATRIX_H
+#ifndef MCA_MATRIX_H
+#define MCA_MATRIX_H
 
 #include <cassert>
 #include <cstring>
@@ -9,12 +9,12 @@
 #include <utility>
 #include <vector>
 
+#include "__mca_internal/matrix_declaration.h"
+#include "__mca_internal/single_thread_matrix_calculation.h"
 #include "diag.h"
 #include "identity_matrix.h"
-#include "matrix_declaration.h"
 #include "mca.h"
 #include "shape.h"
-#include "single_thread_matrix_calculation.h"
 
 namespace mca {
 template <class ELEMENT_TYPE>

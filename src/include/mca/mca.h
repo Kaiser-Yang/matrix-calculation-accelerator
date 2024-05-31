@@ -1,17 +1,17 @@
-#ifndef MCA_PRIVATE_H
-#define MCA_PRIVATE_H
+#ifndef MCA_MCA_H
+#define MCA_MCA_H
 
 #include <future>
 #include <thread>
 #include <type_traits>
 #include <vector>
 
+#include "__mca_internal/matrix_declaration.h"
+#include "__mca_internal/single_thread_matrix_calculation.h"
+#include "__mca_internal/thread_pool.h"
+#include "__mca_internal/utility.h"
 #include "identity_matrix.h"
-#include "matrix_declaration.h"
-#include "mca_utility.h"
 #include "shape.h"
-#include "single_thread_matrix_calculation.h"
-#include "thread_pool.h"
 
 namespace mca {
 /* Initialize the mca, before using mca, you must call init
