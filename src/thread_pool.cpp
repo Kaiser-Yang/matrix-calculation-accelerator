@@ -2,6 +2,9 @@
 
 namespace mca {
 void ThreadPool::resize(size_t newSize) {
+    // if the new size is equal with the old one, do nothing
+    if (newSize == size()) { return; }
+
     clear();
     stopped.store(false, std::memory_order_relaxed);
     assert(taskQueue.size() == 0);
