@@ -20,6 +20,7 @@ protected:
     static constexpr int THREAD_NUM = 10;
     std::default_random_engine generator;
     Shape squareShape{1000, 1000};
+    Shape rectangleShape{100, 121};
     std::vector<std::vector<double>> vec;
     std::vector<double> array;
     std::vector<double> diag;
@@ -465,74 +466,7 @@ TEST_F(TestMatrixMultiThread, assignmentFromVector) {
 }
 
 TEST_F(TestMatrixMultiThread, transpose) {
-    // transpose(a)
-    singleOutput = multiOutput = Matrix<>(squareShape);
-    for (size_t i = 0; i < singleOutput.rows(); i++) {
-        for (size_t j = 0; j < singleOutput.columns(); j++) {
-            singleOutput.get(i, j) = multiOutput.get(i, j) = generator() % MAX_VALUE;
-        }
-    }
-    auto startTime = high_resolution_clock::now();
-    transpose(singleOutput);
-    auto endTime       = high_resolution_clock::now();
-    auto executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
-    // record time in gtest
-    testing::Test::RecordProperty("SinglceTime", executionTime);
-
-    init(THREAD_NUM);
-    // the expected time in multi thread
-    testing::Test::RecordProperty("BaseTime", executionTime / (threadNum() + 1));
-
-    // get the multi-thread mode time
-    startTime = high_resolution_clock::now();
-    // get multi-thread transpose in multiOutput
-    transpose(multiOutput);
-    endTime       = high_resolution_clock::now();
-    executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
-    // record multi-thread time in gtest
-    testing::Test::RecordProperty("MultiTime", executionTime);
-
-    // TODO this should be updated with Matrix::operator== with multi-thread
-    // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
-}
-
-TEST_F(TestMatrixMultiThread, transposeToOutput) {
-    // transpose(a,output)
-    singleOutput = multiOutput = Matrix<>(squareShape);
-    Matrix<> a(squareShape);
-    for (size_t i = 0; i < a.rows(); i++) {
-        for (size_t j = 0; j < a.columns(); j++) { a.get(i, j) = generator() % MAX_VALUE; }
-    }
-
-    auto startTime = high_resolution_clock::now();
-    transpose(a, singleOutput);
-    auto endTime       = high_resolution_clock::now();
-    auto executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
-    // record time in gtest
-    testing::Test::RecordProperty("SingleTime", executionTime);
-
-    init(THREAD_NUM);
-    // the expected time in multi thread
-    testing::Test::RecordProperty("BaseTime", executionTime / (threadNum() + 1));
-
-    // get the multi-thread mode time
-    startTime = high_resolution_clock::now();
-    // get multi-thread transpose in multiOutput
-    transpose(a, multiOutput);
-    endTime       = high_resolution_clock::now();
-    executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
-    // record multi-thread time in gtest
-    testing::Test::RecordProperty("MultiTime", executionTime);
-
-    // TODO this should be updated with Matrix::operator== with multi-thread
-    // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
-}
-
-TEST_F(TestMatrixMultiThread, selfTranspose) {
-    // a.transpose()
-    Matrix<> a(squareShape);
+    a = Matrix<>(rectangleShape);
     for (size_t i = 0; i < a.rows(); i++) {
         for (size_t j = 0; j < a.columns(); j++) { a.get(i, j) = generator() % MAX_VALUE; }
     }

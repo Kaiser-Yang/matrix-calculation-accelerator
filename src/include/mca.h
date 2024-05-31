@@ -298,7 +298,7 @@ void operator/=(const Number &number, Matrix<T> &a);
  *              transpose(a)
  *              a: [[1, 2],
  *                  [2, 3],
- *                  [3, 4] */
+ *                  [3, 4]] */
 template <class T>
 void transpose(Matrix<T> &a);
 
@@ -314,7 +314,7 @@ void transpose(Matrix<T> &a);
  *                  [2, 3, 4]]
  *              output: [[1, 2],
  *                       [2, 3],
- *                       [3, 4] */
+ *                       [3, 4]] */
 template <class T, class O>
 void transpose(const Matrix<T> &a, Matrix<O> &output);
 
@@ -773,38 +773,17 @@ void operator/=(const Number &number, Matrix<T> &a) {
 
 template <class T>
 void transpose(Matrix<T> &a) {
-    // single mode
-    Matrix<T> output(a.shape());
-    if (threadNum() == 0 || limit() > a.size()) {
-        transposeSingleThread(a, output, 0, a.size());
-        a = std::move(output);
-        return;
-    }
-    // threadCalculation and taskNum
-    auto res = threadCalculationTaskNum(a.size());
-
-    // the return value of every task, use this to make sure every task is finished
-    std::vector<std::future<void>> returnValue(res.second - 1);
-    // assign task for every sub-thread
-    for (size_t i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([&a, start = i * res.first, len = res.first, &output]() {
-                transposeSingleThread(a, output, start, len);
-            });
-    }
-    // let main thread calculate took
-    transposeSingleThread(
-        a, output, (res.second - 1) * res.first, (a.size() - (res.second - 1) * res.first));
-
-    // make sure all the sub threads are finished
-    for (auto &item : returnValue) { item.get(); }
+    Matrix<T> output(Shape{a.columns(), a.rows()});
+    transpose(a, output);
     a = std::move(output);
 }
 
 template <class T, class O>
 void transpose(const Matrix<T> &a, Matrix<O> &output) {
+    assert(a.rows() == output.columns());
+    assert(a.columns() == output.rows());
     // single mode
-    if (threadNum() == 0 || limit() > a.size()) {
+    if (threadNum() == 0 || limit() >= a.size()) {
         transposeSingleThread(a, output, 0, a.size());
         return;
     }
