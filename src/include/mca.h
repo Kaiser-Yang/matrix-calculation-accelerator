@@ -788,7 +788,7 @@ void transpose(Matrix<T> &a) {
     // assign task for every sub-thread
     for (size_t i = 0; i < res.second - 1; i++) {
         returnValue[i] =
-            threadPool().addTask([a, start = i * res.first, len = res.first, &output]() {
+            threadPool().addTask([&a, start = i * res.first, len = res.first, &output]() {
                 transposeSingleThread(a, output, start, len);
             });
     }
