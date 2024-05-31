@@ -292,6 +292,32 @@ void operator/=(Matrix<T> &a, const Number &number);
 template <class Number, class T, class = std::enable_if_t<!is_matrix_v<Number>>>
 void operator/=(const Number &number, Matrix<T> &a);
 
+/* Transpose a in place using multi-thread
+ * for example: a = [[1, 2, 3],
+ *                   [2, 3, 4]]
+ *              transpose(a)
+ *              a: [[1, 2],
+ *                  [2, 3],
+ *                  [3, 4] */
+template <class T>
+void transpose(Matrix<T> &a);
+
+/* Store the transposed matrix of a in output using multi-thread
+ * NOTE: output must have the same shape with the current matrix after transposition
+ *       If O and T are not same, all the elements will first be cast to
+ *       std::common_type<O, T>, after calculation they will be cast into O
+ *       by using static_cast
+ * for example: a = [[1, 2, 3],
+ *                   [2, 3, 4]]
+ *              transpose(a, output)
+ *              a: [[1, 2, 3],
+ *                  [2, 3, 4]]
+ *              output: [[1, 2],
+ *                       [2, 3],
+ *                       [3, 4] */
+template <class T, class O>
+void transpose(const Matrix<T> &a, Matrix<O> &output);
+
 // TODO
 template <class T1, class T2>
 bool operator==(const Matrix<T1> &a, const Matrix<T2> &b) {}
@@ -743,6 +769,66 @@ void operator/=(const Number &number, Matrix<T> &a) {
     // make sure all the sub threads are finished
     for (auto &item : returnValue) { item.get(); }
     return;
+}
+
+template <class T>
+void transpose(Matrix<T> &a) {
+    // single mode
+    Matrix<T> output(a.shape());
+    if (threadNum() == 0 || limit() > a.size()) {
+        transposeSingleThread(a, output, 0, a.size());
+        a = std::move(output);
+        return;
+    }
+    // threadCalculation and taskNum
+    auto res = threadCalculationTaskNum(a.size());
+
+    // the return value of every task, use this to make sure every task is finished
+    std::vector<std::future<void>> returnValue(res.second - 1);
+    // assign task for every sub-thread
+    for (size_t i = 0; i < res.second - 1; i++) {
+        returnValue[i] =
+            threadPool().addTask([a, start = i * res.first, len = res.first, &output]() {
+                transposeSingleThread(a, output, start, len);
+            });
+    }
+    // let main thread calculate took
+    transposeSingleThread(
+        a, output, (res.second - 1) * res.first, (a.size() - (res.second - 1) * res.first));
+
+    // make sure all the sub threads are finished
+    for (auto &item : returnValue) { item.get(); }
+    a = std::move(output);
+}
+
+template <class T, class O>
+void transpose(const Matrix<T> &a, Matrix<O> &output) {
+    // single mode
+    if (threadNum() == 0 || limit() > a.size()) {
+        transposeSingleThread(a, output, 0, a.size());
+        return;
+    }
+
+    // threadCalculation and taskNum
+    auto res = threadCalculationTaskNum(a.size());
+
+    // the return value of every task, use this to make sure every task is finished
+    std::vector<std::future<void>> returnValue(res.second - 1);
+
+    // assign task for every sub-thread
+    for (size_t i = 0; i < res.second - 1; i++) {
+        returnValue[i] =
+            threadPool().addTask([&a, start = i * res.first, len = res.first, &output]() {
+                transposeSingleThread(a, output, start, len);
+            });
+    }
+
+    // let main thread calculate took
+    transposeSingleThread(
+        a, output, (res.second - 1) * res.first, (a.size() - (res.second - 1) * res.first));
+
+    // make sure all the sub threads are finished
+    for (auto &item : returnValue) { item.get(); }
 }
 
 inline std::pair<size_t, size_t> threadCalculationTaskNum(const size_t &total) {

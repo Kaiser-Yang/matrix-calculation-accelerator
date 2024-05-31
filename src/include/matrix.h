@@ -166,25 +166,19 @@ public:
     void pow(const size_t &exponent, Matrix<O> &output) const;
     inline void pow(const size_t &exponent);
 
-    /* Transpose (*this), and store the result in output
-     * The function whose parameters do not include output will change (*this)
-     * NOTE: output must have the same shape with the current matrix after transposition
+    /* Return the transposed matrix of (*this)
      *       If O and ELEMENT_TYPE are not same, all the elements will first be cast to
      *       std::common_type<O, ELEMENT_TYPE>, after calculation they will be cast into O
      *       by using static_cast
      * for example: a = [[1, 2, 3],
      *                   [2, 3, 4]]
-     *              a.powNumber(2, output)
-     *              output: [[1, 2],
+     *              a.transpose()
+     *              a: [[1, 2, 3],
+     *                  [2, 3, 4]]
+     *              return: [[1, 2],
      *                       [2, 3],
-     *                       [3, 4]]
-     *              a.numberPow(2)
-     *              a: [[1, 2],
-     *                  [2, 3],
-     *                  [3, 4]] */
-    template <class O>
-    void transpose(Matrix<O> &output) const;
-    void transpose();
+     *                       [3, 4]] */
+    Matrix transpose() const;
 
     /* Check if the matrix is a square matrix */
     inline bool isSquare() const;
@@ -676,12 +670,34 @@ inline void Matrix<ELEMENT_TYPE>::pow(const size_t &exponent) {
     pow(exponent, *this);
 }
 
-// TODO
 template <class ELEMENT_TYPE>
-template <class O>
-void Matrix<ELEMENT_TYPE>::transpose(Matrix<O> &output) const {}
-template <class ELEMENT_TYPE>
-void Matrix<ELEMENT_TYPE>::transpose() {}
+Matrix<ELEMENT_TYPE> Matrix<ELEMENT_TYPE>::transpose() const {
+    // single mode
+    Matrix<> output(shape(), 0);
+    if (threadNum() == 0 || limit() > size()) {
+        transposeSingleThread(*this, output, 0, size());
+        return output;
+    }
+    // threadCalculation and taskNum
+    auto res = threadCalculationTaskNum(size());
+
+    // the return value of every task, use this to make sure every task is finished
+    std::vector<std::future<void>> returnValue(res.second - 1);
+    // assign task for every sub-thread
+    for (size_t i = 0; i < res.second - 1; i++) {
+        returnValue[i] =
+            threadPool().addTask([this, start = i * res.first, len = res.first, &output]() {
+                transposeSingleThread(*this, output, start, len);
+            });
+    }
+    // let main thread calculate took
+    transposeSingleThread(
+        *this, output, (res.second - 1) * res.first, (size() - (res.second - 1) * res.first));
+
+    // make sure all the sub threads are finished
+    for (auto &item : returnValue) { item.get(); }
+    return output;
+}
 
 template <class ELEMENT_TYPE>
 inline bool Matrix<ELEMENT_TYPE>::isSquare() const {
@@ -691,6 +707,7 @@ inline bool Matrix<ELEMENT_TYPE>::isSquare() const {
 // TODO
 template <class ELEMENT_TYPE>
 inline bool Matrix<ELEMENT_TYPE>::symmetric() const {}
+
 template <class ELEMENT_TYPE>
 inline bool Matrix<ELEMENT_TYPE>::antisymmetric() const {}
 }  // namespace mca
