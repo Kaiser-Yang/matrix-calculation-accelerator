@@ -305,17 +305,19 @@ bool operator<(const Matrix<T1> &a, const Matrix<T2> &b) {}
 template <class T1, class T2>
 bool operator<=(const Matrix<T1> &a, const Matrix<T2> &b) {
     if (a.shape() != b.shape()) { return false; }
-    if (threadNum() == 0 || limit() > a.size()) { return lessEqualSingleThread(a, b, 0, a.size()); }
+    if (threadNum() == 0 || limit() >= a.size()) {
+        return lessEqualSingleThread(a, b, 0, a.size(), epsilon());
+    }
     auto res = threadCalculationTaskNum(a.size());
     std::vector<std::future<bool>> returnValue(res.second - 1);
     for (size_t i = 0; i < res.second - 1; i++) {
         returnValue[i] =
             threadPool().addTask([start = i * res.first, &a, &b, len = res.first]() -> bool {
-                return lessEqualSingleThread(a, b, start, len);
+                return lessEqualSingleThread(a, b, start, len, epsilon());
             });
     }
     bool result = lessEqualSingleThread(
-        a, b, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+        a, b, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first, epsilon());
     for (auto &item : returnValue) { result &= item.get(); }
     return result;
 }
@@ -327,19 +329,19 @@ bool operator>(const Matrix<T1> &a, const Matrix<T2> &b) {}
 template <class T1, class T2>
 bool operator>=(const Matrix<T1> &a, const Matrix<T2> &b) {
     if (a.shape() != b.shape()) { return false; }
-    if (threadNum() == 0 || limit() > a.size()) {
-        return greaterEqualSingleThread(a, b, 0, a.size());
+    if (threadNum() == 0 || limit() >= a.size()) {
+        return greaterEqualSingleThread(a, b, 0, a.size(), epsilon());
     }
     auto res = threadCalculationTaskNum(a.size());
     std::vector<std::future<bool>> returnValue(res.second - 1);
     for (size_t i = 0; i < res.second - 1; i++) {
         returnValue[i] =
             threadPool().addTask([start = i * res.first, &a, &b, len = res.first]() -> bool {
-                return greaterEqualSingleThread(a, b, start, len);
+                return greaterEqualSingleThread(a, b, start, len, epsilon());
             });
     }
     bool result = greaterEqualSingleThread(
-        a, b, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+        a, b, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first, epsilon());
     for (auto &item : returnValue) { result &= item.get(); }
     return result;
 }
@@ -349,7 +351,7 @@ Matrix<std::common_type_t<T1, T2>> operator+(const Matrix<T1> &a, const Matrix<T
     assert(a.shape() == b.shape());
     using CommonType = std::common_type_t<T1, T2>;
     Matrix<CommonType> result(a.shape());
-    if (threadNum() == 0 || limit() > a.size()) {
+    if (threadNum() == 0 || limit() >= a.size()) {
         addSingleThread(a, b, result, 0, a.size());
         return result;
     }
@@ -372,7 +374,7 @@ Matrix<std::common_type_t<T1, T2>> operator-(const Matrix<T1> &a, const Matrix<T
     assert(a.shape() == b.shape());
     using CommonType = std::common_type_t<T1, T2>;
     Matrix<CommonType> result(a.shape());
-    if (threadNum() == 0 || limit() > a.size()) {
+    if (threadNum() == 0 || limit() >= a.size()) {
         subtractSingleThread(a, b, result, 0, a.size());
         return result;
     }
@@ -395,7 +397,7 @@ Matrix<std::common_type_t<T1, T2>> operator*(const Matrix<T1> &a, const Matrix<T
     assert(a.columns() == b.rows());
     using CommonType = std::common_type_t<T1, T2>;
     Matrix<CommonType> result(Shape{a.rows(), b.columns()});
-    if (threadNum() == 0 || limit() > result.size()) {
+    if (threadNum() == 0 || limit() >= result.size()) {
         multiplySingleThread(a, b, result, 0, result.size());
         return result;
     }
@@ -418,7 +420,7 @@ Matrix<std::common_type_t<T, Number>> operator+(const Matrix<T> &a, const Number
     using CommonType = std::common_type_t<T, Number>;
     Matrix<CommonType> result(a.shape());
     // single mode
-    if (threadNum() == 0 || limit() > a.size()) {
+    if (threadNum() == 0 || limit() >= a.size()) {
         addSingleThread(number, a, result, 0, a.size());
         return result;
     }
@@ -449,7 +451,7 @@ Matrix<std::common_type_t<T, Number>> operator-(const Matrix<T> &a, const Number
     using CommonType = std::common_type_t<T, Number>;
     Matrix<CommonType> result(a.shape(), CommonType(0));
     // single mode
-    if (threadNum() == 0 || limit() > a.size()) {
+    if (threadNum() == 0 || limit() >= a.size()) {
         subtractSingleThread(a, number, result, 0, a.size());
         return result;
     }
@@ -475,7 +477,7 @@ Matrix<std::common_type_t<T, Number>> operator-(const Number &number, const Matr
     using CommonType = std::common_type_t<T, Number>;
     Matrix<CommonType> result(a.shape());
     // single mode
-    if (threadNum() == 0 || limit() > a.size()) {
+    if (threadNum() == 0 || limit() >= a.size()) {
         subtractSingleThread(number, a, result, 0, a.size());
         return result;
     }
@@ -507,7 +509,7 @@ Matrix<std::common_type_t<T, Number>> operator/(const Matrix<T> &a, const Number
     using CommonType = std::common_type_t<T, Number>;
     Matrix<CommonType> result(a.shape());
     // single mode
-    if (threadNum() == 0 || limit() > a.size()) {
+    if (threadNum() == 0 || limit() >= a.size()) {
         divideSingleThread(a, number, result, 0, a.size());
         return result;
     }
@@ -533,7 +535,7 @@ Matrix<std::common_type_t<T, Number>> operator/(const Number &number, const Matr
     using CommonType = std::common_type_t<T, Number>;
     Matrix<CommonType> result(a.shape(), CommonType(0));
     // single mode
-    if (threadNum() == 0 || limit() > a.size()) {
+    if (threadNum() == 0 || limit() >= a.size()) {
         divideSingleThread(number, a, result, 0, a.size());
         return result;
     }
@@ -557,7 +559,7 @@ Matrix<std::common_type_t<T, Number>> operator/(const Number &number, const Matr
 template <class T1, class T2>
 void operator+=(Matrix<T1> &a, const Matrix<T2> &b) {
     assert(a.shape() == b.shape());
-    if (threadNum() == 0 || limit() > a.size()) {
+    if (threadNum() == 0 || limit() >= a.size()) {
         addSingleThread(a, b, a, 0, a.size());
         return;
     }
@@ -575,7 +577,7 @@ void operator+=(Matrix<T1> &a, const Matrix<T2> &b) {
 template <class T1, class T2>
 void operator-=(Matrix<T1> &a, const Matrix<T2> &b) {
     assert(a.shape() == b.shape());
-    if (threadNum() == 0 || limit() > a.size()) {
+    if (threadNum() == 0 || limit() >= a.size()) {
         subtractSingleThread(a, b, a, 0, a.size());
         return;
     }
@@ -595,7 +597,7 @@ template <class T1, class T2>
 void operator*=(Matrix<T1> &a, const Matrix<T2> &b) {
     assert(a.columns() == b.rows());
     Matrix<T1> result(Shape{a.rows(), b.columns()}, IdentityMatrix());
-    if (threadNum() == 0 || limit() > result.size()) {
+    if (threadNum() == 0 || limit() >= result.size()) {
         multiplySingleThread(a, b, result, 0, result.size());
         a = std::move(result);
         return;
@@ -617,7 +619,7 @@ void operator*=(Matrix<T1> &a, const Matrix<T2> &b) {
 template <class T, class Number, class>
 void operator+=(Matrix<T> &a, const Number &number) {
     // single mode
-    if (threadNum() == 0 || limit() > a.size()) {
+    if (threadNum() == 0 || limit() >= a.size()) {
         addSingleThread(number, a, a, 0, a.size());
         return;
     }
@@ -645,7 +647,7 @@ inline void operator+=(const Number &number, Matrix<T> &a) {
 template <class T, class Number, class>
 void operator-=(Matrix<T> &a, const Number &number) {
     // single mode
-    if (threadNum() == 0 || limit() > a.size()) {
+    if (threadNum() == 0 || limit() >= a.size()) {
         subtractSingleThread(a, number, a, 0, a.size());
         return;
     }
@@ -669,7 +671,7 @@ void operator-=(Matrix<T> &a, const Number &number) {
 template <class Number, class T, class>
 void operator-=(const Number &number, Matrix<T> &a) {
     // single mode
-    if (threadNum() == 0 || limit() > a.size()) {
+    if (threadNum() == 0 || limit() >= a.size()) {
         subtractSingleThread(number, a, a, 0, a.size());
         return;
     }
@@ -699,7 +701,7 @@ void operator*=(const Number &number, Matrix<T> &a) {}
 template <class T, class Number, class>
 void operator/=(Matrix<T> &a, const Number &number) {
     // single mode
-    if (threadNum() == 0 || limit() > a.size()) {
+    if (threadNum() == 0 || limit() >= a.size()) {
         divideSingleThread(a, number, a, 0, a.size());
         return;
     }
@@ -722,7 +724,7 @@ void operator/=(Matrix<T> &a, const Number &number) {
 template <class Number, class T, class>
 void operator/=(const Number &number, Matrix<T> &a) {
     // single mode
-    if (threadNum() == 0 || limit() > a.size()) {
+    if (threadNum() == 0 || limit() >= a.size()) {
         divideSingleThread(number, a, a, 0, a.size());
         return;
     }
