@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "diag.h"
 #include "single_thread_matrix_calculation.h"
 
 namespace mca {
@@ -72,10 +73,10 @@ TEST(TestMatrix, constructors) {
     ASSERT_TRUE(equalSingleThread(m5, result, 0, m5.size()));
 
     // construct a diagonal matrix
-    Matrix<int> m6({1, 2, 3});
+    Matrix<int> m6(Diag({1, 2, 3}));
     result = Matrix<int>({{1, 0, 0}, {0, 2, 0}, {0, 0, 3}});
     ASSERT_TRUE(equalSingleThread(m6, result, 0, m6.size()));
-    Matrix<int> m7(std::vector<int>{1, 2, 3});
+    Matrix<int> m7(Diag(std::vector<int>{1, 2, 3}));
     result = Matrix<int>({{1, 0, 0}, {0, 2, 0}, {0, 0, 3}});
     ASSERT_TRUE(equalSingleThread(m6, result, 0, m6.size()));
 
@@ -117,23 +118,6 @@ TEST(TestMatrix, assignments) {
     // copy assignment from Matrix<double>
     Matrix<double> newM = Matrix<>(Shape{3, 3}, 1.5);
     result              = newM;
-    ASSERT_TRUE(equalSingleThread(m, result, 0, m.size()));
-
-    // copy assignment from a pointer
-    double data[9] = {1.5, 2.5, 3.5};
-    m              = &data[0];
-    result         = Matrix<>(Shape{3, 3}, &data[0], 3);
-    ASSERT_TRUE(equalSingleThread(m, result, 0, m.size()));
-
-    // copy assignment from std::initializer_list
-    m      = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
-    result = Matrix<>({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
-    ASSERT_TRUE(equalSingleThread(m, result, 0, m.size()));
-
-    // copy assignment from a std::vector
-    std::vector<std::vector<int>> vec{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
-    m = Matrix<>();
-    m = vec;
     ASSERT_TRUE(equalSingleThread(m, result, 0, m.size()));
 }
 

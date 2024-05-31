@@ -6,15 +6,15 @@ struct Shape {
     size_t rows    = 0;
     size_t columns = 0;
 
-    explicit inline Shape() = default;
+    inline Shape() = default;
 
-    explicit inline Shape(size_t rows, size_t columns);
+    inline explicit Shape(size_t rows, size_t columns);
 
-    bool operator==(const Shape &other) const;
+    inline bool operator==(const Shape &other) const;
 
-    bool operator!=(const Shape &other) const;
+    inline bool operator!=(const Shape &other) const;
 
-    size_t size() const;
+    inline size_t size() const;
 };
 
 inline Shape::Shape(size_t rows, size_t columns) : rows(rows), columns(columns) {}
