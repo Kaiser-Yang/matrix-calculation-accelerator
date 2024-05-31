@@ -1,5 +1,6 @@
 #ifndef MCA_DIAG_H
 #define MCA_DIAG_H
+
 #include <cstddef>
 #include <initializer_list>
 #include <vector>

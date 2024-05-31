@@ -4,9 +4,9 @@
 #include <ctime>
 #include <random>
 
-#include "matrix.h"
-#include "mca.h"
-#include "single_thread_matrix_calculation.h"
+#include "mca/__mca_internal/single_thread_matrix_calculation.h"
+#include "mca/matrix.h"
+#include "mca/mca.h"
 
 using namespace std::chrono;
 

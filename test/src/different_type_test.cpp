@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "matrix.h"
-#include "single_thread_matrix_calculation.h"
+#include "mca/__mca_internal/single_thread_matrix_calculation.h"
+#include "mca/matrix.h"
 
 namespace mca {
 namespace test {

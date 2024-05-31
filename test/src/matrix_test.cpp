@@ -1,11 +1,11 @@
-#include "matrix.h"
+#include "mca/matrix.h"
 
 #include <gtest/gtest.h>
 
 #include <vector>
 
-#include "diag.h"
-#include "single_thread_matrix_calculation.h"
+#include "mca/__mca_internal/single_thread_matrix_calculation.h"
+#include "mca/diag.h"
 
 namespace mca {
 namespace test {

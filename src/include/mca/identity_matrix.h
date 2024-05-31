@@ -1,5 +1,6 @@
 #ifndef MCA_IDENTITY_MATRIX_H
 #define MCA_IDENTITY_MATRIX_H
+
 namespace mca {
 // non-copyable, non-movable, non-assignable
 struct IdentityMatrix {

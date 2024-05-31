@@ -1,5 +1,5 @@
-#ifndef THREAD_POOL_H
-#define THREAD_POOL_H
+#ifndef MCA_THREAD_POOL_H
+#define MCA_THREAD_POOL_H
 
 #include <atomic>
 #include <cassert>
