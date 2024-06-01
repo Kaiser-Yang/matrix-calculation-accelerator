@@ -54,9 +54,8 @@ TEST_F(TestMultiThreadCalculation, numAddMatrix) {
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
 
-    // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
+    ASSERT_EQ(singleOutput, multiOutput);
 }
 
 TEST_F(TestMultiThreadCalculation, matrixAddNum) {
@@ -83,9 +82,8 @@ TEST_F(TestMultiThreadCalculation, matrixAddNum) {
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
 
-    // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
+    ASSERT_EQ(singleOutput, multiOutput);
 }
 
 TEST_F(TestMultiThreadCalculation, matrixSelfAddNum) {
@@ -114,9 +112,8 @@ TEST_F(TestMultiThreadCalculation, matrixSelfAddNum) {
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
 
-    // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
+    ASSERT_EQ(singleOutput, multiOutput);
 }
 
 TEST_F(TestMultiThreadCalculation, numSelfAddMatrix) {
@@ -145,9 +142,8 @@ TEST_F(TestMultiThreadCalculation, numSelfAddMatrix) {
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
 
-    // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
+    ASSERT_EQ(singleOutput, multiOutput);
 }
 
 TEST_F(TestMultiThreadCalculation, matrixSubtractMatrix) {
@@ -176,9 +172,8 @@ TEST_F(TestMultiThreadCalculation, matrixSubtractMatrix) {
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
 
-    // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
+    ASSERT_EQ(singleOutput, multiOutput);
 }
 
 TEST_F(TestMultiThreadCalculation, matrixSelfSubtractMatrix) {
@@ -208,9 +203,8 @@ TEST_F(TestMultiThreadCalculation, matrixSelfSubtractMatrix) {
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
 
-    // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
+    ASSERT_EQ(singleOutput, multiOutput);
 }
 
 TEST_F(TestMultiThreadCalculation, matrixAddMatrix) {
@@ -239,9 +233,8 @@ TEST_F(TestMultiThreadCalculation, matrixAddMatrix) {
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
 
-    // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
+    ASSERT_EQ(singleOutput, multiOutput);
 }
 
 TEST_F(TestMultiThreadCalculation, matrixSelfAddMatrix) {
@@ -271,9 +264,8 @@ TEST_F(TestMultiThreadCalculation, matrixSelfAddMatrix) {
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
 
-    // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
+    ASSERT_EQ(singleOutput, multiOutput);
 }
 
 TEST_F(TestMultiThreadCalculation, matrixMultiplyMatrix) {
@@ -302,9 +294,8 @@ TEST_F(TestMultiThreadCalculation, matrixMultiplyMatrix) {
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
 
-    // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
+    ASSERT_EQ(singleOutput, multiOutput);
 }
 
 TEST_F(TestMultiThreadCalculation, matrixSelfMultiplyMatrix) {
@@ -334,9 +325,8 @@ TEST_F(TestMultiThreadCalculation, matrixSelfMultiplyMatrix) {
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
 
-    // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
+    ASSERT_EQ(singleOutput, multiOutput);
 }
 
 TEST_F(TestMultiThreadCalculation, matrixLessEqualMatrix) {
@@ -395,9 +385,8 @@ TEST_F(TestMultiThreadCalculation, numSubtractMatrix) {
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
 
-    // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
+    ASSERT_EQ(singleOutput, multiOutput);
 }
 
 TEST_F(TestMultiThreadCalculation, matrixDivideNum) {
@@ -424,9 +413,8 @@ TEST_F(TestMultiThreadCalculation, matrixDivideNum) {
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
 
-    // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
+    ASSERT_EQ(singleOutput, multiOutput);
 }
 
 TEST_F(TestMultiThreadCalculation, matrixSelfDivideNum) {
@@ -455,9 +443,8 @@ TEST_F(TestMultiThreadCalculation, matrixSelfDivideNum) {
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
 
-    // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
+    ASSERT_EQ(singleOutput, multiOutput);
 }
 
 TEST_F(TestMultiThreadCalculation, numSelfSubtractMatrix) {
@@ -486,9 +473,8 @@ TEST_F(TestMultiThreadCalculation, numSelfSubtractMatrix) {
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
 
-    // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
+    ASSERT_EQ(singleOutput, multiOutput);
 }
 
 TEST_F(TestMultiThreadCalculation, matrixGreaterEqualMatrix) {
@@ -547,9 +533,8 @@ TEST_F(TestMultiThreadCalculation, matrixSubtractNum) {
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
 
-    // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
+    ASSERT_EQ(singleOutput, multiOutput);
 }
 
 TEST_F(TestMultiThreadCalculation, numDivideMatrix) {
@@ -576,9 +561,8 @@ TEST_F(TestMultiThreadCalculation, numDivideMatrix) {
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
 
-    // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
+    ASSERT_EQ(singleOutput, multiOutput);
 }
 
 TEST_F(TestMultiThreadCalculation, matrixSelfSubtractNum) {
@@ -605,9 +589,8 @@ TEST_F(TestMultiThreadCalculation, matrixSelfSubtractNum) {
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
 
-    // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
+    ASSERT_EQ(singleOutput, multiOutput);
 }
 
 TEST_F(TestMultiThreadCalculation, numSelfDivideMatrix) {
@@ -634,9 +617,8 @@ TEST_F(TestMultiThreadCalculation, numSelfDivideMatrix) {
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
 
-    // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
+    ASSERT_EQ(singleOutput, multiOutput);
 }
 
 TEST_F(TestMultiThreadCalculation, transposeMatrix) {
@@ -666,9 +648,8 @@ TEST_F(TestMultiThreadCalculation, transposeMatrix) {
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
 
-    // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
+    ASSERT_EQ(singleOutput, multiOutput);
 }
 
 TEST_F(TestMultiThreadCalculation, transposeMatrixToOutput) {
@@ -700,9 +681,8 @@ TEST_F(TestMultiThreadCalculation, transposeMatrixToOutput) {
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
 
-    // TODO this should be updated with Matrix::operator== with multi-thread
     // make sure they are equal
-    ASSERT_TRUE(equalSingleThread(singleOutput, multiOutput, 0, singleOutput.size()));
+    ASSERT_EQ(singleOutput, multiOutput);
 }
 
 TEST_F(TestMultiThreadCalculation, matrixLessMatrix) {
