@@ -438,8 +438,8 @@ TEST_F(TestMatrixMultiThread, assignmentFromInitializerList) {
     ASSERT_EQ(singleOutput, multiOutput);
     ASSERT_EQ(a.shape(), Shape(0, 0));
     ASSERT_EQ(b.shape(), Shape(2, 0));
-    ASSERT_EQ(a.dataPtr(), nullptr);
-    ASSERT_EQ(b.dataPtr(), nullptr);
+    ASSERT_EQ(a.data(), nullptr);
+    ASSERT_EQ(b.data(), nullptr);
 }
 
 TEST_F(TestMatrixMultiThread, assignmentFromVector) {
@@ -450,8 +450,8 @@ TEST_F(TestMatrixMultiThread, assignmentFromVector) {
 
     ASSERT_EQ(a.shape(), Shape(0, 0));
     ASSERT_EQ(b.shape(), Shape(2, 0));
-    ASSERT_EQ(a.dataPtr(), nullptr);
-    ASSERT_EQ(b.dataPtr(), nullptr);
+    ASSERT_EQ(a.data(), nullptr);
+    ASSERT_EQ(b.data(), nullptr);
 }
 
 TEST_F(TestMatrixMultiThread, transpose) {
