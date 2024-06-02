@@ -17,16 +17,17 @@ namespace mca {
  * synchronizations are needed when more than one thread operate the same object of the class */
 class ThreadPool {
 public:
+    using size_type = std::size_t;
     /* size is the size of the thread pool */
-    inline ThreadPool(size_t size = 0);
+    inline ThreadPool(size_type size = 0) { resize(size); }
 
     /* set a new size, and this will clear the task queue
      * this will wait for all the running threads finish their current tasks, then stop them
      * and create new threads */
-    void resize(size_t newSize);
+    void resize(size_type newSize);
 
     /* the size of the thread pool */
-    inline size_t size();
+    inline size_type size() { return threadQueue.size(); }
 
     /* add a task to the thread pool
      * this will return a std::future
@@ -42,12 +43,12 @@ public:
     void clear();
 
     /* the destructor will stop all the threads */
-    inline ~ThreadPool();
+    inline ~ThreadPool() { clear(); }
 
 private:
     std::vector<std::queue<std::function<void()>>> taskQueue;
     std::queue<std::thread> threadQueue;
-    size_t i{0};
+    size_type i{0};
     std::atomic<bool> stopped{false};
 };
 
@@ -62,12 +63,6 @@ auto ThreadPool::addTask(Function &&func, Args &&...args)
     i = (i + 1) % size();
     return taskPtr->get_future();
 }
-
-inline ThreadPool::ThreadPool(size_t size) { resize(size); }
-
-inline size_t ThreadPool::size() { return threadQueue.size(); }
-
-inline ThreadPool::~ThreadPool() { clear(); }
 }  // namespace mca
 
 #endif

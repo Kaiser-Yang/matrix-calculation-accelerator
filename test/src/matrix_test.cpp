@@ -2,6 +2,7 @@
 
 #include <gtest/gtest.h>
 
+#include <array>
 #include <vector>
 
 #include "mca/__mca_internal/single_thread_matrix_calculation.h"
@@ -58,34 +59,44 @@ TEST(TestMatrix, constructors) {
     // construct an identity matrix
     Matrix<int> m3(Shape{3, 3}, IdentityMatrix());
     Matrix<int> result({{1, 0, 0}, {0, 1, 0}, {0, 0, 1}});
-    ASSERT_TRUE(equalSingleThread(m3, result, 0, m3.size()));
+    ASSERT_EQ(m3, result);
 
     // construct from a pointer
     int data[] = {1, 2, 3};
     Matrix<int> m4(Shape{3, 3}, &data[0], 3);
     result = Matrix<int>({{1, 2, 3}, {0, 0, 0}, {0, 0, 0}});
-    ASSERT_TRUE(equalSingleThread(m4, result, 0, m4.size()));
+    ASSERT_EQ(m4, result);
 
     // construct from a vector
     std::vector<std::vector<int>> vec{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
     Matrix<int> m5(vec);
     result = Matrix<int>({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
-    ASSERT_TRUE(equalSingleThread(m5, result, 0, m5.size()));
+    ASSERT_EQ(m5, result);
 
     // construct a diagonal matrix
     Matrix<int> m6(Diag({1, 2, 3}));
     result = Matrix<int>({{1, 0, 0}, {0, 2, 0}, {0, 0, 3}});
-    ASSERT_TRUE(equalSingleThread(m6, result, 0, m6.size()));
+    ASSERT_EQ(m6, result);
     Matrix<int> m7(Diag(std::vector<int>{1, 2, 3}));
     result = Matrix<int>({{1, 0, 0}, {0, 2, 0}, {0, 0, 3}});
-    ASSERT_TRUE(equalSingleThread(m6, result, 0, m6.size()));
+    ASSERT_EQ(m7, result);
 
     // copy constructor
     // NOLINTNEXTLINE(performance-unnecessary-copy-initialization): allow tests to copy
     Matrix<int> m8(m7);
-    ASSERT_TRUE(equalSingleThread(m7, m8, 0, m7.size()));
-    Matrix<> m9(m8);
-    ASSERT_TRUE(equalSingleThread(m8, m9, 0, m8.size()));
+    ASSERT_EQ(m7, m8);
+    Matrix<double> m9(m8);
+    ASSERT_EQ(m8, m9);
+
+    // construct from an array
+    int array[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    Matrix<int> m10(Shape(3, 3), array);
+    for (size_t i = 0; i < sizeof(array) / sizeof(int); i++) { ASSERT_EQ(i + 1, m10[i]); }
+
+    // construct from a std::array
+    std::array<int, 9> stdArray{1, 2, 3, 4, 5, 6, 7, 8, 9};
+    Matrix<int> m11(Shape(3, 3), stdArray);
+    for (size_t i = 0; i < stdArray.size(); i++) { ASSERT_EQ(i + 1, m11[i]); }
 }
 
 TEST(TestMatrix, assignments) {
@@ -102,9 +113,9 @@ TEST(TestMatrix, assignments) {
     }
 
     // copy assignment from Matrix<double>
-    m = Matrix<>(Shape{3, 3}, 1.5);
+    m = Matrix<double>(Shape{3, 3}, 1.5);
     Matrix<int> result(Shape{3, 3}, 1);
-    ASSERT_TRUE(equalSingleThread(m, result, 0, m.size()));
+    ASSERT_EQ(m, result);
 
     // copy assignment from Matrix<int>
     Matrix<int> newN(Shape{3, 3}, 1);
@@ -116,9 +127,9 @@ TEST(TestMatrix, assignments) {
     }
 
     // copy assignment from Matrix<double>
-    Matrix<double> newM = Matrix<>(Shape{3, 3}, 1.5);
+    Matrix<double> newM = Matrix<double>(Shape{3, 3}, 1.5);
     result              = newM;
-    ASSERT_TRUE(equalSingleThread(m, result, 0, m.size()));
+    ASSERT_EQ(m, result);
 }
 
 TEST(TestMatrix, geter) {
@@ -145,6 +156,46 @@ TEST(TestMatrix, isSquare) {
     ASSERT_TRUE(m.isSquare());
     m.reshape(Shape{1, 9});
     ASSERT_FALSE(m.isSquare());
+}
+
+TEST(TestMatrix, iterators) {
+    Matrix<double> a(Diag({1, 2, 3, 4}));
+    size_t i = 0;
+    for (auto &item : a) { ASSERT_FLOAT_EQ(item, a[i++]); }
+    for (auto iter = a.rbegin(); iter != a.rend(); iter++) { ASSERT_FLOAT_EQ(*iter, a[--i]); }
+    const Matrix<double> b(a);
+    for (auto &item : b) { ASSERT_FLOAT_EQ(item, b[i++]); }
+    for (auto iter = b.rbegin(); iter != b.rend(); iter++) { ASSERT_FLOAT_EQ(*iter, b[--i]); }
+}
+
+TEST(TestMatrix, front) {
+    Matrix<double> a({{1, 2, 3}, {4, 5, 6}});
+    ASSERT_FLOAT_EQ(a.front(), 1);
+    a.front() = -1;
+    ASSERT_FLOAT_EQ(a.front(), -1);
+}
+
+TEST(TestMatrix, back) {
+    Matrix<double> a({{1, 2, 3}, {4, 5, 6}});
+    ASSERT_FLOAT_EQ(a.back(), 6);
+    a.back() = -1;
+    ASSERT_FLOAT_EQ(a.back(), -1);
+}
+
+TEST(TestMatrix, empty) {
+    Matrix<double> a;
+    ASSERT_TRUE(a.empty());
+    a = Matrix<double>({{1}});
+    ASSERT_FALSE(a.empty());
+}
+
+TEST(TestMatrix, swap) {
+    Shape shape1{2, 2}, shape2{3, 3};
+    double value1 = 1, value2 = -1;
+    Matrix<double> a(shape1, value1), b(shape2, value2);
+    a.swap(b);
+    ASSERT_EQ(a, Matrix<double>(shape2, value2));
+    ASSERT_EQ(b, Matrix<double>(shape1, value1));
 }
 }  // namespace test
 }  // namespace mca

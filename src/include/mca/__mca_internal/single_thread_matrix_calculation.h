@@ -26,8 +26,8 @@ template <class Number, class T, class O, class = std::enable_if_t<!is_matrix_v<
 void numberPowSingleThread(const Number &number,
                            const Matrix<T> &a,
                            Matrix<O> &output,
-                           const size_t &pos,
-                           const size_t &len);
+                           const std::size_t &pos,
+                           const std::size_t &len);
 
 /* Calculate a ^ number, and store the result in output
  * This will only calculate the a^number[pos: pos + len] in the matrix
@@ -46,8 +46,8 @@ template <class T, class Number, class O, class = std::enable_if_t<!is_matrix_v<
 void powNumberSingleThread(const Matrix<T> &a,
                            const Number &number,
                            Matrix<O> &output,
-                           const size_t &pos,
-                           const size_t &len);
+                           const std::size_t &pos,
+                           const std::size_t &len);
 
 /* Check if the elements of the sub-matrix of a are all less than the sub-matrix of b's
  * This will only check the a[pos:pos+len] with b[pos:pos+len]
@@ -57,8 +57,8 @@ void powNumberSingleThread(const Matrix<T> &a,
 template <class T1, class T2>
 bool lessSingleThread(const Matrix<T1> &a,
                       const Matrix<T2> &b,
-                      const size_t &pos,
-                      const size_t &len,
+                      const std::size_t &pos,
+                      const std::size_t &len,
                       const double &eps = 1e-100);
 
 /* Check if the elements of the sub-matrix of a are all equal to the sub-matrix of b's
@@ -67,8 +67,8 @@ bool lessSingleThread(const Matrix<T1> &a,
 template <class T1, class T2>
 bool equalSingleThread(const Matrix<T1> &a,
                        const Matrix<T2> &b,
-                       const size_t &pos,
-                       const size_t &len,
+                       const std::size_t &pos,
+                       const std::size_t &len,
                        const double &eps = 1e-100);
 
 /* Check if the elements of the sub-matrix of a are all less than or equal to the sub-matrix of
@@ -79,8 +79,8 @@ bool equalSingleThread(const Matrix<T1> &a,
 template <class T1, class T2>
 bool lessEqualSingleThread(const Matrix<T1> &a,
                            const Matrix<T2> &b,
-                           const size_t &pos,
-                           const size_t &len,
+                           const std::size_t &pos,
+                           const std::size_t &len,
                            const double &eps = 1e-100);
 
 /* Check if the elements of the sub-matrix of a are all greater than the sub-matrix of b's
@@ -91,8 +91,8 @@ bool lessEqualSingleThread(const Matrix<T1> &a,
 template <class T1, class T2>
 bool greaterSingleThread(const Matrix<T1> &a,
                          const Matrix<T2> &b,
-                         const size_t &pos,
-                         const size_t &len,
+                         const std::size_t &pos,
+                         const std::size_t &len,
                          const double &eps = 1e-100);
 
 /* Check if the elements of the sub-matrix of a are all greater than or equal to the sub-matrix of
@@ -102,8 +102,8 @@ bool greaterSingleThread(const Matrix<T1> &a,
 template <class T1, class T2>
 bool greaterEqualSingleThread(const Matrix<T1> &a,
                               const Matrix<T2> &b,
-                              const size_t &pos,
-                              const size_t &len,
+                              const std::size_t &pos,
+                              const std::size_t &len,
                               const double &eps = 1e-100);
 
 /* Check if any element of the sub-matrix of a is not equal to the sub-matrix of b's
@@ -113,8 +113,8 @@ bool greaterEqualSingleThread(const Matrix<T1> &a,
 template <class T1, class T2>
 bool notEqualSingleThread(const Matrix<T1> &a,
                           const Matrix<T2> &b,
-                          const size_t &pos,
-                          const size_t &len,
+                          const std::size_t &pos,
+                          const std::size_t &len,
                           const double &eps = 1e-100);
 
 /* Calculate a + b, and store the result in output
@@ -135,8 +135,8 @@ template <class T1, class T2, class O>
 void addSingleThread(const Matrix<T1> &a,
                      const Matrix<T2> &b,
                      Matrix<O> &output,
-                     const size_t &pos,
-                     const size_t &len);
+                     const std::size_t &pos,
+                     const std::size_t &len);
 
 /* Calculate a - b, and store the result in output
  * This will only calculate the a-b[pos:pos+len]
@@ -156,8 +156,8 @@ template <class T1, class T2, class O>
 void subtractSingleThread(const Matrix<T1> &a,
                           const Matrix<T2> &b,
                           Matrix<O> &output,
-                          const size_t &pos,
-                          const size_t &len);
+                          const std::size_t &pos,
+                          const std::size_t &len);
 
 /* Calculate a * b, and store the result in output
  * This will only calculate the a*b[pos:pos+len]
@@ -170,8 +170,8 @@ template <class T1, class T2, class O>
 void multiplySingleThread(const Matrix<T1> &a,
                           const Matrix<T2> &b,
                           Matrix<O> &output,
-                          const size_t &pos,
-                          const size_t &len);
+                          const std::size_t &pos,
+                          const std::size_t &len);
 
 /* Calculate number + a, and store the result in output
  * This will only calculate the number+a[pos:pos+len]
@@ -189,8 +189,8 @@ template <class Number, class T, class O, class = std::enable_if_t<!is_matrix_v<
 void addSingleThread(const Number &number,
                      const Matrix<T> &a,
                      Matrix<O> &output,
-                     const size_t &pos,
-                     const size_t &len);
+                     const std::size_t &pos,
+                     const std::size_t &len);
 
 /* Calculate number - a, and store the result in output
  * This will only calculate the number-a[pos:pos+len]
@@ -208,8 +208,8 @@ template <class Number, class T, class O, class = std::enable_if_t<!is_matrix_v<
 void subtractSingleThread(const Number &number,
                           const Matrix<T> &a,
                           Matrix<O> &output,
-                          const size_t &pos,
-                          const size_t &len);
+                          const std::size_t &pos,
+                          const std::size_t &len);
 
 /* Calculate a - number, and store the result in output
  * This will only calculate the a[pos:pos+len]-number
@@ -227,8 +227,8 @@ template <class T, class Number, class O, class = std::enable_if_t<!is_matrix_v<
 void subtractSingleThread(const Matrix<T> &a,
                           const Number &number,
                           Matrix<O> &output,
-                          const size_t &pos,
-                          const size_t &len);
+                          const std::size_t &pos,
+                          const std::size_t &len);
 
 /* Calculate number * a, and store the result in output
  * This will only calculate the number*a[pos:pos+len]
@@ -246,8 +246,8 @@ template <class Number, class T, class O, class = std::enable_if_t<!is_matrix_v<
 void multiplySingleThread(const Number &number,
                           const Matrix<T> &a,
                           Matrix<O> &output,
-                          const size_t &pos,
-                          const size_t &len);
+                          const std::size_t &pos,
+                          const std::size_t &len);
 
 /* Calculate a / number, and store the result in output
  * This will only calculate the a[pos:pos+len]/number
@@ -265,8 +265,8 @@ template <class T, class Number, class O, class = std::enable_if_t<!is_matrix_v<
 void divideSingleThread(const Matrix<T> &a,
                         const Number &number,
                         Matrix<O> &output,
-                        const size_t &pos,
-                        const size_t &len);
+                        const std::size_t &pos,
+                        const std::size_t &len);
 
 /* Calculate number / a, and store the result in output
  * This will only calculate the number+a[sx:sx+shape.rows][sy:sy+shape+shape.columns]
@@ -285,8 +285,8 @@ template <class Number, class T, class O, class = std::enable_if_t<!is_matrix_v<
 void divideSingleThread(const Number &number,
                         const Matrix<T> &a,
                         Matrix<O> &output,
-                        const size_t &pos,
-                        const size_t &len);
+                        const std::size_t &pos,
+                        const std::size_t &len);
 
 /* Transpose a matrix, and store the result in output
  * This will only get the transposed output[pos:pos+len]
@@ -306,8 +306,8 @@ void divideSingleThread(const Number &number,
 template <class T>
 void transposeSingleThread(const Matrix<T> &a,
                            Matrix<T> &output,
-                           const size_t &pos,
-                           const size_t &len);
+                           const std::size_t &pos,
+                           const std::size_t &len);
 
 /* Check whether or not rows of matrix are symmetric
  * pos: start position from the first element which will be used
@@ -322,8 +322,8 @@ void transposeSingleThread(const Matrix<T> &a,
  *              return: true */
 template <class T>
 bool symmetricSingleThread(const Matrix<T> &a,
-                           const size_t &pos,
-                           const size_t &len,
+                           const std::size_t &pos,
+                           const std::size_t &len,
                            const double &eps = 1e-100);
 
 /* Check whether or not rows of matrix are antisymmetric
@@ -339,8 +339,8 @@ bool symmetricSingleThread(const Matrix<T> &a,
  *              return: true */
 template <class T>
 bool antisymmetricSingleThread(const Matrix<T> &a,
-                               const size_t &pos,
-                               const size_t &len,
+                               const std::size_t &pos,
+                               const std::size_t &len,
                                const double &eps = 1e-100);
 
 // Those below are the implementations
@@ -348,12 +348,12 @@ template <class Number, class T, class O, class>
 void numberPowSingleThread(const Number &number,
                            const Matrix<T> &a,
                            Matrix<O> &output,
-                           const size_t &pos,
-                           const size_t &len) {
+                           const std::size_t &pos,
+                           const std::size_t &len) {
     assert(a.shape() == output.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<Number, T, O>;
-    for (size_t i = pos; i < pos + len; i++) {
+    for (std::size_t i = pos; i < pos + len; i++) {
         output[i] = static_cast<O>(
             std::pow(static_cast<CommonType>(number), static_cast<CommonType>(a[i])));
     }
@@ -363,12 +363,12 @@ template <class T, class Number, class O, class>
 void powNumberSingleThread(const Matrix<T> &a,
                            const Number &number,
                            Matrix<O> &output,
-                           const size_t &pos,
-                           const size_t &len) {
+                           const std::size_t &pos,
+                           const std::size_t &len) {
     assert(a.shape() == output.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<Number, T, O>;
-    for (size_t i = pos; i < pos + len; i++) {
+    for (std::size_t i = pos; i < pos + len; i++) {
         output[i] = static_cast<O>(
             std::pow(static_cast<CommonType>(a[i]), static_cast<CommonType>(number)));
     }
@@ -377,13 +377,13 @@ void powNumberSingleThread(const Matrix<T> &a,
 template <class T1, class T2>
 bool lessSingleThread(const Matrix<T1> &a,
                       const Matrix<T2> &b,
-                      const size_t &pos,
-                      const size_t &len,
+                      const std::size_t &pos,
+                      const std::size_t &len,
                       const double &eps) {
     assert(a.shape() == b.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<T1, T2>;
-    for (size_t i = pos; i < pos + len; i++) {
+    for (std::size_t i = pos; i < pos + len; i++) {
         if (std::is_floating_point_v<CommonType> &&
             static_cast<CommonType>(a[i]) - static_cast<CommonType>(b[i]) >= -eps) {
             return false;
@@ -399,13 +399,13 @@ bool lessSingleThread(const Matrix<T1> &a,
 template <class T1, class T2>
 bool equalSingleThread(const Matrix<T1> &a,
                        const Matrix<T2> &b,
-                       const size_t &pos,
-                       const size_t &len,
+                       const std::size_t &pos,
+                       const std::size_t &len,
                        const double &eps) {
     assert(a.shape() == b.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<T1, T2>;
-    for (size_t i = pos; i < pos + len; i++) {
+    for (std::size_t i = pos; i < pos + len; i++) {
         if (std::is_floating_point_v<CommonType> &&
             std::fabs(static_cast<CommonType>(a[i]) - static_cast<CommonType>(b[i])) > eps) {
             return false;
@@ -421,13 +421,13 @@ bool equalSingleThread(const Matrix<T1> &a,
 template <class T1, class T2>
 bool lessEqualSingleThread(const Matrix<T1> &a,
                            const Matrix<T2> &b,
-                           const size_t &pos,
-                           const size_t &len,
+                           const std::size_t &pos,
+                           const std::size_t &len,
                            const double &eps) {
     assert(a.shape() == b.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<T1, T2>;
-    for (size_t i = pos; i < pos + len; i++) {
+    for (std::size_t i = pos; i < pos + len; i++) {
         if (std::is_floating_point_v<CommonType> &&
             static_cast<CommonType>(a[i]) - static_cast<CommonType>(b[i]) > eps) {
             return false;
@@ -443,13 +443,13 @@ bool lessEqualSingleThread(const Matrix<T1> &a,
 template <class T1, class T2>
 bool greaterSingleThread(const Matrix<T1> &a,
                          const Matrix<T2> &b,
-                         const size_t &pos,
-                         const size_t &len,
+                         const std::size_t &pos,
+                         const std::size_t &len,
                          const double &eps) {
     assert(a.shape() == b.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<T1, T2>;
-    for (size_t i = pos; i < pos + len; i++) {
+    for (std::size_t i = pos; i < pos + len; i++) {
         if (std::is_floating_point_v<CommonType> &&
             (static_cast<CommonType>(a[i]) - static_cast<CommonType>(b[i]) < eps ||
              fabs(static_cast<CommonType>(a[i]) - static_cast<CommonType>(b[i])) <= eps)) {
@@ -466,13 +466,13 @@ bool greaterSingleThread(const Matrix<T1> &a,
 template <class T1, class T2>
 bool greaterEqualSingleThread(const Matrix<T1> &a,
                               const Matrix<T2> &b,
-                              const size_t &pos,
-                              const size_t &len,
+                              const std::size_t &pos,
+                              const std::size_t &len,
                               const double &eps) {
     assert(a.shape() == b.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<T1, T2>;
-    for (size_t i = pos; i < pos + len; i++) {
+    for (std::size_t i = pos; i < pos + len; i++) {
         if (std::is_floating_point_v<CommonType> &&
             static_cast<CommonType>(a[i]) - static_cast<CommonType>(b[i]) < -eps) {
             return false;
@@ -488,13 +488,13 @@ bool greaterEqualSingleThread(const Matrix<T1> &a,
 template <class T1, class T2>
 bool notEqualSingleThread(const Matrix<T1> &a,
                           const Matrix<T2> &b,
-                          const size_t &pos,
-                          const size_t &len,
+                          const std::size_t &pos,
+                          const std::size_t &len,
                           const double &eps) {
     assert(a.shape() == b.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<T1, T2>;
-    for (size_t i = pos; i < pos + len; i++) {
+    for (std::size_t i = pos; i < pos + len; i++) {
         if (std::is_floating_point_v<CommonType> &&
             std::fabs(static_cast<CommonType>(a[i]) - static_cast<CommonType>(b[i])) <= eps) {
             return false;
@@ -511,12 +511,12 @@ template <class Number, class T, class O, class>
 void multiplySingleThread(const Number &number,
                           const Matrix<T> &a,
                           Matrix<O> &output,
-                          const size_t &pos,
-                          const size_t &len) {
+                          const std::size_t &pos,
+                          const std::size_t &len) {
     assert(a.shape() == output.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<Number, T, O>;
-    for (size_t i = pos; i < pos + len; i++)
+    for (std::size_t i = pos; i < pos + len; i++)
         output[i] = static_cast<O>(static_cast<CommonType>(a[i]) * static_cast<CommonType>(number));
 }
 
@@ -524,13 +524,13 @@ template <class T1, class T2, class O>
 void addSingleThread(const Matrix<T1> &a,
                      const Matrix<T2> &b,
                      Matrix<O> &output,
-                     const size_t &pos,
-                     const size_t &len) {
+                     const std::size_t &pos,
+                     const std::size_t &len) {
     assert(a.shape() == b.shape());
     assert(a.shape() == output.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<T1, T2, O>;
-    for (size_t i = pos; i < pos + len; i++) {
+    for (std::size_t i = pos; i < pos + len; i++) {
         output[i] = static_cast<O>(static_cast<CommonType>(a[i]) + static_cast<CommonType>(b[i]));
     }
 }
@@ -539,12 +539,12 @@ template <class T1, class T2, class O>
 void subtractSingleThread(const Matrix<T1> &a,
                           const Matrix<T2> &b,
                           Matrix<O> &output,
-                          const size_t &pos,
-                          const size_t &len) {
+                          const std::size_t &pos,
+                          const std::size_t &len) {
     assert(a.shape() == b.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<T1, T2, O>;
-    for (size_t i = pos; i < pos + len; i++) {
+    for (std::size_t i = pos; i < pos + len; i++) {
         output[i] = static_cast<O>(static_cast<CommonType>(a[i]) - static_cast<CommonType>(b[i]));
     }
 }
@@ -553,20 +553,20 @@ template <class T1, class T2, class O>
 void multiplySingleThread(const Matrix<T1> &a,
                           const Matrix<T2> &b,
                           Matrix<O> &output,
-                          const size_t &pos,
-                          const size_t &len) {
+                          const std::size_t &pos,
+                          const std::size_t &len) {
     assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.columns() == b.rows());
     assert(a.rows() == output.rows());
     assert(b.columns() == output.columns());
     assert(pos + len <= output.size());
     using CommonType = std::common_type_t<T1, T2, O>;
-    size_t i = 0, j = 0;
-    for (size_t t = pos; t < pos + len; t++) {
+    std::size_t i = 0, j = 0;
+    for (std::size_t t = pos; t < pos + len; t++) {
         i                = t / output.columns();
         j                = t % output.columns();
         output.get(i, j) = O();
-        for (size_t k = 0; k < a.columns(); k++) {
+        for (std::size_t k = 0; k < a.columns(); k++) {
             // clang-format off
             output.get(i, j) = static_cast<O>(static_cast<CommonType>(output.get(i, j)) +
                                               static_cast<CommonType>(a.get(i, k)) *
@@ -580,12 +580,12 @@ template <class Number, class T, class O, class>
 void addSingleThread(const Number &number,
                      const Matrix<T> &a,
                      Matrix<O> &output,
-                     const size_t &pos,
-                     const size_t &len) {
+                     const std::size_t &pos,
+                     const std::size_t &len) {
     assert(a.shape() == output.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<Number, T, O>;
-    for (size_t i = pos; i < pos + len; i++)
+    for (std::size_t i = pos; i < pos + len; i++)
         output[i] = static_cast<O>(static_cast<CommonType>(number) + static_cast<CommonType>(a[i]));
 }
 
@@ -593,12 +593,12 @@ template <class Number, class T, class O, class>
 void subtractSingleThread(const Number &number,
                           const Matrix<T> &a,
                           Matrix<O> &output,
-                          const size_t &pos,
-                          const size_t &len) {
+                          const std::size_t &pos,
+                          const std::size_t &len) {
     assert(a.shape() == output.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<Number, T, O>;
-    for (size_t i = pos; i < pos + len; i++)
+    for (std::size_t i = pos; i < pos + len; i++)
         output[i] = static_cast<O>(static_cast<CommonType>(number) - static_cast<CommonType>(a[i]));
 }
 
@@ -606,12 +606,12 @@ template <class T, class Number, class O, class>
 void subtractSingleThread(const Matrix<T> &a,
                           const Number &number,
                           Matrix<O> &output,
-                          const size_t &pos,
-                          const size_t &len) {
+                          const std::size_t &pos,
+                          const std::size_t &len) {
     assert(a.shape() == output.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<Number, T, O>;
-    for (size_t i = pos; i < pos + len; i++)
+    for (std::size_t i = pos; i < pos + len; i++)
         output[i] = static_cast<O>(static_cast<CommonType>(a[i]) - static_cast<CommonType>(number));
 }
 
@@ -619,12 +619,12 @@ template <class T, class Number, class O, class>
 void divideSingleThread(const Matrix<T> &a,
                         const Number &number,
                         Matrix<O> &output,
-                        const size_t &pos,
-                        const size_t &len) {
+                        const std::size_t &pos,
+                        const std::size_t &len) {
     assert(a.shape() == output.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<Number, T, O>;
-    for (size_t i = pos; i < pos + len; i++)
+    for (std::size_t i = pos; i < pos + len; i++)
         output[i] = static_cast<O>(static_cast<CommonType>(a[i]) / static_cast<CommonType>(number));
 }
 
@@ -632,12 +632,12 @@ template <class Number, class T, class O, class>
 void divideSingleThread(const Number &number,
                         const Matrix<T> &a,
                         Matrix<O> &output,
-                        const size_t &pos,
-                        const size_t &len) {
+                        const std::size_t &pos,
+                        const std::size_t &len) {
     assert(a.shape() == output.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<Number, T, O>;
-    for (size_t i = pos; i < pos + len; i++) {
+    for (std::size_t i = pos; i < pos + len; i++) {
         output[i] = static_cast<O>(static_cast<CommonType>(number) / static_cast<CommonType>(a[i]));
     }
 }
@@ -645,14 +645,14 @@ void divideSingleThread(const Number &number,
 template <class T>
 void transposeSingleThread(const Matrix<T> &a,
                            Matrix<T> &output,
-                           const size_t &pos,
-                           const size_t &len) {
+                           const std::size_t &pos,
+                           const std::size_t &len) {
     assert(reinterpret_cast<const void *>(&a) != reinterpret_cast<const void *>(&output));
     assert(a.rows() == output.columns());
     assert(a.columns() == output.rows());
     assert(pos + len <= output.size());
-    size_t i = 0, j = 0;
-    for (size_t t = pos; t < pos + len; t++) {
+    std::size_t i = 0, j = 0;
+    for (std::size_t t = pos; t < pos + len; t++) {
         i                = t / output.columns();
         j                = t % output.columns();
         output.get(i, j) = a.get(j, i);
@@ -661,13 +661,13 @@ void transposeSingleThread(const Matrix<T> &a,
 
 template <class T>
 bool symmetricSingleThread(const Matrix<T> &a,
-                           const size_t &pos,
-                           const size_t &len,
+                           const std::size_t &pos,
+                           const std::size_t &len,
                            const double &eps) {
     assert(a.rows() == a.columns());
     assert(pos + len <= (a.size() - a.rows()) / 2);
-    size_t i = 0, j = 0, k = 0;
-    for (size_t t = pos; t < pos + len; t++) {
+    std::size_t i = 0, j = 0, k = 0;
+    for (std::size_t t = pos; t < pos + len; t++) {
         k = std::ceil((-1 + std::sqrt(1 + 4 * a.rows() * a.rows() - 4 * a.rows() - 8 * t) / 2.0));
         i = a.rows() - 1 - k;
         j = a.rows() - (a.rows() * (a.rows() - 1) / 2 - k * (k - 1) / 2);
@@ -682,13 +682,13 @@ bool symmetricSingleThread(const Matrix<T> &a,
 
 template <class T>
 bool antisymmetricSingleThread(const Matrix<T> &a,
-                               const size_t &pos,
-                               const size_t &len,
+                               const std::size_t &pos,
+                               const std::size_t &len,
                                const double &eps) {
     assert(a.rows() == a.columns());
     assert(pos + len <= (a.size() - a.rows()) / 2);
-    size_t i = 0, j = 0, k = 0;
-    for (size_t t = pos; t < pos + len; t++) {
+    std::size_t i = 0, j = 0, k = 0;
+    for (std::size_t t = pos; t < pos + len; t++) {
         k = std::ceil((-1 + std::sqrt(1 + 4 * a.rows() * a.rows() - 4 * a.rows() - 8 * t) / 2.0));
         i = a.rows() - 1 - k;
         j = a.rows() - (a.rows() * (a.rows() - 1) / 2 - k * (k - 1) / 2);

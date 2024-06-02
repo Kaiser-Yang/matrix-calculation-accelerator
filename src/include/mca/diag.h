@@ -10,6 +10,8 @@ namespace mca {
 template <class Container>
 class _Diag {
 public:
+    using size_type = std::size_t;
+
     _Diag() = delete;
 
     _Diag(_Diag &&other) noexcept = delete;
@@ -18,32 +20,19 @@ public:
     _Diag &operator=(const _Diag &) = delete;
     _Diag &operator=(_Diag &&)      = delete;
 
-    inline explicit _Diag(const Container &other);
-    inline explicit _Diag(Container &&other);
+    inline explicit _Diag(const Container &other) : _diagRef(other) {}
+    inline explicit _Diag(Container &&other) : _diag(std::move(other)), _diagRef(_diag) {}
 
-    inline const typename Container::value_type &operator[](const size_t &i) const;
-    inline size_t size() const;
+    inline const typename Container::value_type &operator[](const size_type &i) const {
+        return std::data(_diagRef)[i];
+    }
+
+    inline size_type size() const noexcept { return _diagRef.size(); }
 
 private:
     const Container &_diagRef;
     Container _diag;
 };
-
-template <class Container>
-_Diag<Container>::_Diag(const Container &_diag) : _diagRef(_diag) {}
-
-template <class Container>
-inline _Diag<Container>::_Diag(Container &&_diag) : _diag(std::move(_diag)), _diagRef(_diag) {}
-
-template <class Container>
-inline const typename Container::value_type &_Diag<Container>::operator[](const size_t &i) const {
-    return std::data(_diagRef)[i];
-}
-
-template <class Container>
-inline size_t _Diag<Container>::size() const {
-    return _diagRef.size();
-}
 
 template <class Container>
 inline _Diag<std::decay_t<Container>> Diag(Container &&container) {
