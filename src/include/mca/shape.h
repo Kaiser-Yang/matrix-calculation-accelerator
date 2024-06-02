@@ -5,29 +5,22 @@
 
 namespace mca {
 struct Shape {
-    size_t rows    = 0;
-    size_t columns = 0;
+    using size_type   = std::size_t;
+    size_type rows    = 0;
+    size_type columns = 0;
 
     inline Shape() = default;
 
-    inline explicit Shape(size_t rows, size_t columns);
+    inline explicit Shape(const size_type &rows, const size_type &columns)
+        : rows(rows), columns(columns) {}
 
-    inline bool operator==(const Shape &other) const;
+    inline bool operator==(const Shape &other) const noexcept {
+        return rows == other.rows && columns == other.columns;
+    }
 
-    inline bool operator!=(const Shape &other) const;
+    inline bool operator!=(const Shape &other) const noexcept { return !(*this == other); }
 
-    inline size_t size() const;
+    inline size_type size() const noexcept { return rows * columns; };
 };
-
-inline Shape::Shape(size_t rows, size_t columns) : rows(rows), columns(columns) {}
-
-inline bool Shape::operator==(const Shape &other) const {
-    return rows == other.rows && columns == other.columns;
-}
-
-inline bool Shape::operator!=(const Shape &other) const { return !(*this == other); }
-
-inline size_t Shape::size() const { return rows * columns; }
-
 }  // namespace mca
 #endif

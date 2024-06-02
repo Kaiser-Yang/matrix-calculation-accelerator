@@ -1,7 +1,7 @@
 #include "mca/__mca_internal/thread_pool.h"
 
 namespace mca {
-void ThreadPool::resize(size_t newSize) {
+void ThreadPool::resize(size_type newSize) {
     // if the new size is equal to the old one, do nothing
     if (newSize == size()) { return; }
 
@@ -13,7 +13,7 @@ void ThreadPool::resize(size_t newSize) {
         taskQueue.emplace_back(std::queue<std::function<void()>>());
     }
     assert(size() == 0);
-    for (size_t i = 0; i < newSize; i++) {
+    for (size_type i = 0; i < newSize; i++) {
         threadQueue.emplace([this, id = size()]() {
             std::function<void()> task;
             while (!stopped.load(std::memory_order_relaxed)) {

@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <array>
 #include <chrono>
 #include <ctime>
 #include <random>
@@ -24,8 +25,8 @@ protected:
     std::vector<std::vector<double>> vec;
     std::vector<double> array;
     std::vector<double> diag;
-    Matrix<> a, b;
-    Matrix<> singleOutput, multiOutput;
+    Matrix<double> a, b;
+    Matrix<double> singleOutput, multiOutput;
     size_t exponent;
     Shape powShape{100, 100};
 
@@ -67,33 +68,47 @@ TEST_F(TestMatrixMultiThread, fill) {
 TEST_F(TestMatrixMultiThread, constructors) {
     auto value = generator() % MAX_VALUE;
 
-    a = Matrix<>(squareShape, value);
+    a = Matrix<double>(squareShape, value);
 
     vec   = std::vector<std::vector<double>>(squareShape.rows,
                                            std::vector<double>(squareShape.columns, value));
     array = std::vector<double>(squareShape.size() / 2, value);
     diag  = std::vector<double>(squareShape.rows, value);
 
+    constexpr size_t arrayLen = 1000;
+    double cArray[arrayLen];
+    for (size_t i = 0; i < arrayLen; i++) { cArray[i] = i; }
+
+    std::array<double, arrayLen> stdArray;
+    for (size_t i = 0; i < arrayLen; i++) { stdArray[i] = i; }
+
     // single thread mode
     auto startTime = high_resolution_clock::now();
     // construct a matrix with a specified value
-    Matrix<> m1(squareShape, value);
+    Matrix<double> m1(squareShape, value);
 
     // construct an identity matrix
-    Matrix<> m2(squareShape, IdentityMatrix());
+    Matrix<double> m2(squareShape, IdentityMatrix());
 
     // construct from a pointer
-    Matrix<> m3(squareShape, array.data(), array.size());
+    Matrix<double> m3(squareShape, array.data(), array.size());
 
     // construct from a vector
-    Matrix<> m4(vec);
+    Matrix<double> m4(vec);
 
     // construct a diagonal matrix
-    Matrix<> m5(Diag(diag));
+    Matrix<double> m5(Diag(diag));
 
     // copy constructor
-    Matrix<> m6(a);
-    Matrix<> m7(Matrix<int>(squareShape, value));
+    Matrix<double> m6(a);
+    Matrix<double> m7(Matrix<int>(squareShape, value));
+
+    // construct a matrix from an array
+    Matrix<double> m8(squareShape, cArray);
+
+    // construct a matrix from a std::array
+    Matrix<double> m9(squareShape, cArray);
+
     auto endTime       = high_resolution_clock::now();
     auto executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     // record time in gtest
@@ -107,23 +122,29 @@ TEST_F(TestMatrixMultiThread, constructors) {
     // multi thread mode
     startTime = high_resolution_clock::now();
     // construct a matrix with a specified value
-    Matrix<> n1(squareShape, value);
+    Matrix<double> n1(squareShape, value);
 
     // construct an identity matrix
-    Matrix<> n2(squareShape, IdentityMatrix());
+    Matrix<double> n2(squareShape, IdentityMatrix());
 
     // construct from a pointer
-    Matrix<> n3(squareShape, array.data(), array.size());
+    Matrix<double> n3(squareShape, array.data(), array.size());
 
     // construct from a vector
-    Matrix<> n4(vec);
+    Matrix<double> n4(vec);
 
     // construct a diagonal matrix
-    Matrix<> n5(Diag(diag));
+    Matrix<double> n5(Diag(diag));
 
     // copy constructor
-    Matrix<> n6(a);
-    Matrix<> n7(Matrix<int>(squareShape, value));
+    Matrix<double> n6(a);
+    Matrix<double> n7(Matrix<int>(squareShape, value));
+
+    // construct a matrix from an array
+    Matrix<double> n8(squareShape, cArray);
+
+    // construct a matrix from a std::array
+    Matrix<double> n9(squareShape, cArray);
     endTime       = high_resolution_clock::now();
     executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     // record time in gtest
@@ -136,23 +157,35 @@ TEST_F(TestMatrixMultiThread, constructors) {
     ASSERT_EQ(m5, n5);
     ASSERT_EQ(m6, n6);
     ASSERT_EQ(m7, n7);
+    ASSERT_EQ(m8, n8);
+    ASSERT_EQ(m9, n9);
+
+    for (size_t i = 0; i < m8.size(); i++) {
+        if (i < arrayLen) {
+            ASSERT_EQ(m8[i], i);
+            ASSERT_EQ(m9[i], i);
+        } else {
+            ASSERT_EQ(m8[i], 0);
+            ASSERT_EQ(m9[i], 0);
+        }
+    }
 }
 
 TEST_F(TestMatrixMultiThread, assignments) {
     auto value = generator() % MAX_VALUE;
 
-    a = Matrix<>(squareShape, value);
+    a = Matrix<double>(squareShape, value);
 
     vec   = std::vector<std::vector<double>>(squareShape.rows,
                                            std::vector<double>(squareShape.columns, value));
     array = std::vector<double>(squareShape.size(), value);
     diag  = std::vector<double>(squareShape.rows, value);
 
-    Matrix<> n1, n2, n3, n4, m1, m2, m3, m4;
+    Matrix<double> n1, n2, n3, n4, m1, m2, m3, m4;
 
     // single assignment thread mode
     auto startTime = high_resolution_clock::now();
-    // copy from a Matrix<>
+    // copy from a Matrix<double>
     n1 = a;
     // copy assignment from Matrix<int>
     n4                 = Matrix<int>(squareShape, value);
@@ -166,7 +199,7 @@ TEST_F(TestMatrixMultiThread, assignments) {
     // the expected time in multi thread
     testing::Test::RecordProperty("BaseTime", executionTime / (threadNum() + 1));
     startTime = high_resolution_clock::now();
-    // copy from a Matrix<>
+    // copy from a Matrix<double>
     m1 = a;
     // copy assignment from Matrix<int>
     m4            = Matrix<int>(squareShape, value);
@@ -186,7 +219,7 @@ TEST_F(TestMatrixMultiThread, powNumber) {
 
     const auto &number = exponent;
 
-    singleOutput = multiOutput = Matrix<>(squareShape, value);
+    singleOutput = multiOutput = Matrix<double>(squareShape, value);
 
     auto startTime = high_resolution_clock::now();
     singleOutput.powNumber(number);
@@ -215,11 +248,11 @@ TEST_F(TestMatrixMultiThread, powNumber) {
 TEST_F(TestMatrixMultiThread, powNumberToOutput) {
     auto value = generator() % MAX_VALUE;
 
-    singleOutput = multiOutput = Matrix<>(squareShape);
+    singleOutput = multiOutput = Matrix<double>(squareShape);
 
     const auto &number = exponent;
 
-    a = Matrix<>(squareShape, value);
+    a = Matrix<double>(squareShape, value);
 
     auto startTime = high_resolution_clock::now();
     a.powNumber(number, singleOutput);
@@ -250,7 +283,7 @@ TEST_F(TestMatrixMultiThread, numberPow) {
 
     const auto &number = exponent;
 
-    singleOutput = multiOutput = Matrix<>(squareShape, value);
+    singleOutput = multiOutput = Matrix<double>(squareShape, value);
 
     // first use numberPowSingleThread to get the single mode time
     auto startTime = high_resolution_clock::now();
@@ -280,11 +313,11 @@ TEST_F(TestMatrixMultiThread, numberPow) {
 TEST_F(TestMatrixMultiThread, numberPowToOutput) {
     auto value = generator() % MAX_VALUE;
 
-    singleOutput = multiOutput = Matrix<>(squareShape);
+    singleOutput = multiOutput = Matrix<double>(squareShape);
 
     const auto &number = exponent;
 
-    a = Matrix<>(squareShape, value);
+    a = Matrix<double>(squareShape, value);
     // first use numberPowSingleThread to get the single mode time
     auto startTime = high_resolution_clock::now();
     a.numberPow(number, singleOutput);
@@ -313,7 +346,7 @@ TEST_F(TestMatrixMultiThread, numberPowToOutput) {
 TEST_F(TestMatrixMultiThread, pow) {
     auto value = generator() % MAX_VALUE;
 
-    singleOutput = multiOutput = Matrix<>(powShape, value);
+    singleOutput = multiOutput = Matrix<double>(powShape, value);
 
     auto startTime = high_resolution_clock::now();
     singleOutput.pow(exponent);
@@ -342,9 +375,9 @@ TEST_F(TestMatrixMultiThread, pow) {
 TEST_F(TestMatrixMultiThread, powToOutput) {
     auto value = generator() % MAX_VALUE;
 
-    singleOutput = multiOutput = Matrix<>(powShape);
+    singleOutput = multiOutput = Matrix<double>(powShape);
 
-    a = Matrix<>(powShape, value);
+    a = Matrix<double>(powShape, value);
 
     auto startTime = high_resolution_clock::now();
     a.pow(exponent, singleOutput);
@@ -395,21 +428,21 @@ TEST_F(TestMatrixMultiThread, constructorFromDiag) {
 
 TEST_F(TestMatrixMultiThread, assignmentFromInitializerList) {
     // create a null matrix
-    a = Matrix<>(std::initializer_list<std::initializer_list<double>>{});
+    a = Matrix<double>(std::initializer_list<std::initializer_list<double>>{});
     // create a column null matirx
-    b = Matrix<>(std::initializer_list<std::initializer_list<double>>{{}, {}});
+    b = Matrix<double>(std::initializer_list<std::initializer_list<double>>{{}, {}});
 
     auto startTime     = high_resolution_clock::now();
-    singleOutput       = Matrix<>({{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                                   {0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
-                                   {0, 0, 2, 0, 0, 0, 0, 0, 0, 0},
-                                   {0, 0, 0, 3, 0, 0, 0, 0, 0, 0},
-                                   {0, 0, 0, 0, 4, 0, 0, 0, 0, 0},
-                                   {0, 0, 0, 0, 0, 5, 0, 0, 0, 0},
-                                   {0, 0, 0, 0, 0, 0, 6, 0, 0, 0},
-                                   {0, 0, 0, 0, 0, 0, 0, 7, 0, 0},
-                                   {0, 0, 0, 0, 0, 0, 0, 0, 8, 0},
-                                   {0, 0, 0, 0, 0, 0, 0, 0, 0, 9}});
+    singleOutput       = Matrix<double>({{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                                         {0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
+                                         {0, 0, 2, 0, 0, 0, 0, 0, 0, 0},
+                                         {0, 0, 0, 3, 0, 0, 0, 0, 0, 0},
+                                         {0, 0, 0, 0, 4, 0, 0, 0, 0, 0},
+                                         {0, 0, 0, 0, 0, 5, 0, 0, 0, 0},
+                                         {0, 0, 0, 0, 0, 0, 6, 0, 0, 0},
+                                         {0, 0, 0, 0, 0, 0, 0, 7, 0, 0},
+                                         {0, 0, 0, 0, 0, 0, 0, 0, 8, 0},
+                                         {0, 0, 0, 0, 0, 0, 0, 0, 0, 9}});
     auto endTime       = high_resolution_clock::now();
     auto executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     // record time in gtest
@@ -420,16 +453,16 @@ TEST_F(TestMatrixMultiThread, assignmentFromInitializerList) {
     // the expected time in multi thread
     testing::Test::RecordProperty("BaseTime", executionTime / (threadNum() + 1));
     startTime     = high_resolution_clock::now();
-    multiOutput   = Matrix<>({{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                              {0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
-                              {0, 0, 2, 0, 0, 0, 0, 0, 0, 0},
-                              {0, 0, 0, 3, 0, 0, 0, 0, 0, 0},
-                              {0, 0, 0, 0, 4, 0, 0, 0, 0, 0},
-                              {0, 0, 0, 0, 0, 5, 0, 0, 0, 0},
-                              {0, 0, 0, 0, 0, 0, 6, 0, 0, 0},
-                              {0, 0, 0, 0, 0, 0, 0, 7, 0, 0},
-                              {0, 0, 0, 0, 0, 0, 0, 0, 8, 0},
-                              {0, 0, 0, 0, 0, 0, 0, 0, 0, 9}});
+    multiOutput   = Matrix<double>({{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                                    {0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
+                                    {0, 0, 2, 0, 0, 0, 0, 0, 0, 0},
+                                    {0, 0, 0, 3, 0, 0, 0, 0, 0, 0},
+                                    {0, 0, 0, 0, 4, 0, 0, 0, 0, 0},
+                                    {0, 0, 0, 0, 0, 5, 0, 0, 0, 0},
+                                    {0, 0, 0, 0, 0, 0, 6, 0, 0, 0},
+                                    {0, 0, 0, 0, 0, 0, 0, 7, 0, 0},
+                                    {0, 0, 0, 0, 0, 0, 0, 0, 8, 0},
+                                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 9}});
     endTime       = high_resolution_clock::now();
     executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     // record time in gtest
@@ -444,9 +477,9 @@ TEST_F(TestMatrixMultiThread, assignmentFromInitializerList) {
 
 TEST_F(TestMatrixMultiThread, assignmentFromVector) {
     // create a null matrix
-    a = Matrix<>(std::vector<std::vector<double>>{});
+    a = Matrix<double>(std::vector<std::vector<double>>{});
     // create a column null matirx
-    b = Matrix<>(std::vector<std::vector<double>>{{}, {}});
+    b = Matrix<double>(std::vector<std::vector<double>>{{}, {}});
 
     ASSERT_EQ(a.shape(), Shape(0, 0));
     ASSERT_EQ(b.shape(), Shape(2, 0));
@@ -455,7 +488,7 @@ TEST_F(TestMatrixMultiThread, assignmentFromVector) {
 }
 
 TEST_F(TestMatrixMultiThread, transpose) {
-    a = Matrix<>(rectangleShape);
+    a = Matrix<double>(rectangleShape);
     for (size_t i = 0; i < a.rows(); i++) {
         for (size_t j = 0; j < a.columns(); j++) { a.get(i, j) = generator() % MAX_VALUE; }
     }

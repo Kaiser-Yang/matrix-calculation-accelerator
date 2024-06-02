@@ -23,7 +23,7 @@ protected:
     Shape rectangleShape1{1000, 1210};
     Shape rectangleShape2{1210, 1000};
     std::default_random_engine generator;
-    Matrix<> singleOutput, multiOutput, a, b, c, mulA, mulB;
+    Matrix<double> singleOutput, multiOutput, a, b, c, mulA, mulB;
 
     void SetUp() override { generator.seed(time(nullptr)); }
 
@@ -32,7 +32,7 @@ protected:
 
 TEST_F(TestMultiThreadCalculation, numAddMatrix) {
     auto value = generator() % MAX_VALUE, number = generator() % MAX_VALUE;
-    a = Matrix<>(squareShape, value);
+    a = Matrix<double>(squareShape, value);
 
     auto startTime     = high_resolution_clock::now();
     singleOutput       = number + a;
@@ -60,7 +60,7 @@ TEST_F(TestMultiThreadCalculation, numAddMatrix) {
 
 TEST_F(TestMultiThreadCalculation, matrixAddNum) {
     auto value = generator() % MAX_VALUE, number = generator() % MAX_VALUE;
-    a = Matrix<>(squareShape, value);
+    a = Matrix<double>(squareShape, value);
 
     auto startTime     = high_resolution_clock::now();
     singleOutput       = a + number;
@@ -89,7 +89,7 @@ TEST_F(TestMultiThreadCalculation, matrixAddNum) {
 TEST_F(TestMultiThreadCalculation, matrixSelfAddNum) {
     auto value = generator() % MAX_VALUE, number = generator() % MAX_VALUE;
 
-    singleOutput = multiOutput = Matrix<>(squareShape, value);
+    singleOutput = multiOutput = Matrix<double>(squareShape, value);
 
     // first use addSingleThread to get the single mode time
     auto startTime = high_resolution_clock::now();
@@ -119,7 +119,7 @@ TEST_F(TestMultiThreadCalculation, matrixSelfAddNum) {
 TEST_F(TestMultiThreadCalculation, numSelfAddMatrix) {
     auto value = generator() % MAX_VALUE, number = generator() % MAX_VALUE;
 
-    singleOutput = multiOutput = Matrix<>(squareShape, value);
+    singleOutput = multiOutput = Matrix<double>(squareShape, value);
 
     // first use addSingleThread to get the single mode time
     auto startTime = high_resolution_clock::now();
@@ -149,8 +149,8 @@ TEST_F(TestMultiThreadCalculation, numSelfAddMatrix) {
 TEST_F(TestMultiThreadCalculation, matrixSubtractMatrix) {
     auto value1 = generator() % MAX_VALUE, value2 = generator() % MAX_VALUE;
 
-    a = Matrix<>(squareShape, value1);
-    b = Matrix<>(squareShape, value2);
+    a = Matrix<double>(squareShape, value1);
+    b = Matrix<double>(squareShape, value2);
 
     auto startTime     = high_resolution_clock::now();
     singleOutput       = a - b;
@@ -179,9 +179,9 @@ TEST_F(TestMultiThreadCalculation, matrixSubtractMatrix) {
 TEST_F(TestMultiThreadCalculation, matrixSelfSubtractMatrix) {
     auto value1 = generator() % MAX_VALUE, value2 = generator() % MAX_VALUE;
 
-    singleOutput = multiOutput = Matrix<>(squareShape, value1);
+    singleOutput = multiOutput = Matrix<double>(squareShape, value1);
 
-    a = Matrix<>(squareShape, value2);
+    a = Matrix<double>(squareShape, value2);
 
     auto startTime = high_resolution_clock::now();
     singleOutput -= a;
@@ -210,8 +210,8 @@ TEST_F(TestMultiThreadCalculation, matrixSelfSubtractMatrix) {
 TEST_F(TestMultiThreadCalculation, matrixAddMatrix) {
     auto value1 = generator() % MAX_VALUE, value2 = generator() % MAX_VALUE;
 
-    a = Matrix<>(squareShape, value1);
-    b = Matrix<>(squareShape, value2);
+    a = Matrix<double>(squareShape, value1);
+    b = Matrix<double>(squareShape, value2);
 
     auto startTime     = high_resolution_clock::now();
     singleOutput       = a + b;
@@ -240,9 +240,9 @@ TEST_F(TestMultiThreadCalculation, matrixAddMatrix) {
 TEST_F(TestMultiThreadCalculation, matrixSelfAddMatrix) {
     auto value1 = generator() % MAX_VALUE, value2 = generator() % MAX_VALUE;
 
-    singleOutput = multiOutput = Matrix<>(squareShape, value1);
+    singleOutput = multiOutput = Matrix<double>(squareShape, value1);
 
-    a = Matrix<>(squareShape, value2);
+    a = Matrix<double>(squareShape, value2);
 
     auto startTime = high_resolution_clock::now();
     singleOutput += a;
@@ -271,8 +271,8 @@ TEST_F(TestMultiThreadCalculation, matrixSelfAddMatrix) {
 TEST_F(TestMultiThreadCalculation, matrixMultiplyMatrix) {
     auto value1 = generator() % MAX_VALUE, value2 = generator() % MAX_VALUE;
 
-    mulA = Matrix<>(mul1Shape, value1);
-    mulB = Matrix<>(mul2Shape, value2);
+    mulA = Matrix<double>(mul1Shape, value1);
+    mulB = Matrix<double>(mul2Shape, value2);
 
     auto startTime     = high_resolution_clock::now();
     singleOutput       = mulA * mulB;
@@ -301,9 +301,9 @@ TEST_F(TestMultiThreadCalculation, matrixMultiplyMatrix) {
 TEST_F(TestMultiThreadCalculation, matrixSelfMultiplyMatrix) {
     auto value1 = generator() % MAX_VALUE, value2 = generator() % MAX_VALUE;
 
-    singleOutput = multiOutput = Matrix<>(mul1Shape, value1);
+    singleOutput = multiOutput = Matrix<double>(mul1Shape, value1);
 
-    mulA = Matrix<>(mul2Shape, value2);
+    mulA = Matrix<double>(mul2Shape, value2);
 
     auto startTime = high_resolution_clock::now();
     singleOutput *= mulA;
@@ -332,9 +332,9 @@ TEST_F(TestMultiThreadCalculation, matrixSelfMultiplyMatrix) {
 TEST_F(TestMultiThreadCalculation, matrixLessEqualMatrix) {
     auto value1 = generator() % MAX_VALUE, value2 = generator() % MAX_VALUE;
 
-    a = Matrix<>(squareShape, value1);
-    b = Matrix<>(squareShape, value2);
-    c = Matrix<>(smallShape, value1);
+    a = Matrix<double>(squareShape, value1);
+    b = Matrix<double>(squareShape, value2);
+    c = Matrix<double>(smallShape, value1);
 
     // judgement of different shapes
     ASSERT_FALSE(a <= c);
@@ -363,7 +363,7 @@ TEST_F(TestMultiThreadCalculation, matrixLessEqualMatrix) {
 
 TEST_F(TestMultiThreadCalculation, numSubtractMatrix) {
     auto value = generator() % MAX_VALUE, number = generator() % MAX_VALUE;
-    a = Matrix<>(squareShape, value);
+    a = Matrix<double>(squareShape, value);
 
     auto startTime     = high_resolution_clock::now();
     singleOutput       = number - a;
@@ -391,7 +391,7 @@ TEST_F(TestMultiThreadCalculation, numSubtractMatrix) {
 
 TEST_F(TestMultiThreadCalculation, matrixDivideNum) {
     auto value = generator() % MAX_VALUE, number = generator() % MAX_VALUE + 1;
-    a = Matrix<>(squareShape, value);
+    a = Matrix<double>(squareShape, value);
 
     auto startTime     = high_resolution_clock::now();
     singleOutput       = a / number;
@@ -420,7 +420,7 @@ TEST_F(TestMultiThreadCalculation, matrixDivideNum) {
 TEST_F(TestMultiThreadCalculation, matrixSelfDivideNum) {
     auto value = generator() % MAX_VALUE, number = generator() % MAX_VALUE + 1;
 
-    singleOutput = multiOutput = Matrix<>(squareShape, value);
+    singleOutput = multiOutput = Matrix<double>(squareShape, value);
 
     // first use addSingleThread to get the single mode time
     auto startTime = high_resolution_clock::now();
@@ -450,7 +450,7 @@ TEST_F(TestMultiThreadCalculation, matrixSelfDivideNum) {
 TEST_F(TestMultiThreadCalculation, numSelfSubtractMatrix) {
     auto value = generator() % MAX_VALUE, number = generator() % MAX_VALUE;
 
-    singleOutput = multiOutput = Matrix<>(squareShape, value);
+    singleOutput = multiOutput = Matrix<double>(squareShape, value);
 
     // first use addSingleThread to get the single mode time
     auto startTime = high_resolution_clock::now();
@@ -480,9 +480,9 @@ TEST_F(TestMultiThreadCalculation, numSelfSubtractMatrix) {
 TEST_F(TestMultiThreadCalculation, matrixGreaterEqualMatrix) {
     auto value1 = generator() % MAX_VALUE, value2 = generator() % MAX_VALUE;
 
-    a = Matrix<>(squareShape, value1);
-    b = Matrix<>(squareShape, value2);
-    c = Matrix<>(smallShape, value1);
+    a = Matrix<double>(squareShape, value1);
+    b = Matrix<double>(squareShape, value2);
+    c = Matrix<double>(smallShape, value1);
 
     // judgement of different shapes
     ASSERT_FALSE(a <= c);
@@ -511,7 +511,7 @@ TEST_F(TestMultiThreadCalculation, matrixGreaterEqualMatrix) {
 
 TEST_F(TestMultiThreadCalculation, matrixSubtractNum) {
     auto value = generator() % MAX_VALUE, number = generator() % MAX_VALUE;
-    a = Matrix<>(squareShape, value);
+    a = Matrix<double>(squareShape, value);
 
     auto startTime     = high_resolution_clock::now();
     singleOutput       = a - number;
@@ -539,7 +539,7 @@ TEST_F(TestMultiThreadCalculation, matrixSubtractNum) {
 
 TEST_F(TestMultiThreadCalculation, numDivideMatrix) {
     auto value = generator() % MAX_VALUE + 1, number = generator() % MAX_VALUE;
-    a = Matrix<>(squareShape, value);
+    a = Matrix<double>(squareShape, value);
 
     auto startTime     = high_resolution_clock::now();
     singleOutput       = number / a;
@@ -567,7 +567,7 @@ TEST_F(TestMultiThreadCalculation, numDivideMatrix) {
 
 TEST_F(TestMultiThreadCalculation, matrixSelfSubtractNum) {
     auto value = generator() % MAX_VALUE, number = generator() % MAX_VALUE;
-    singleOutput = multiOutput = Matrix<>(squareShape, value);
+    singleOutput = multiOutput = Matrix<double>(squareShape, value);
 
     auto startTime = high_resolution_clock::now();
     singleOutput -= number;
@@ -595,7 +595,7 @@ TEST_F(TestMultiThreadCalculation, matrixSelfSubtractNum) {
 
 TEST_F(TestMultiThreadCalculation, numSelfDivideMatrix) {
     auto value = generator() % MAX_VALUE + 1, number = generator() % MAX_VALUE;
-    singleOutput = multiOutput = Matrix<>(squareShape, value);
+    singleOutput = multiOutput = Matrix<double>(squareShape, value);
 
     auto startTime = high_resolution_clock::now();
     number /= singleOutput;
@@ -622,7 +622,7 @@ TEST_F(TestMultiThreadCalculation, numSelfDivideMatrix) {
 }
 
 TEST_F(TestMultiThreadCalculation, transposeMatrix) {
-    singleOutput = multiOutput = Matrix<>(rectangleShape1);
+    singleOutput = multiOutput = Matrix<double>(rectangleShape1);
     for (size_t i = 0; i < singleOutput.rows(); i++) {
         for (size_t j = 0; j < singleOutput.columns(); j++) {
             singleOutput.get(i, j) = multiOutput.get(i, j) = generator() % MAX_VALUE;
@@ -653,9 +653,9 @@ TEST_F(TestMultiThreadCalculation, transposeMatrix) {
 }
 
 TEST_F(TestMultiThreadCalculation, transposeMatrixToOutput) {
-    singleOutput = multiOutput = Matrix<>(rectangleShape2);
+    singleOutput = multiOutput = Matrix<double>(rectangleShape2);
 
-    a = Matrix<>(rectangleShape1);
+    a = Matrix<double>(rectangleShape1);
 
     for (size_t i = 0; i < a.rows(); i++) {
         for (size_t j = 0; j < a.columns(); j++) { a.get(i, j) = generator() % MAX_VALUE; }
@@ -688,9 +688,9 @@ TEST_F(TestMultiThreadCalculation, transposeMatrixToOutput) {
 TEST_F(TestMultiThreadCalculation, matrixLessMatrix) {
     auto value1 = generator() % MAX_VALUE, value2 = generator() % MAX_VALUE;
 
-    a = Matrix<>(squareShape, value1);
-    b = Matrix<>(squareShape, value2);
-    c = Matrix<>(smallShape, value1);
+    a = Matrix<double>(squareShape, value1);
+    b = Matrix<double>(squareShape, value2);
+    c = Matrix<double>(smallShape, value1);
 
     // judgement of different shapes
     ASSERT_FALSE(a < c);
@@ -720,9 +720,9 @@ TEST_F(TestMultiThreadCalculation, matrixLessMatrix) {
 TEST_F(TestMultiThreadCalculation, matrixEqualMatrix) {
     auto value1 = generator() % MAX_VALUE, value2 = generator() % MAX_VALUE;
 
-    a = Matrix<>(squareShape, value1);
-    b = Matrix<>(squareShape, value2);
-    c = Matrix<>(smallShape, value1);
+    a = Matrix<double>(squareShape, value1);
+    b = Matrix<double>(squareShape, value2);
+    c = Matrix<double>(smallShape, value1);
 
     // judgement of different shapes
     ASSERT_FALSE(a == c);
@@ -761,9 +761,9 @@ TEST_F(TestMultiThreadCalculation, matrixEqualMatrix) {
 TEST_F(TestMultiThreadCalculation, matrixNotEqualMatrix) {
     auto value1 = generator() % MAX_VALUE, value2 = generator() % MAX_VALUE;
 
-    a = Matrix<>(squareShape, value1);
-    b = Matrix<>(squareShape, value2);
-    c = Matrix<>(smallShape, value1);
+    a = Matrix<double>(squareShape, value1);
+    b = Matrix<double>(squareShape, value2);
+    c = Matrix<double>(smallShape, value1);
 
     // judgement of different shapes
     ASSERT_NE(a, c);
@@ -802,9 +802,9 @@ TEST_F(TestMultiThreadCalculation, matrixNotEqualMatrix) {
 TEST_F(TestMultiThreadCalculation, matrixGreaterMatrix) {
     auto value1 = generator() % MAX_VALUE, value2 = generator() % MAX_VALUE;
 
-    a = Matrix<>(squareShape, value1);
-    b = Matrix<>(squareShape, value2);
-    c = Matrix<>(smallShape, value1);
+    a = Matrix<double>(squareShape, value1);
+    b = Matrix<double>(squareShape, value2);
+    c = Matrix<double>(smallShape, value1);
 
     // judgement of different shapes
     ASSERT_FALSE(a > c);
@@ -833,7 +833,7 @@ TEST_F(TestMultiThreadCalculation, matrixGreaterMatrix) {
 
 TEST_F(TestMultiThreadCalculation, matrixMultiplyNum) {
     auto value = generator() % MAX_VALUE, number = generator() % MAX_VALUE;
-    a = Matrix<>(squareShape, value);
+    a = Matrix<double>(squareShape, value);
 
     auto startTime     = high_resolution_clock::now();
     singleOutput       = a * number;
@@ -861,7 +861,7 @@ TEST_F(TestMultiThreadCalculation, matrixMultiplyNum) {
 
 TEST_F(TestMultiThreadCalculation, numMultiplyMatrix) {
     auto value = generator() % MAX_VALUE, number = generator() % MAX_VALUE;
-    a = Matrix<>(squareShape, value);
+    a = Matrix<double>(squareShape, value);
 
     auto startTime     = high_resolution_clock::now();
     singleOutput       = number * a;
@@ -890,7 +890,7 @@ TEST_F(TestMultiThreadCalculation, numMultiplyMatrix) {
 TEST_F(TestMultiThreadCalculation, numSelfMultiplyMatrix) {
     auto value = generator() % MAX_VALUE, number = generator() % MAX_VALUE;
 
-    singleOutput = multiOutput = Matrix<>(squareShape, value);
+    singleOutput = multiOutput = Matrix<double>(squareShape, value);
 
     // first use addSingleThread to get the single mode time
     auto startTime = high_resolution_clock::now();
@@ -920,7 +920,7 @@ TEST_F(TestMultiThreadCalculation, numSelfMultiplyMatrix) {
 TEST_F(TestMultiThreadCalculation, matrixSelfMultiplyNum) {
     auto value = generator() % MAX_VALUE, number = generator() % MAX_VALUE;
 
-    singleOutput = multiOutput = Matrix<>(squareShape, value);
+    singleOutput = multiOutput = Matrix<double>(squareShape, value);
 
     // first use addSingleThread to get the single mode time
     auto startTime = high_resolution_clock::now();
