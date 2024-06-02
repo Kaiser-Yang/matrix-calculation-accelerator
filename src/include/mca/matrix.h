@@ -106,7 +106,7 @@ public:
 
     /* Make all the elements of the matrix be a new value, when pos = 0
      * Otherwise, the elements before pos will not changed
-     * pos should be less than or equal with size() */
+     * pos should be less than or equal to size() */
     void fill(const value_type &value, const size_t &pos = 0);
 
     /* Calculate number ^ (*this), and store the result in output
@@ -187,7 +187,7 @@ public:
     bool antisymmetric() const;
 
 private:
-    /* Allocate memory for _date, and update _shape with shape */
+    /* Allocate memory for _data, and update _shape with shape */
     inline void allocateMemory(const Shape &shape);
 
     std::unique_ptr<value_type[]> _data;
