@@ -2,7 +2,7 @@
 
 namespace mca {
 void ThreadPool::resize(size_t newSize) {
-    // if the new size is equal with the old one, do nothing
+    // if the new size is equal to the old one, do nothing
     if (newSize == size()) { return; }
 
     clear();

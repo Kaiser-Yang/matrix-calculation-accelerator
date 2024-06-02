@@ -61,7 +61,7 @@ bool lessSingleThread(const Matrix<T1> &a,
                       const size_t &len,
                       const double &eps = 1e-100);
 
-/* Check if the elements of the sub-matrix of a are all equal with the sub-matrix of b's
+/* Check if the elements of the sub-matrix of a are all equal to the sub-matrix of b's
  * This will only check the a[pos:pos+len] with b[pos:pos+len]
  * NOTE: eps will be used when T1 or T2 is floating number */
 template <class T1, class T2>
@@ -71,7 +71,7 @@ bool equalSingleThread(const Matrix<T1> &a,
                        const size_t &len,
                        const double &eps = 1e-100);
 
-/* Check if the elements of the sub-matrix of a are all less than or equal with the sub-matrix of
+/* Check if the elements of the sub-matrix of a are all less than or equal to the sub-matrix of
  * This will only check the a[pos:pos+len] with b[pos:pos+len]
  * pos: one-demensional starting index of the matrix
  * len: number of elements to be checked
@@ -95,7 +95,7 @@ bool greaterSingleThread(const Matrix<T1> &a,
                          const size_t &len,
                          const double &eps = 1e-100);
 
-/* Check if the elements of the sub-matrix of a are all greater than or equal with the sub-matrix of
+/* Check if the elements of the sub-matrix of a are all greater than or equal to the sub-matrix of
  * b's This will only check the a[pos:pos+len] with
  * b[pos:pos+len]
  * NOTE: eps will be used when T1 or T2 is floating number */
@@ -106,7 +106,7 @@ bool greaterEqualSingleThread(const Matrix<T1> &a,
                               const size_t &len,
                               const double &eps = 1e-100);
 
-/* Check if any element of the sub-matrix of a is not equal with the sub-matrix of b's
+/* Check if any element of the sub-matrix of a is not equal to the sub-matrix of b's
  * This will only check the a[pos:pos+len] with
  * b[pos:pos+len]
  * NOTE: eps will be used when T1 or T2 is floating number */
@@ -164,7 +164,7 @@ void subtractSingleThread(const Matrix<T1> &a,
  * pos: start position
  * len: length of calculation
  * NOTE: a must have the same shape with output and b
- *       &a must not be equal with &output
+ *       &a must not be equal to &output
  *       the matrix which will be calculated must in range */
 template <class T1, class T2, class O>
 void multiplySingleThread(const Matrix<T1> &a,
@@ -294,7 +294,7 @@ void divideSingleThread(const Number &number,
  * len: length of elements
  * NOTE: a must have the same shape with output after transposition
  *       the matrix which will be calculated must in range
- *       &a must not be equal with &output
+ *       &a must not be equal to &output
  * for example: number = 2,
  *              a = [[1, 2, 3],
  *                   [2, 3, 4]]
@@ -313,7 +313,7 @@ void transposeSingleThread(const Matrix<T> &a,
  * pos: start position from the first element which will be used
  * len: length of elements
  * NOTE: a must be a square matrix
- *       pos + len must less than or equal with (a.size() - a.rows())/2
+ *       pos + len must less than or equal to (a.size() - a.rows())/2
  * for example: a = [[1, 2, 3],
  *                   [2, 3, 4],
  *                   [3, 6, 5]]
@@ -330,7 +330,7 @@ bool symmetricSingleThread(const Matrix<T> &a,
  * pos: start pos from the first element which will be used
  * len: length of elements
  * NOTE: a must be a square matrix
- *       pos + len must less than or equal with (a.size() - a.rows())/2
+ *       pos + len must less than or equal to (a.size() - a.rows())/2
  * for example: a = [[1,  2, 3],
  *                   [2,  3, 4],
  *                   [3, -4, 5]]

@@ -37,12 +37,12 @@ TEST(TestMatrix, constructors) {
     // default constructor
     Matrix<int> m;
     ASSERT_EQ(m.shape(), Shape(0, 0));
-    ASSERT_EQ(m.dataPtr(), nullptr);
+    ASSERT_EQ(m.data(), nullptr);
 
     // construct a matrix with a specified value
     Matrix<int> m1(Shape{3, 3}, -1);
     ASSERT_EQ(m1.shape(), Shape(3, 3));
-    ASSERT_NE(m1.dataPtr(), nullptr);
+    ASSERT_NE(m1.data(), nullptr);
     for (size_t i = 0; i < m1.rows(); i++) {
         for (size_t j = 0; j < m1.columns(); j++) { ASSERT_EQ(m1.get(i, j), -1); }
     }
@@ -50,7 +50,7 @@ TEST(TestMatrix, constructors) {
     // construct from a std::initializer_list
     Matrix<int> m2({{-1, -1, -1}, {-1, -1, -1}});
     ASSERT_EQ(m2.shape(), Shape(2, 3));
-    ASSERT_NE(m2.dataPtr(), nullptr);
+    ASSERT_NE(m2.data(), nullptr);
     for (size_t i = 0; i < m2.rows(); i++) {
         for (size_t j = 0; j < m2.columns(); j++) { ASSERT_EQ(m2.get(i, j), -1); }
     }
@@ -91,12 +91,12 @@ TEST(TestMatrix, constructors) {
 TEST(TestMatrix, assignments) {
     Matrix<int> m;
     ASSERT_EQ(m.shape(), Shape(0, 0));
-    ASSERT_EQ(m.dataPtr(), nullptr);
+    ASSERT_EQ(m.data(), nullptr);
 
     // move assignment from Matrix<int>
     m = Matrix<int>(Shape{3, 3}, 1);
     ASSERT_EQ(m.shape(), Shape(3, 3));
-    ASSERT_NE(m.dataPtr(), nullptr);
+    ASSERT_NE(m.data(), nullptr);
     for (size_t i = 0; i < m.rows(); i++) {
         for (size_t j = 0; j < m.columns(); j++) { ASSERT_EQ(m.get(i, j), 1); }
     }
@@ -110,7 +110,7 @@ TEST(TestMatrix, assignments) {
     Matrix<int> newN(Shape{3, 3}, 1);
     m = newN;
     ASSERT_EQ(m.shape(), Shape(3, 3));
-    ASSERT_NE(m.dataPtr(), nullptr);
+    ASSERT_NE(m.data(), nullptr);
     for (size_t i = 0; i < m.rows(); i++) {
         for (size_t j = 0; j < m.columns(); j++) { ASSERT_EQ(m.get(i, j), 1); }
     }
