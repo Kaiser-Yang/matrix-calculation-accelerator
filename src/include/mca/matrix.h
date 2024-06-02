@@ -20,7 +20,7 @@ namespace mca {
 template <class ELEMENT_TYPE>
 class Matrix {
 public:
-    using ElementType = ELEMENT_TYPE;
+    using value_type = ELEMENT_TYPE;
 
     /* Construct an empty matrix */
     inline Matrix() = default;
@@ -31,17 +31,17 @@ public:
     /* Construct a matrix from a initializer_list
      * You can use this like Matrix<>({{1, 2}, {3, 4}})
      * NOTE: if you use Matrix({{1, 2}, {3, 4}}) the ELEMENT_TYPE will be int rather than double */
-    explicit inline Matrix(const std::initializer_list<std::initializer_list<ELEMENT_TYPE>> &init);
+    explicit inline Matrix(const std::initializer_list<std::initializer_list<value_type>> &init);
 
     /* Construct a matrix from a vector */
-    explicit inline Matrix(const std::vector<std::vector<ELEMENT_TYPE>> &init);
+    explicit inline Matrix(const std::vector<std::vector<value_type>> &init);
 
     /* Construct a matrix from a pointer
      * when len is less than shape.size(), the rest part will be filled with ELEMENT_TYPE() */
-    explicit inline Matrix(const Shape &shape, const ELEMENT_TYPE *data, const size_t &len);
+    explicit inline Matrix(const Shape &shape, const value_type *data, const size_t &len);
 
     /* Construct a matrix with shape and defaultValue */
-    explicit inline Matrix(const Shape &shape, const ELEMENT_TYPE &defaultValue = ELEMENT_TYPE());
+    explicit inline Matrix(const Shape &shape, const value_type &defaultValue = value_type());
 
     /* Construct a diagonal matrix, the diag is the diagonal elements
      * Matrix<>({1, 2, 3, 4}) will construct a matrix whose shape is 4 * 4,
@@ -71,21 +71,21 @@ public:
      * the other matrix's data will use static_cast<> to convert its type the same with current
      * matrix */
     template <class T>
-    Matrix<ELEMENT_TYPE> &operator=(const Matrix<T> &other);
-    Matrix<ELEMENT_TYPE> &operator=(const Matrix &other);
+    Matrix<value_type> &operator=(const Matrix<T> &other);
+    Matrix<value_type> &operator=(const Matrix &other);
 
     /* get the reference to the element of i-th row, j-th column */
-    inline ELEMENT_TYPE &get(const size_t &i, const size_t &j);
-    inline const ELEMENT_TYPE &get(const size_t &i, const size_t &j) const;
+    inline value_type &get(const size_t &i, const size_t &j);
+    inline const value_type &get(const size_t &i, const size_t &j) const;
 
     /* Get the element at pos
      * The elements are numbered sequentially from left to right and top to bottom. */
-    inline ELEMENT_TYPE &operator[](const size_t &pos);
-    inline const ELEMENT_TYPE &operator[](const size_t &pos) const;
+    inline value_type &operator[](const size_t &pos);
+    inline const value_type &operator[](const size_t &pos) const;
 
     /* get the date pointer */
-    inline ELEMENT_TYPE *data();
-    inline const ELEMENT_TYPE *data() const;
+    inline value_type *data();
+    inline const value_type *data() const;
 
     /* get the number of rows */
     inline size_t rows() const;
@@ -107,7 +107,7 @@ public:
     /* Make all the elements of the matrix be a new value, when pos = 0
      * Otherwise, the elements before pos will not changed
      * pos should be less than or equal with size() */
-    void fill(const ELEMENT_TYPE &value, const size_t &pos = 0);
+    void fill(const value_type &value, const size_t &pos = 0);
 
     /* Calculate number ^ (*this), and store the result in output
      * The function whose parameters do not include output will change (*this)
@@ -187,7 +187,10 @@ public:
     bool antisymmetric() const;
 
 private:
-    std::unique_ptr<ELEMENT_TYPE[]> _data;
+    /* Allocate memory for _date, and update _shape with shape */
+    inline void allocateMemory(const Shape &shape);
+
+    std::unique_ptr<value_type[]> _data;
     Shape _shape;
 
     //     template <class T1, class T2>
@@ -263,9 +266,7 @@ private:
 
 template <class ELEMENT_TYPE>
 Matrix<ELEMENT_TYPE>::Matrix(const Shape &shape, const IdentityMatrix &) {
-    if (shape.size() == 0) { return; }
-    _shape = shape;
-    _data  = std::make_unique<ELEMENT_TYPE[]>(size());
+    allocateMemory(shape);
     fill(ELEMENT_TYPE());
     size_t totalCalculation = std::min(rows(), columns());
     if (threadNum() == 0 || limit() >= totalCalculation) {
@@ -289,18 +290,7 @@ Matrix<ELEMENT_TYPE>::Matrix(const Shape &shape, const IdentityMatrix &) {
 template <class ELEMENT_TYPE>
 inline Matrix<ELEMENT_TYPE>::Matrix(
     const std::initializer_list<std::initializer_list<ELEMENT_TYPE>> &init) {
-    _shape.rows = init.size();
-    if (init.size() == 0) {
-        _shape.columns = 0;
-        _data          = nullptr;
-        return;
-    }
-    _shape.columns = init.begin()->size();
-    if (size() == 0) {
-        _data = nullptr;
-        return;
-    }
-    _data = std::make_unique<ELEMENT_TYPE[]>(size());
+    allocateMemory(Shape(init.size(), init.size() == 0 ? 0 : init.begin()->size()));
     if (threadNum() == 0 || limit() >= size()) {
         for (size_t i = 0; i < rows(); i++)
             for (size_t j = 0; j < columns(); j++) { get(i, j) = std::data(std::data(init)[i])[j]; }
@@ -327,18 +317,7 @@ inline Matrix<ELEMENT_TYPE>::Matrix(
 
 template <class ELEMENT_TYPE>
 inline Matrix<ELEMENT_TYPE>::Matrix(const std::vector<std::vector<ELEMENT_TYPE>> &init) {
-    _shape.rows = init.size();
-    if (init.size() == 0) {
-        _shape.columns = 0;
-        _data          = nullptr;
-        return;
-    }
-    _shape.columns = init.begin()->size();
-    if (size() == 0) {
-        _data = nullptr;
-        return;
-    }
-    _data = std::make_unique<ELEMENT_TYPE[]>(size());
+    allocateMemory(Shape(init.size(), init.size() == 0 ? 0 : init.begin()->size()));
     if (threadNum() == 0 || limit() >= size()) {
         for (size_t i = 0; i < rows(); i++)
             for (size_t j = 0; j < columns(); j++) { get(i, j) = init[i][j]; }
@@ -364,9 +343,7 @@ template <class ELEMENT_TYPE>
 inline Matrix<ELEMENT_TYPE>::Matrix(const Shape &shape,
                                     const ELEMENT_TYPE *data,
                                     const size_t &len) {
-    if (shape.size() == 0) { return; }
-    _shape = shape;
-    _data  = std::make_unique<ELEMENT_TYPE[]>(size());
+    allocateMemory(shape);
 
     // the actual length of elements in data will be used
     size_t actualLen = std::min(size(), len);
@@ -395,18 +372,14 @@ inline Matrix<ELEMENT_TYPE>::Matrix(const Shape &shape,
 
 template <class ELEMENT_TYPE>
 inline Matrix<ELEMENT_TYPE>::Matrix(const Shape &shape, const ELEMENT_TYPE &defaultValue) {
-    if (shape.size() == 0) { return; }
-    _shape = shape;
-    _data  = std::make_unique<ELEMENT_TYPE[]>(size());
+    allocateMemory(shape);
     fill(defaultValue);
 }
 
 template <class ELEMENT_TYPE>
 template <class Container>
 Matrix<ELEMENT_TYPE>::Matrix(const _Diag<Container> &diag) {
-    if (diag.size() == 0) { return; }
-    _shape = Shape{diag.size(), diag.size()};
-    _data  = std::make_unique<ELEMENT_TYPE[]>(size());
+    allocateMemory(Shape(diag.size(), diag.size()));
     fill(ELEMENT_TYPE());
     if (threadNum() == 0 || limit() >= rows()) {
         for (size_t i = 0; i < rows(); i++) { get(i, i) = diag[i]; }
@@ -450,8 +423,7 @@ inline Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(Matrix &&other) noe
 template <class ELEMENT_TYPE>
 template <class T>
 Matrix<ELEMENT_TYPE> &Matrix<ELEMENT_TYPE>::operator=(const Matrix<T> &other) {
-    _shape = other.shape();
-    _data  = std::make_unique<ELEMENT_TYPE[]>(size());
+    allocateMemory(other.shape());
     if (threadNum() == 0 || limit() >= size()) {
         for (size_t i = 0; i < size(); i++) { (*this)[i] = static_cast<ELEMENT_TYPE>(other[i]); }
         return *this;
@@ -675,6 +647,21 @@ template <class ELEMENT_TYPE>
 inline bool Matrix<ELEMENT_TYPE>::symmetric() const {}
 template <class ELEMENT_TYPE>
 inline bool Matrix<ELEMENT_TYPE>::antisymmetric() const {}
+
+template <class ELEMENT_TYPE>
+inline void Matrix<ELEMENT_TYPE>::allocateMemory(const Shape &shape) {
+    // no need to re-allocate
+    if (size() == shape.size()) {
+        _shape = shape;
+        return;
+    }
+    _shape = shape;
+    if (size() == 0) {
+        _data = nullptr;
+        return;
+    }
+    _data = std::make_unique<ELEMENT_TYPE[]>(size());
+}
 }  // namespace mca
 
 #endif
