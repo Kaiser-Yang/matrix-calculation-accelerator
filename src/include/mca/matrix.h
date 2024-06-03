@@ -569,9 +569,58 @@ void Matrix<T>::pow(const size_type &exponent, Matrix<O> &output) const {
 
 // TODO
 template <class T>
-bool Matrix<T>::symmetric() const noexcept {}
+bool Matrix<T>::symmetric() const noexcept {
+    if (!isSquare()) { return false; }
+    // single mode
+    if (threadNum() == 0 || limit() >= size()) {
+        return symmetricSingleThread(*this, 0, size(), epsilon());
+    }
+    // threadCalculation and taskNum
+    auto res = threadCalculationTaskNum(size());
+
+    // the return value of every task, use this to make sure every task is finished
+    std::vector<std::future<bool>> returnValue(res.second - 1);
+    // assign task for every sub-thread
+    for (size_type i = 0; i < res.second - 1; i++) {
+        returnValue[i] = threadPool().addTask([this, start = i * res.first, len = res.first]() {
+            return symmetricSingleThread(*this, start, len, epsilon());
+        });
+    }
+    // let main thread calculate took
+    bool result = symmetricSingleThread(
+        *this, (res.second - 1) * res.first, (size() - (res.second - 1) * res.first), epsilon());
+
+    // make sure all the sub threads are finished
+    for (auto &item : returnValue) { result &= item.get(); }
+    return result;
+}
 template <class T>
-bool Matrix<T>::antisymmetric() const noexcept {}
+bool Matrix<T>::antisymmetric() const noexcept {
+    if (!isSquare()) { return false; }
+    // single mode
+    if (threadNum() == 0 || limit() >= size()) {
+        return antisymmetricSingleThread(*this, 0, size(), epsilon());
+    }
+    // threadCalculation and taskNum
+    auto res = threadCalculationTaskNum(size());
+
+    // the return value of every task, use this to make sure every task is finished
+    std::vector<std::future<bool>> returnValue(res.second - 1);
+    // assign task for every sub-thread
+    for (size_type i = 0; i < res.second - 1; i++) {
+        returnValue[i] = threadPool().addTask([this, start = i * res.first, len = res.first]() {
+            return antisymmetricSingleThread(*this, start, len, epsilon());
+        });
+    }
+    // let main thread calculate took
+    bool result = antisymmetricSingleThread(
+        *this, (res.second - 1) * res.first, (size() - (res.second - 1) * res.first), epsilon());
+
+    // make sure all the sub threads are finished
+    for (auto &item : returnValue) { result &= item.get(); }
+    return result;
+}
 }  // namespace mca
+   // namespace mca
 
 #endif

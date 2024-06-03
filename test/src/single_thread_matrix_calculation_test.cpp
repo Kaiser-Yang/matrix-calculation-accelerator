@@ -280,8 +280,8 @@ TEST_F(TestSingleThreadCalculation, transposeSubMatrix) {
 }
 
 TEST_F(TestSingleThreadCalculation, symmetricWholeMatrix) {
-    ASSERT_TRUE(symmetricSingleThread(sym, 0, (sym.size() - sym.rows()) / 2));
-    ASSERT_FALSE(symmetricSingleThread(antisym, 0, (antisym.size() - antisym.rows()) / 2));
+    ASSERT_TRUE(symmetricSingleThread(sym, 0, sym.size()));
+    ASSERT_FALSE(symmetricSingleThread(antisym, 0, antisym.size()));
 }
 
 TEST_F(TestSingleThreadCalculation, symmetricSubMatrix) {
@@ -290,8 +290,8 @@ TEST_F(TestSingleThreadCalculation, symmetricSubMatrix) {
 }
 
 TEST_F(TestSingleThreadCalculation, antisymmetricWholeMatrix) {
-    ASSERT_TRUE(antisymmetricSingleThread(antisym, 0, (antisym.size() - antisym.rows()) / 2));
-    ASSERT_FALSE(antisymmetricSingleThread(sym, 0, (sym.size() - sym.rows()) / 2));
+    ASSERT_TRUE(antisymmetricSingleThread(antisym, 0, antisym.size()));
+    ASSERT_FALSE(antisymmetricSingleThread(sym, 0, sym.size()));
 }
 
 TEST_F(TestSingleThreadCalculation, antisymmetricSubMatrix) {

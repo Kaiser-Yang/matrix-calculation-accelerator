@@ -25,7 +25,7 @@ protected:
     std::vector<std::vector<double>> vec;
     std::vector<double> array;
     std::vector<double> diag;
-    Matrix<double> a, b;
+    Matrix<double> a, b, c;
     Matrix<double> singleOutput, multiOutput;
     size_t exponent;
     Shape powShape{100, 100};
@@ -515,6 +515,66 @@ TEST_F(TestMatrixMultiThread, transpose) {
 
     // make sure they are equal
     ASSERT_EQ(singleOutput, multiOutput);
+}
+
+TEST_F(TestMatrixMultiThread, symmetric) {
+    a = Matrix<double>(squareShape);
+    for (size_t i = 0; i < a.rows(); i++) {
+        for (size_t j = 0; j < a.columns(); j++) { a.get(i, j) = generator() % MAX_VALUE; }
+    }
+    b                  = Matrix<double>(rectangleShape);
+    c                  = Matrix<double>(squareShape);
+    auto startTime     = high_resolution_clock::now();
+    bool singleBool1   = a.symmetric();
+    bool singleBool2   = b.symmetric();
+    bool singleBool3   = c.symmetric();
+    auto endTime       = high_resolution_clock::now();
+    auto executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+    // get the multi-thread mode time
+    startTime = high_resolution_clock::now();
+    // get multi-thread symmetric in multiBool
+    bool multiBool1 = a.symmetric();
+    bool multiBool2 = b.symmetric();
+    bool multiBool3 = c.symmetric();
+    endTime         = high_resolution_clock::now();
+    executionTime   = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+    // record multi-thread time in gtest
+    testing::Test::RecordProperty("MultiTime", executionTime);
+
+    // make sure they are equal
+    ASSERT_EQ(singleBool1, multiBool1);
+    ASSERT_EQ(singleBool2, multiBool2);
+    ASSERT_EQ(singleBool3, multiBool3);
+}
+
+TEST_F(TestMatrixMultiThread, antisymmetric) {
+    a = Matrix<double>(squareShape);
+    for (size_t i = 0; i < a.rows(); i++) {
+        for (size_t j = 0; j < a.columns(); j++) { a.get(i, j) = generator() % MAX_VALUE; }
+    }
+    b                  = Matrix<double>(rectangleShape);
+    c                  = Matrix<double>(squareShape);
+    auto startTime     = high_resolution_clock::now();
+    bool singleBool1   = a.antisymmetric();
+    bool singleBool2   = b.antisymmetric();
+    bool singleBool3   = c.antisymmetric();
+    auto endTime       = high_resolution_clock::now();
+    auto executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+    // get the multi-thread mode time
+    startTime = high_resolution_clock::now();
+    // get multi-thread antisymmetric in multiBool
+    bool multiBool1 = a.antisymmetric();
+    bool multiBool2 = b.antisymmetric();
+    bool multiBool3 = c.antisymmetric();
+    endTime         = high_resolution_clock::now();
+    executionTime   = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+    // record multi-thread time in gtest
+    testing::Test::RecordProperty("MultiTime", executionTime);
+
+    // make sure they are equal
+    ASSERT_EQ(singleBool1, multiBool1);
+    ASSERT_EQ(singleBool2, multiBool2);
+    ASSERT_EQ(singleBool3, multiBool3);
 }
 
 }  // namespace test
