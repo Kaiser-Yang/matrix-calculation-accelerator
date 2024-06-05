@@ -309,11 +309,10 @@ void transposeSingleThread(const Matrix<T> &a,
                            const std::size_t &pos,
                            const std::size_t &len);
 
-/* Check whether or not rows of matrix are symmetric
- * pos: start position from the first element which will be used
+/* Check whether or not a is symmetric
+ * This will only check the a[pos:pos+len]
+ * pos: the frist position of matrix a
  * len: length of elements
- * NOTE: a must be a square matrix
- *       pos + len must less than or equal to (a.size() - a.rows())/2
  * for example: a = [[1, 2, 3],
  *                   [2, 3, 4],
  *                   [3, 6, 5]]
@@ -326,15 +325,14 @@ bool symmetricSingleThread(const Matrix<T> &a,
                            const std::size_t &len,
                            const double &eps = 1e-100);
 
-/* Check whether or not rows of matrix are antisymmetric
- * pos: start pos from the first element which will be used
+/* Check whether or not a is antisymmetric
+ * This will only check the a[pos:pos+len]
+ * pos: the frist position of matrix a
  * len: length of elements
- * NOTE: a must be a square matrix
- *       pos + len must less than or equal to (a.size() - a.rows())/2
  * for example: a = [[1,  2, 3],
  *                   [2,  3, 4],
  *                   [3, -4, 5]]
- *              pos = 2 (pos 2's element is 4)
+ *              pos = 5
  *              len = 1
  *              return: true */
 template <class T>
@@ -665,13 +663,14 @@ bool symmetricSingleThread(const Matrix<T> &a,
                            const std::size_t &len,
                            const double &eps) {
     assert(a.rows() == a.columns());
-    assert(pos + len <= (a.size() - a.rows()) / 2);
-    std::size_t i = 0, j = 0, k = 0;
+    assert(pos + len <= a.size());
+    std::size_t i = 0, j = 0;
     for (std::size_t t = pos; t < pos + len; t++) {
-        k = std::ceil((-1 + std::sqrt(1 + 4 * a.rows() * a.rows() - 4 * a.rows() - 8 * t) / 2.0));
-        i = a.rows() - 1 - k;
-        j = a.rows() - (a.rows() * (a.rows() - 1) / 2 - k * (k - 1) / 2);
-        if (std::is_floating_point_v<T> && fabs(a.get(i, j) - a.get(j, i)) > eps) {
+        i = t / a.columns();
+        j = t % a.columns();
+        if (i == j) {
+            continue;
+        } else if (std::is_floating_point_v<T> && fabs(a.get(i, j) - a.get(j, i)) > eps) {
             return false;
         } else if (!std::is_floating_point_v<T> && a.get(i, j) != a.get(j, i)) {
             return false;
@@ -686,13 +685,14 @@ bool antisymmetricSingleThread(const Matrix<T> &a,
                                const std::size_t &len,
                                const double &eps) {
     assert(a.rows() == a.columns());
-    assert(pos + len <= (a.size() - a.rows()) / 2);
-    std::size_t i = 0, j = 0, k = 0;
+    assert(pos + len <= a.size());
+    std::size_t i = 0, j = 0;
     for (std::size_t t = pos; t < pos + len; t++) {
-        k = std::ceil((-1 + std::sqrt(1 + 4 * a.rows() * a.rows() - 4 * a.rows() - 8 * t) / 2.0));
-        i = a.rows() - 1 - k;
-        j = a.rows() - (a.rows() * (a.rows() - 1) / 2 - k * (k - 1) / 2);
-        if (std::is_floating_point_v<T> && fabs(a.get(i, j) + a.get(j, i)) > eps) {
+        i = t / a.columns();
+        j = t % a.columns();
+        if (i == j) {
+            continue;
+        } else if (std::is_floating_point_v<T> && fabs(a.get(i, j) + a.get(j, i)) > eps) {
             return false;
         } else if (!std::is_floating_point_v<T> && a.get(i, j) != -a.get(j, i)) {
             return false;
