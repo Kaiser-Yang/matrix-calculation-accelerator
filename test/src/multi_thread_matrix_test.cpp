@@ -524,9 +524,9 @@ TEST_F(TestMatrixMultiThread, symmetric) {
     }
     b = Matrix<double>(rectangleShape);
     c = Matrix<double>(squareShape);
-    for (size_t i = 0; i < a.rows(); i++) {
-        for (size_t j = 0; j < a.columns(); j++) {
-            if (i < j) (c.get(i, j) = c.get(j, i) = generator() % MAX_VALUE);
+    for (size_t i = 0; i < c.rows(); i++) {
+        for (size_t j = 0; j < c.columns(); j++) {
+            if (i < j) { c.get(i, j) = c.get(j, i) = generator() % MAX_VALUE; }
         }
     }
     auto startTime     = high_resolution_clock::now();
@@ -569,10 +569,12 @@ TEST_F(TestMatrixMultiThread, antisymmetric) {
     }
     b = Matrix<double>(rectangleShape);
     c = Matrix<double>(squareShape);
-    for (size_t i = 0; i < a.rows(); i++) {
-        for (size_t j = 0; j < a.columns(); j++) {
-            if (i < j) (c.get(i, j) = generator() % MAX_VALUE);
-            c.get(j, i) = -c.get(i, j);
+    for (size_t i = 0; i < c.rows(); i++) {
+        for (size_t j = 0; j < c.columns(); j++) {
+            if (i < j) {
+                c.get(i, j) = generator() % MAX_VALUE;
+                c.get(j, i) = -c.get(i, j);
+            }
         }
     }
     auto startTime     = high_resolution_clock::now();

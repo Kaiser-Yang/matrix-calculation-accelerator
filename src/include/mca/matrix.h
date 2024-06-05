@@ -237,10 +237,10 @@ public:
     inline bool isSquare() const noexcept { return rows() == columns(); }
 
     /* Check if the matrix is symmetric with multi-thread */
-    bool symmetric() const noexcept;
+    bool symmetric() const;
 
     /* Check if the matrix is antisymmetric with multi-thread */
-    bool antisymmetric() const noexcept;
+    bool antisymmetric() const;
 
     /* Rreturn iterators */
     inline iterator begin() noexcept { return iterator(data()); }
@@ -568,7 +568,7 @@ void Matrix<T>::pow(const size_type &exponent, Matrix<O> &output) const {
 }
 
 template <class T>
-bool Matrix<T>::symmetric() const noexcept {
+bool Matrix<T>::symmetric() const {
     if (!isSquare()) { return false; }
     // single mode
     if (threadNum() == 0 || limit() >= size()) {
@@ -594,7 +594,7 @@ bool Matrix<T>::symmetric() const noexcept {
     return result;
 }
 template <class T>
-bool Matrix<T>::antisymmetric() const noexcept {
+bool Matrix<T>::antisymmetric() const {
     if (!isSquare()) { return false; }
     // single mode
     if (threadNum() == 0 || limit() >= size()) {
@@ -620,6 +620,5 @@ bool Matrix<T>::antisymmetric() const noexcept {
     return result;
 }
 }  // namespace mca
-   // namespace mca
 
 #endif
