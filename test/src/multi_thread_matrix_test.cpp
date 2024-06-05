@@ -522,14 +522,26 @@ TEST_F(TestMatrixMultiThread, symmetric) {
     for (size_t i = 0; i < a.rows(); i++) {
         for (size_t j = 0; j < a.columns(); j++) { a.get(i, j) = generator() % MAX_VALUE; }
     }
-    b                  = Matrix<double>(rectangleShape);
-    c                  = Matrix<double>(squareShape);
+    b = Matrix<double>(rectangleShape);
+    c = Matrix<double>(squareShape);
+    for (size_t i = 0; i < a.rows(); i++) {
+        for (size_t j = 0; j < a.columns(); j++) {
+            if (i < j) (c.get(i, j) = c.get(j, i) = generator() % MAX_VALUE);
+        }
+    }
     auto startTime     = high_resolution_clock::now();
     bool singleBool1   = a.symmetric();
     bool singleBool2   = b.symmetric();
     bool singleBool3   = c.symmetric();
     auto endTime       = high_resolution_clock::now();
     auto executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+    // record time in gtest
+    testing::Test::RecordProperty("SingleTime", executionTime);
+
+    init(THREAD_NUM);
+    // the expected time in multi thread
+    testing::Test::RecordProperty("BaseTime", executionTime / (threadNum() + 1));
+
     // get the multi-thread mode time
     startTime = high_resolution_clock::now();
     // get multi-thread symmetric in multiBool
@@ -540,6 +552,9 @@ TEST_F(TestMatrixMultiThread, symmetric) {
     executionTime   = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
+
+    ASSERT_FALSE(singleBool2);
+    ASSERT_TRUE(singleBool3);
 
     // make sure they are equal
     ASSERT_EQ(singleBool1, multiBool1);
@@ -552,14 +567,27 @@ TEST_F(TestMatrixMultiThread, antisymmetric) {
     for (size_t i = 0; i < a.rows(); i++) {
         for (size_t j = 0; j < a.columns(); j++) { a.get(i, j) = generator() % MAX_VALUE; }
     }
-    b                  = Matrix<double>(rectangleShape);
-    c                  = Matrix<double>(squareShape);
+    b = Matrix<double>(rectangleShape);
+    c = Matrix<double>(squareShape);
+    for (size_t i = 0; i < a.rows(); i++) {
+        for (size_t j = 0; j < a.columns(); j++) {
+            if (i < j) (c.get(i, j) = generator() % MAX_VALUE);
+            c.get(j, i) = -c.get(i, j);
+        }
+    }
     auto startTime     = high_resolution_clock::now();
     bool singleBool1   = a.antisymmetric();
     bool singleBool2   = b.antisymmetric();
     bool singleBool3   = c.antisymmetric();
     auto endTime       = high_resolution_clock::now();
     auto executionTime = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+    // record time in gtest
+    testing::Test::RecordProperty("SingleTime", executionTime);
+
+    init(THREAD_NUM);
+    // the expected time in multi thread
+    testing::Test::RecordProperty("BaseTime", executionTime / (threadNum() + 1));
+
     // get the multi-thread mode time
     startTime = high_resolution_clock::now();
     // get multi-thread antisymmetric in multiBool
@@ -570,6 +598,9 @@ TEST_F(TestMatrixMultiThread, antisymmetric) {
     executionTime   = duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     // record multi-thread time in gtest
     testing::Test::RecordProperty("MultiTime", executionTime);
+
+    ASSERT_FALSE(singleBool2);
+    ASSERT_TRUE(singleBool3);
 
     // make sure they are equal
     ASSERT_EQ(singleBool1, multiBool1);

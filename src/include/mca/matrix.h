@@ -567,7 +567,6 @@ void Matrix<T>::pow(const size_type &exponent, Matrix<O> &output) const {
     }
 }
 
-// TODO
 template <class T>
 bool Matrix<T>::symmetric() const noexcept {
     if (!isSquare()) { return false; }

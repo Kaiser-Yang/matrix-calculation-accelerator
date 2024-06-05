@@ -309,8 +309,9 @@ void transposeSingleThread(const Matrix<T> &a,
                            const std::size_t &pos,
                            const std::size_t &len);
 
-/* Check whether or not rows of matrix are symmetric
- * pos: start position from the first element which will be used
+/* Check whether or not a is symmetric
+ * This will only check the a[pos:pos+len]
+ * pos: the frist position of matrix a
  * len: length of elements
  * for example: a = [[1, 2, 3],
  *                   [2, 3, 4],
@@ -324,8 +325,9 @@ bool symmetricSingleThread(const Matrix<T> &a,
                            const std::size_t &len,
                            const double &eps = 1e-100);
 
-/* Check whether or not rows of matrix are antisymmetric
- * pos: start pos from the first element which will be used
+/* Check whether or not a is antisymmetric
+ * This will only check the a[pos:pos+len]
+ * pos: the frist position of matrix a
  * len: length of elements
  * for example: a = [[1,  2, 3],
  *                   [2,  3, 4],
