@@ -320,14 +320,14 @@ Matrix<T>::Matrix(const Shape &shape, const IdentityMatrix &) {
         return;
     }
     auto res = threadCalculationTaskNum(totalCalculation);
-    std::vector<std::future<void>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([this, start = i * res.first, end = (i + 1) * res.first]() {
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [this, start = i * res.calculation, end = (i + 1) * res.calculation]() {
                 for (size_type i = start; i < end; i++) { get(i, i) = value_type(1); }
             });
     }
-    for (size_type i = (res.second - 1) * res.first; i < totalCalculation; i++) {
+    for (size_type i = (res.taskNum - 1) * res.calculation; i < totalCalculation; i++) {
         get(i, i) = value_type(1);
     }
     for (auto &item : returnValue) { item.get(); }
@@ -344,10 +344,10 @@ Matrix<T>::Matrix(const std::initializer_list<std::initializer_list<value_type>>
         return;
     }
     auto res = threadCalculationTaskNum(size());
-    std::vector<std::future<void>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([this, start = i * res.first, end = (i + 1) * res.first, &init]() {
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [this, start = i * res.calculation, end = (i + 1) * res.calculation, &init]() {
                 for (size_type i = start; i < end; i++) {
                     (*this)[i] = static_cast<value_type>(
                         std::data(std::data(init)[i / columns()])[i % columns()]);
@@ -355,7 +355,7 @@ Matrix<T>::Matrix(const std::initializer_list<std::initializer_list<value_type>>
             });
     }
 
-    for (size_type i = (res.second - 1) * res.first; i < size(); i++) {
+    for (size_type i = (res.taskNum - 1) * res.calculation; i < size(); i++) {
         (*this)[i] =
             static_cast<value_type>(std::data(std::data(init)[i / columns()])[i % columns()]);
     }
@@ -371,16 +371,16 @@ Matrix<T>::Matrix(const std::vector<std::vector<value_type>> &init) {
         return;
     }
     auto res = threadCalculationTaskNum(size());
-    std::vector<std::future<void>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([this, start = i * res.first, end = (i + 1) * res.first, &init]() {
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [this, start = i * res.calculation, end = (i + 1) * res.calculation, &init]() {
                 for (size_type i = start; i < end; i++) {
                     (*this)[i] = static_cast<value_type>(init[i / columns()][i % columns()]);
                 }
             });
     }
-    for (size_type i = (res.second - 1) * res.first; i < size(); i++) {
+    for (size_type i = (res.taskNum - 1) * res.calculation; i < size(); i++) {
         (*this)[i] = static_cast<value_type>(init[i / columns()][i % columns()]);
     }
     for (auto &item : returnValue) { item.get(); }
@@ -399,16 +399,16 @@ Matrix<T>::Matrix(const Shape &shape, const_pointer data, const size_type &len) 
     }
 
     auto res = threadCalculationTaskNum(actualLen);
-    std::vector<std::future<void>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([this, start = i * res.first, end = (i + 1) * res.first, data]() {
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [this, start = i * res.calculation, end = (i + 1) * res.calculation, data]() {
                 for (size_type i = start; i < end; i++) {
                     (*this)[i] = static_cast<value_type>(data[i]);
                 }
             });
     }
-    for (size_type i = (res.second - 1) * res.first; i < actualLen; i++) {
+    for (size_type i = (res.taskNum - 1) * res.calculation; i < actualLen; i++) {
         (*this)[i] = static_cast<value_type>(data[i]);
     }
     for (auto &item : returnValue) { item.get(); }
@@ -425,14 +425,16 @@ Matrix<T>::Matrix(const _Diag<Container> &diag) {
         return;
     }
     auto res = threadCalculationTaskNum(rows());
-    std::vector<std::future<void>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([this, &diag, start = i * res.first, end = (i + 1) * res.first]() {
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [this, &diag, start = i * res.calculation, end = (i + 1) * res.calculation]() {
                 for (size_type i = start; i < end; i++) { get(i, i) = diag[i]; }
             });
     }
-    for (size_type i = (res.second - 1) * res.first; i < rows(); i++) { get(i, i) = diag[i]; }
+    for (size_type i = (res.taskNum - 1) * res.calculation; i < rows(); i++) {
+        get(i, i) = diag[i];
+    }
     for (auto &item : returnValue) { item.get(); }
 }
 
@@ -445,16 +447,16 @@ Matrix<T> &Matrix<T>::operator=(const Matrix<T1> &other) {
         return *this;
     }
     auto res = threadCalculationTaskNum(size());
-    std::vector<std::future<void>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
         returnValue[i] = threadPool().addTask(
-            [this, start = i * res.first, end = (i + 1) * res.first, &other]() {
+            [this, start = i * res.calculation, end = (i + 1) * res.calculation, &other]() {
                 for (size_type i = start; i < end; i++) {
                     (*this)[i] = static_cast<value_type>(other[i]);
                 }
             });
     }
-    for (size_type i = (res.second - 1) * res.first; i < size(); i++) {
+    for (size_type i = (res.taskNum - 1) * res.calculation; i < size(); i++) {
         (*this)[i] = static_cast<value_type>(other[i]);
     }
     for (auto &item : returnValue) { item.get(); }
@@ -473,16 +475,17 @@ void Matrix<T>::fill(const_reference value, const size_type &pos) {
     auto res = threadCalculationTaskNum(size() - pos);
 
     // the return value of every task, use this to make sure every task is finished
-    std::vector<std::future<void>> returnValue(res.second - 1);
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
     // assign task for every sub-thread
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] = threadPool().addTask(
-            [this, start = i * res.first + pos, end = (i + 1) * res.first + pos, &value]() {
-                std::fill(data() + start, data() + end, value);
-            });
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] =
+            threadPool().addTask([this,
+                                  start = i * res.calculation + pos,
+                                  end   = (i + 1) * res.calculation + pos,
+                                  &value]() { std::fill(data() + start, data() + end, value); });
     }
     // let main thread calculate too
-    std::fill(data() + (res.second - 1) * res.first + pos, data() + size(), value);
+    std::fill(data() + (res.taskNum - 1) * res.calculation + pos, data() + size(), value);
 
     // make sure all the sub threads are finished
     for (auto &item : returnValue) { item.get(); }
@@ -500,11 +503,11 @@ void Matrix<T>::numberPow(const Number &number, Matrix<O> &output) const {
     auto res = threadCalculationTaskNum(size());
 
     // the return value of every task, use this to make sure every task is finished
-    std::vector<std::future<void>> returnValue(res.second - 1);
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
     // assign task for every sub-thread
-    for (size_type i = 0; i < res.second - 1; i++) {
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
         returnValue[i] = threadPool().addTask(
-            [this, start = i * res.first, len = res.first, &output, &number]() {
+            [this, start = i * res.calculation, len = res.calculation, &output, &number]() {
                 numberPowSingleThread(number, *this, output, start, len);
             });
     }
@@ -512,8 +515,8 @@ void Matrix<T>::numberPow(const Number &number, Matrix<O> &output) const {
     numberPowSingleThread(number,
                           *this,
                           output,
-                          (res.second - 1) * res.first,
-                          (size() - (res.second - 1) * res.first));
+                          (res.taskNum - 1) * res.calculation,
+                          (size() - (res.taskNum - 1) * res.calculation));
 
     // make sure all the sub threads are finished
     for (auto &item : returnValue) { item.get(); }
@@ -531,11 +534,11 @@ void Matrix<T>::powNumber(const Number &number, Matrix<O> &output) const {
     auto res = threadCalculationTaskNum(size());
 
     // the return value of every task, use this to make sure every task is finished
-    std::vector<std::future<void>> returnValue(res.second - 1);
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
     // assign task for every sub-thread
-    for (size_type i = 0; i < res.second - 1; i++) {
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
         returnValue[i] = threadPool().addTask(
-            [this, start = i * res.first, len = res.first, &output, &number]() {
+            [this, start = i * res.calculation, len = res.calculation, &output, &number]() {
                 powNumberSingleThread(*this, number, output, start, len);
             });
     }
@@ -543,8 +546,8 @@ void Matrix<T>::powNumber(const Number &number, Matrix<O> &output) const {
     powNumberSingleThread(*this,
                           number,
                           output,
-                          (res.second - 1) * res.first,
-                          (size() - (res.second - 1) * res.first));
+                          (res.taskNum - 1) * res.calculation,
+                          (size() - (res.taskNum - 1) * res.calculation));
 
     // make sure all the sub threads are finished
     for (auto &item : returnValue) { item.get(); }
@@ -578,16 +581,19 @@ bool Matrix<T>::symmetric() const {
     auto res = threadCalculationTaskNum(size());
 
     // the return value of every task, use this to make sure every task is finished
-    std::vector<std::future<bool>> returnValue(res.second - 1);
+    std::vector<std::future<bool>> returnValue(res.taskNum - 1);
     // assign task for every sub-thread
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] = threadPool().addTask([this, start = i * res.first, len = res.first]() {
-            return symmetricSingleThread(*this, start, len, epsilon());
-        });
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] =
+            threadPool().addTask([this, start = i * res.calculation, len = res.calculation]() {
+                return symmetricSingleThread(*this, start, len, epsilon());
+            });
     }
     // let main thread calculate took
-    bool result = symmetricSingleThread(
-        *this, (res.second - 1) * res.first, (size() - (res.second - 1) * res.first), epsilon());
+    bool result = symmetricSingleThread(*this,
+                                        (res.taskNum - 1) * res.calculation,
+                                        (size() - (res.taskNum - 1) * res.calculation),
+                                        epsilon());
 
     // make sure all the sub threads are finished
     for (auto &item : returnValue) { result &= item.get(); }
@@ -604,16 +610,19 @@ bool Matrix<T>::antisymmetric() const {
     auto res = threadCalculationTaskNum(size());
 
     // the return value of every task, use this to make sure every task is finished
-    std::vector<std::future<bool>> returnValue(res.second - 1);
+    std::vector<std::future<bool>> returnValue(res.taskNum - 1);
     // assign task for every sub-thread
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] = threadPool().addTask([this, start = i * res.first, len = res.first]() {
-            return antisymmetricSingleThread(*this, start, len, epsilon());
-        });
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] =
+            threadPool().addTask([this, start = i * res.calculation, len = res.calculation]() {
+                return antisymmetricSingleThread(*this, start, len, epsilon());
+            });
     }
     // let main thread calculate took
-    bool result = antisymmetricSingleThread(
-        *this, (res.second - 1) * res.first, (size() - (res.second - 1) * res.first), epsilon());
+    bool result = antisymmetricSingleThread(*this,
+                                            (res.taskNum - 1) * res.calculation,
+                                            (size() - (res.taskNum - 1) * res.calculation),
+                                            epsilon());
 
     // make sure all the sub threads are finished
     for (auto &item : returnValue) { result &= item.get(); }
