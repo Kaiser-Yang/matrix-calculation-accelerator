@@ -6,6 +6,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "__mca_internal/calculation_task_num.h"
 #include "__mca_internal/matrix_declaration.h"
 #include "__mca_internal/single_thread_matrix_calculation.h"
 #include "__mca_internal/thread_pool.h"
@@ -34,22 +35,23 @@ extern void setThreadNum(const size_type &threadNum);
  *       std::numeric_limits<size_type>::max() */
 extern void setLimit(const size_type &limit);
 
-/* set the epsilon used for comparing floating numbers */
+/* Set the epsilon used for comparing floating numbers */
 extern void setEpsilon(const double &eps);
 
-/* return current thread number */
+/* Return current thread number */
 extern size_type threadNum();
 
-/* return current limit */
+/* Return current limit */
 extern size_type limit();
 
-/* return current epsilon */
+/* Return current epsilon */
 extern double epsilon();
 
-/* return trhead pool object, this should not called by the usrs
- * this is for developers */
+/* Return thread pool object, this should not called by the users, and this is for developers */
 extern ThreadPool &threadPool();
-inline std::pair<size_type, size_type> threadCalculationTaskNum(const size_type &total);
+
+/* Return calculation for every thread and the number of tasks */
+inline CalculationTaskNum threadCalculationTaskNum(const size_type &total);
 
 /* Check if matrix a and matrix b are equal using multi-thread
  * return false when a's shape is not same with b's shape
@@ -326,15 +328,18 @@ bool operator==(const Matrix<T1> &a, const Matrix<T2> &b) {
         return equalSingleThread(a, b, 0, a.size(), epsilon());
     }
     auto res = threadCalculationTaskNum(a.size());
-    std::vector<std::future<bool>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([start = i * res.first, &a, &b, len = res.first]() -> bool {
+    std::vector<std::future<bool>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [start = i * res.calculation, &a, &b, len = res.calculation]() -> bool {
                 return equalSingleThread(a, b, start, len, epsilon());
             });
     }
-    bool result = equalSingleThread(
-        a, b, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first, epsilon());
+    bool result = equalSingleThread(a,
+                                    b,
+                                    (res.taskNum - 1) * res.calculation,
+                                    a.size() - (res.taskNum - 1) * res.calculation,
+                                    epsilon());
     for (auto &item : returnValue) { result &= item.get(); }
     return result;
 }
@@ -346,15 +351,18 @@ bool operator!=(const Matrix<T1> &a, const Matrix<T2> &b) {
         return notEqualSingleThread(a, b, 0, a.size(), epsilon());
     }
     auto res = threadCalculationTaskNum(a.size());
-    std::vector<std::future<bool>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([start = i * res.first, &a, &b, len = res.first]() -> bool {
+    std::vector<std::future<bool>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [start = i * res.calculation, &a, &b, len = res.calculation]() -> bool {
                 return notEqualSingleThread(a, b, start, len, epsilon());
             });
     }
-    bool result = notEqualSingleThread(
-        a, b, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first, epsilon());
+    bool result = notEqualSingleThread(a,
+                                       b,
+                                       (res.taskNum - 1) * res.calculation,
+                                       a.size() - (res.taskNum - 1) * res.calculation,
+                                       epsilon());
     for (auto &item : returnValue) { result |= item.get(); }
     return result;
 }
@@ -366,15 +374,18 @@ bool operator<(const Matrix<T1> &a, const Matrix<T2> &b) {
         return lessSingleThread(a, b, 0, a.size(), epsilon());
     }
     auto res = threadCalculationTaskNum(a.size());
-    std::vector<std::future<bool>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([start = i * res.first, &a, &b, len = res.first]() -> bool {
+    std::vector<std::future<bool>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [start = i * res.calculation, &a, &b, len = res.calculation]() -> bool {
                 return lessSingleThread(a, b, start, len, epsilon());
             });
     }
-    bool result = lessSingleThread(
-        a, b, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first, epsilon());
+    bool result = lessSingleThread(a,
+                                   b,
+                                   (res.taskNum - 1) * res.calculation,
+                                   a.size() - (res.taskNum - 1) * res.calculation,
+                                   epsilon());
     for (auto &item : returnValue) { result &= item.get(); }
     return result;
 }
@@ -386,15 +397,18 @@ bool operator<=(const Matrix<T1> &a, const Matrix<T2> &b) {
         return lessEqualSingleThread(a, b, 0, a.size(), epsilon());
     }
     auto res = threadCalculationTaskNum(a.size());
-    std::vector<std::future<bool>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([start = i * res.first, &a, &b, len = res.first]() -> bool {
+    std::vector<std::future<bool>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [start = i * res.calculation, &a, &b, len = res.calculation]() -> bool {
                 return lessEqualSingleThread(a, b, start, len, epsilon());
             });
     }
-    bool result = lessEqualSingleThread(
-        a, b, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first, epsilon());
+    bool result = lessEqualSingleThread(a,
+                                        b,
+                                        (res.taskNum - 1) * res.calculation,
+                                        a.size() - (res.taskNum - 1) * res.calculation,
+                                        epsilon());
     for (auto &item : returnValue) { result &= item.get(); }
     return result;
 }
@@ -406,15 +420,18 @@ bool operator>(const Matrix<T1> &a, const Matrix<T2> &b) {
         return greaterSingleThread(a, b, 0, a.size(), epsilon());
     }
     auto res = threadCalculationTaskNum(a.size());
-    std::vector<std::future<bool>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([start = i * res.first, &a, &b, len = res.first]() -> bool {
+    std::vector<std::future<bool>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [start = i * res.calculation, &a, &b, len = res.calculation]() -> bool {
                 return greaterSingleThread(a, b, start, len, epsilon());
             });
     }
-    bool result = greaterSingleThread(
-        a, b, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first, epsilon());
+    bool result = greaterSingleThread(a,
+                                      b,
+                                      (res.taskNum - 1) * res.calculation,
+                                      a.size() - (res.taskNum - 1) * res.calculation,
+                                      epsilon());
     for (auto &item : returnValue) { result &= item.get(); }
     return result;
 }
@@ -426,15 +443,18 @@ bool operator>=(const Matrix<T1> &a, const Matrix<T2> &b) {
         return greaterEqualSingleThread(a, b, 0, a.size(), epsilon());
     }
     auto res = threadCalculationTaskNum(a.size());
-    std::vector<std::future<bool>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([start = i * res.first, &a, &b, len = res.first]() -> bool {
+    std::vector<std::future<bool>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [start = i * res.calculation, &a, &b, len = res.calculation]() -> bool {
                 return greaterEqualSingleThread(a, b, start, len, epsilon());
             });
     }
-    bool result = greaterEqualSingleThread(
-        a, b, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first, epsilon());
+    bool result = greaterEqualSingleThread(a,
+                                           b,
+                                           (res.taskNum - 1) * res.calculation,
+                                           a.size() - (res.taskNum - 1) * res.calculation,
+                                           epsilon());
     for (auto &item : returnValue) { result &= item.get(); }
     return result;
 }
@@ -449,15 +469,18 @@ Matrix<std::common_type_t<T1, T2>> operator+(const Matrix<T1> &a, const Matrix<T
         return result;
     }
     auto res = threadCalculationTaskNum(a.size());
-    std::vector<std::future<void>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([&result, start = i * res.first, &a, &b, len = res.first]() {
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [&result, start = i * res.calculation, &a, &b, len = res.calculation]() {
                 addSingleThread(a, b, result, start, len);
             });
     }
-    addSingleThread(
-        a, b, result, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+    addSingleThread(a,
+                    b,
+                    result,
+                    (res.taskNum - 1) * res.calculation,
+                    a.size() - (res.taskNum - 1) * res.calculation);
     for (auto &item : returnValue) { item.get(); }
     return result;
 }
@@ -472,15 +495,18 @@ Matrix<std::common_type_t<T1, T2>> operator-(const Matrix<T1> &a, const Matrix<T
         return result;
     }
     auto res = threadCalculationTaskNum(a.size());
-    std::vector<std::future<void>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([&result, start = i * res.first, &a, &b, len = res.first]() {
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [&result, start = i * res.calculation, &a, &b, len = res.calculation]() {
                 subtractSingleThread(a, b, result, start, len);
             });
     }
-    subtractSingleThread(
-        a, b, result, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+    subtractSingleThread(a,
+                         b,
+                         result,
+                         (res.taskNum - 1) * res.calculation,
+                         a.size() - (res.taskNum - 1) * res.calculation);
     for (auto &item : returnValue) { item.get(); }
     return result;
 }
@@ -495,15 +521,18 @@ Matrix<std::common_type_t<T1, T2>> operator*(const Matrix<T1> &a, const Matrix<T
         return result;
     }
     auto res = threadCalculationTaskNum(result.size());
-    std::vector<std::future<void>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([&result, start = i * res.first, &a, &b, len = res.first]() {
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [&result, start = i * res.calculation, &a, &b, len = res.calculation]() {
                 multiplySingleThread(a, b, result, start, len);
             });
     }
-    multiplySingleThread(
-        a, b, result, (res.second - 1) * res.first, result.size() - (res.second - 1) * res.first);
+    multiplySingleThread(a,
+                         b,
+                         result,
+                         (res.taskNum - 1) * res.calculation,
+                         result.size() - (res.taskNum - 1) * res.calculation);
     for (auto &item : returnValue) { item.get(); }
     return result;
 }
@@ -519,16 +548,19 @@ Matrix<std::common_type_t<T, Number>> operator+(const Matrix<T> &a, const Number
     }
     // threadCalculation and taskNum
     auto res = threadCalculationTaskNum(a.size());
-    std::vector<std::future<void>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([&result, start = i * res.first, &a, &number, len = res.first]() {
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [&result, start = i * res.calculation, &a, &number, len = res.calculation]() {
                 addSingleThread(number, a, result, start, len);
             });
     }
     // let main thread calculate too
-    addSingleThread(
-        number, a, result, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+    addSingleThread(number,
+                    a,
+                    result,
+                    (res.taskNum - 1) * res.calculation,
+                    a.size() - (res.taskNum - 1) * res.calculation);
     // make sure all the sub threads are finished
     for (auto &item : returnValue) { item.get(); }
     return result;
@@ -550,16 +582,19 @@ Matrix<std::common_type_t<T, Number>> operator-(const Matrix<T> &a, const Number
     }
     // threadCalculation and taskNum
     auto res = threadCalculationTaskNum(a.size());
-    std::vector<std::future<void>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([&result, start = i * res.first, &a, &number, len = res.first]() {
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [&result, start = i * res.calculation, &a, &number, len = res.calculation]() {
                 subtractSingleThread(a, number, result, start, len);
             });
     }
     // let main thread calculate too
-    subtractSingleThread(
-        a, number, result, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+    subtractSingleThread(a,
+                         number,
+                         result,
+                         (res.taskNum - 1) * res.calculation,
+                         a.size() - (res.taskNum - 1) * res.calculation);
     // make sure all the sub threads are finished
     for (auto &item : returnValue) { item.get(); }
     return result;
@@ -576,16 +611,19 @@ Matrix<std::common_type_t<T, Number>> operator-(const Number &number, const Matr
     }
     // threadCalculation and taskNum
     auto res = threadCalculationTaskNum(a.size());
-    std::vector<std::future<void>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([&result, start = i * res.first, &a, &number, len = res.first]() {
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [&result, start = i * res.calculation, &a, &number, len = res.calculation]() {
                 subtractSingleThread(number, a, result, start, len);
             });
     }
     // let main thread calculate too
-    subtractSingleThread(
-        number, a, result, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+    subtractSingleThread(number,
+                         a,
+                         result,
+                         (res.taskNum - 1) * res.calculation,
+                         a.size() - (res.taskNum - 1) * res.calculation);
     // make sure all the sub threads are finished
     for (auto &item : returnValue) { item.get(); }
     return result;
@@ -607,16 +645,19 @@ Matrix<std::common_type_t<T, Number>> operator*(const Number &number, const Matr
     }
     // threadCalculation and taskNum
     auto res = threadCalculationTaskNum(a.size());
-    std::vector<std::future<void>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([&result, start = i * res.first, &a, &number, len = res.first]() {
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [&result, start = i * res.calculation, &a, &number, len = res.calculation]() {
                 multiplySingleThread(number, a, result, start, len);
             });
     }
     // let main thread calculate too
-    multiplySingleThread(
-        number, a, result, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+    multiplySingleThread(number,
+                         a,
+                         result,
+                         (res.taskNum - 1) * res.calculation,
+                         a.size() - (res.taskNum - 1) * res.calculation);
     // make sure all the sub threads are finished
     for (auto &item : returnValue) { item.get(); }
     return result;
@@ -633,16 +674,19 @@ Matrix<std::common_type_t<T, Number>> operator/(const Matrix<T> &a, const Number
     }
     // threadCalculation and taskNum
     auto res = threadCalculationTaskNum(a.size());
-    std::vector<std::future<void>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([&result, start = i * res.first, &a, &number, len = res.first]() {
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [&result, start = i * res.calculation, &a, &number, len = res.calculation]() {
                 divideSingleThread(a, number, result, start, len);
             });
     }
     // let main thread calculate too
-    divideSingleThread(
-        a, number, result, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+    divideSingleThread(a,
+                       number,
+                       result,
+                       (res.taskNum - 1) * res.calculation,
+                       a.size() - (res.taskNum - 1) * res.calculation);
     // make sure all the sub threads are finished
     for (auto &item : returnValue) { item.get(); }
     return result;
@@ -659,16 +703,19 @@ Matrix<std::common_type_t<T, Number>> operator/(const Number &number, const Matr
     }
     // threadCalculation and taskNum
     auto res = threadCalculationTaskNum(a.size());
-    std::vector<std::future<void>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([&result, start = i * res.first, &a, &number, len = res.first]() {
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [&result, start = i * res.calculation, &a, &number, len = res.calculation]() {
                 divideSingleThread(number, a, result, start, len);
             });
     }
     // let main thread calculate too
-    divideSingleThread(
-        number, a, result, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+    divideSingleThread(number,
+                       a,
+                       result,
+                       (res.taskNum - 1) * res.calculation,
+                       a.size() - (res.taskNum - 1) * res.calculation);
     // make sure all the sub threads are finished
     for (auto &item : returnValue) { item.get(); }
     return result;
@@ -682,13 +729,18 @@ void operator+=(Matrix<T1> &a, const Matrix<T2> &b) {
         return;
     }
     auto res = threadCalculationTaskNum(a.size());
-    std::vector<std::future<void>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] = threadPool().addTask([start = i * res.first, &a, &b, len = res.first]() {
-            addSingleThread(a, b, a, start, len);
-        });
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] =
+            threadPool().addTask([start = i * res.calculation, &a, &b, len = res.calculation]() {
+                addSingleThread(a, b, a, start, len);
+            });
     }
-    addSingleThread(a, b, a, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+    addSingleThread(a,
+                    b,
+                    a,
+                    (res.taskNum - 1) * res.calculation,
+                    a.size() - (res.taskNum - 1) * res.calculation);
     for (auto &item : returnValue) { item.get(); }
 }
 
@@ -700,14 +752,18 @@ void operator-=(Matrix<T1> &a, const Matrix<T2> &b) {
         return;
     }
     auto res = threadCalculationTaskNum(a.size());
-    std::vector<std::future<void>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] = threadPool().addTask([start = i * res.first, &a, &b, len = res.first]() {
-            subtractSingleThread(a, b, a, start, len);
-        });
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] =
+            threadPool().addTask([start = i * res.calculation, &a, &b, len = res.calculation]() {
+                subtractSingleThread(a, b, a, start, len);
+            });
     }
-    subtractSingleThread(
-        a, b, a, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+    subtractSingleThread(a,
+                         b,
+                         a,
+                         (res.taskNum - 1) * res.calculation,
+                         a.size() - (res.taskNum - 1) * res.calculation);
     for (auto &item : returnValue) { item.get(); }
 }
 
@@ -721,15 +777,18 @@ void operator*=(Matrix<T1> &a, const Matrix<T2> &b) {
         return;
     }
     auto res = threadCalculationTaskNum(result.size());
-    std::vector<std::future<void>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([&result, start = i * res.first, &a, &b, len = res.first]() {
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [&result, start = i * res.calculation, &a, &b, len = res.calculation]() {
                 multiplySingleThread(a, b, result, start, len);
             });
     }
-    multiplySingleThread(
-        a, b, result, (res.second - 1) * res.first, result.size() - (res.second - 1) * res.first);
+    multiplySingleThread(a,
+                         b,
+                         result,
+                         (res.taskNum - 1) * res.calculation,
+                         result.size() - (res.taskNum - 1) * res.calculation);
     for (auto &item : returnValue) { item.get(); }
     a = std::move(result);
 }
@@ -743,16 +802,19 @@ void operator+=(Matrix<T> &a, const Number &number) {
     }
     // threadCalculation and taskNum
     auto res = threadCalculationTaskNum(a.size());
-    std::vector<std::future<void>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([start = i * res.first, &a, &number, len = res.first]() {
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [start = i * res.calculation, &a, &number, len = res.calculation]() {
                 addSingleThread(number, a, a, start, len);
             });
     }
     // let main thread calculate too
-    addSingleThread(
-        number, a, a, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+    addSingleThread(number,
+                    a,
+                    a,
+                    (res.taskNum - 1) * res.calculation,
+                    a.size() - (res.taskNum - 1) * res.calculation);
     // make sure all the sub threads are finished
     for (auto &item : returnValue) { item.get(); }
 }
@@ -771,16 +833,19 @@ void operator-=(Matrix<T> &a, const Number &number) {
     }
     // threadCalculation and taskNum
     auto res = threadCalculationTaskNum(a.size());
-    std::vector<std::future<void>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([start = i * res.first, &a, &number, len = res.first]() {
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [start = i * res.calculation, &a, &number, len = res.calculation]() {
                 subtractSingleThread(a, number, a, start, len);
             });
     }
     // let main thread calculate too
-    subtractSingleThread(
-        a, number, a, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+    subtractSingleThread(a,
+                         number,
+                         a,
+                         (res.taskNum - 1) * res.calculation,
+                         a.size() - (res.taskNum - 1) * res.calculation);
     // make sure all the sub threads are finished
     for (auto &item : returnValue) { item.get(); }
     return;
@@ -795,16 +860,19 @@ void operator-=(const Number &number, Matrix<T> &a) {
     }
     // threadCalculation and taskNum
     auto res = threadCalculationTaskNum(a.size());
-    std::vector<std::future<void>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([start = i * res.first, &a, &number, len = res.first]() {
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [start = i * res.calculation, &a, &number, len = res.calculation]() {
                 subtractSingleThread(number, a, a, start, len);
             });
     }
     // let main thread calculate too
-    subtractSingleThread(
-        number, a, a, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+    subtractSingleThread(number,
+                         a,
+                         a,
+                         (res.taskNum - 1) * res.calculation,
+                         a.size() - (res.taskNum - 1) * res.calculation);
     // make sure all the sub threads are finished
     for (auto &item : returnValue) { item.get(); }
 }
@@ -823,16 +891,19 @@ void operator*=(const Number &number, Matrix<T> &a) {
     }
     // threadCalculation and taskNum
     auto res = threadCalculationTaskNum(a.size());
-    std::vector<std::future<void>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([start = i * res.first, &a, &number, len = res.first]() {
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [start = i * res.calculation, &a, &number, len = res.calculation]() {
                 multiplySingleThread(number, a, a, start, len);
             });
     }
     // let main thread calculate too
-    multiplySingleThread(
-        number, a, a, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+    multiplySingleThread(number,
+                         a,
+                         a,
+                         (res.taskNum - 1) * res.calculation,
+                         a.size() - (res.taskNum - 1) * res.calculation);
     // make sure all the sub threads are finished
     for (auto &item : returnValue) { item.get(); }
     return;
@@ -847,16 +918,19 @@ void operator/=(Matrix<T> &a, const Number &number) {
     }
     // threadCalculation and taskNum
     auto res = threadCalculationTaskNum(a.size());
-    std::vector<std::future<void>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([start = i * res.first, &a, &number, len = res.first]() {
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [start = i * res.calculation, &a, &number, len = res.calculation]() {
                 divideSingleThread(a, number, a, start, len);
             });
     }
     // let main thread calculate too
-    divideSingleThread(
-        a, number, a, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+    divideSingleThread(a,
+                       number,
+                       a,
+                       (res.taskNum - 1) * res.calculation,
+                       a.size() - (res.taskNum - 1) * res.calculation);
     // make sure all the sub threads are finished
     for (auto &item : returnValue) { item.get(); }
 }
@@ -870,16 +944,19 @@ void operator/=(const Number &number, Matrix<T> &a) {
     }
     // threadCalculation and taskNum
     auto res = threadCalculationTaskNum(a.size());
-    std::vector<std::future<void>> returnValue(res.second - 1);
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([start = i * res.first, &a, &number, len = res.first]() {
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [start = i * res.calculation, &a, &number, len = res.calculation]() {
                 divideSingleThread(number, a, a, start, len);
             });
     }
     // let main thread calculate too
-    divideSingleThread(
-        number, a, a, (res.second - 1) * res.first, a.size() - (res.second - 1) * res.first);
+    divideSingleThread(number,
+                       a,
+                       a,
+                       (res.taskNum - 1) * res.calculation,
+                       a.size() - (res.taskNum - 1) * res.calculation);
     // make sure all the sub threads are finished
     for (auto &item : returnValue) { item.get(); }
     return;
@@ -906,29 +983,31 @@ void transpose(const Matrix<T> &a, Matrix<O> &output) {
     auto res = threadCalculationTaskNum(a.size());
 
     // the return value of every task, use this to make sure every task is finished
-    std::vector<std::future<void>> returnValue(res.second - 1);
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
 
     // assign task for every sub-thread
-    for (size_type i = 0; i < res.second - 1; i++) {
-        returnValue[i] =
-            threadPool().addTask([&a, start = i * res.first, len = res.first, &output]() {
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [&a, start = i * res.calculation, len = res.calculation, &output]() {
                 transposeSingleThread(a, output, start, len);
             });
     }
 
     // let main thread calculate took
-    transposeSingleThread(
-        a, output, (res.second - 1) * res.first, (a.size() - (res.second - 1) * res.first));
+    transposeSingleThread(a,
+                          output,
+                          (res.taskNum - 1) * res.calculation,
+                          (a.size() - (res.taskNum - 1) * res.calculation));
 
     // make sure all the sub threads are finished
     for (auto &item : returnValue) { item.get(); }
 }
 
-inline std::pair<size_type, size_type> threadCalculationTaskNum(const size_type &total) {
-    size_type threadCalculation = std::max(total / (threadNum() + 1), limit());
-    size_type taskNum           = total / threadCalculation;
-    if (total % threadCalculation > 0) { taskNum++; }
-    return {threadCalculation, taskNum};
+inline CalculationTaskNum threadCalculationTaskNum(const size_type &total) {
+    size_type calculation = std::max(total / (threadNum() + 1), limit());
+    size_type taskNum     = total / calculation;
+    if (total % calculation > 0) { taskNum++; }
+    return CalculationTaskNum{calculation, taskNum};
 }
 }  // namespace mca
 #endif
