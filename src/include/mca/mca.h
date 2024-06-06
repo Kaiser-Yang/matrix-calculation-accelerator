@@ -321,6 +321,82 @@ void transpose(Matrix<T> &a);
 template <class T, class O>
 void transpose(const Matrix<T> &a, Matrix<O> &output);
 
+/* Calculate the exponentiation of a square matrix, and store the result in matrix a
+ * This is different from powNumber or numberPow
+ * This will calculate the exponentiation of matrix
+ * This is only valid when the matrix a is a square matrix
+ * NOTE: Matrix a must be a square matrix
+ *       If O and value_type are not same, all the elements will first be cast to
+ *       std::common_type<O, value_type>, after calculation they will be cast into O
+ *       by using static_cast
+ * for example:  a = [[1, 2],
+ *                    [2, 3]]
+ *              pow(2, a)
+ *              a:  [[5, 8],
+ *                   [8, 13]] */
+template <class T>
+void pow(Matrix<T> &a, const size_type &exponent);
+
+/* Calculate the exponentiation of a square matrix, and store the result in output
+ * Most of the things to note about this function are the same as the previous one
+ * NOTE: Matrix a must be a square matrix
+ *       output must have the same shape as the current matrix a
+ *       If O and T are not same, all the elements will first be cast to
+ *       std::common_type<O, T>, after calculation they will be cast into O
+ *       by using static_cast
+ * for example: a = [[1, 2, 3],
+ *                   [2, 3, 4],
+ *                   [7, 8, 9]]
+ *              pow(2, a, output)
+ *              a: [[1, 2, 3],
+ *                  [2, 3, 4]
+ *                  [7, 8, 9]]
+ *              output: [[26, 32,  38],
+ *                       [36, 45,  54],
+ *                       [86, 110, 134]] */
+template <class T, class O, class = std::enable_if_t<!is_matrix_v<size_type>>>
+void pow(const Matrix<T> &a, const size_type &exponent, Matrix<O> &output);
+
+/* Calculate number ^ elements of the matrix a, and store the result in output
+ * The function whose parameters do not include output will change the matrix a
+ * NOTE: Matrix a must have the same shape as output
+ *       If O and value_type are not same, all the elements will first be cast to
+ *       std::common_type_t<O, value_type>, after calculation they will be cast into O
+ *       by using static_cast
+ * for example: a = [[1, 2, 3],
+ *                   [2, 3, 4]]
+ *              numberPow(2, a, output)
+ *              output: [[2^1, 2^2, 2^3],
+ *                       [2^2, 2^3, 2^4]]
+ *              numberPow(2, a)
+ *              a: [[2^1, 2^2, 2^3],
+ *                  [2^2, 2^3, 2^4]] */
+template <class Number, class T, class O, class = std::enable_if_t<!is_matrix_v<Number>>>
+void numberPow(const Number &number, Matrix<T> &a, Matrix<O> &output);
+template <class Number, class T, class = std::enable_if_t<!is_matrix_v<Number>>>
+void numberPow(const Number &number, Matrix<T> &a);
+
+/* Calculate the elements of the matrix a ^ number, and store the result in output
+ * The function whose parameters do not include output will change the matrix a
+ * NOTE: Matrix a must have the same shape as output
+ *       If O and value_type are not same, all the elements will first be cast to
+ *       std::common_type_t<O, value_type>, after calculation they will be cast into O
+ *       by using static_cast
+ * for example:  a = [[1, 2, 3],
+ *                   [2, 3, 4]]
+ *              powNumber(a, 2, output)
+ *               a:  [[1, 2, 3],
+ *                    [2, 3, 4]]
+ *              output: [[1^2, 2^2, 3^2],
+ *                       [2^2, 3^2, 4^2]]
+ *              powNumber(a, 2)
+ *              a: [[1^2, 2^2, 3^2],
+ *                  [2^2, 3^2, 4^2]] */
+template <class T, class Number, class O, class = std::enable_if_t<!is_matrix_v<Number>>>
+void powNumber(const Matrix<T> &a, const Number &number, Matrix<O> &output);
+template <class T, class Number, class = std::enable_if_t<!is_matrix_v<Number>>>
+void powNumber(Matrix<T> &a, const Number &number);
+
 template <class T1, class T2>
 bool operator==(const Matrix<T1> &a, const Matrix<T2> &b) {
     if (a.shape() != b.shape()) { return false; }
@@ -1008,6 +1084,112 @@ inline CalculationTaskNum threadCalculationTaskNum(const size_type &total) {
     size_type taskNum     = total / calculation;
     if (total % calculation > 0) { taskNum++; }
     return CalculationTaskNum{calculation, taskNum};
+}
+
+template <class T>
+void pow(Matrix<T> &a, const size_type &exponent) {
+    assert(a.isSquare());
+    Matrix<T> output(a.shape());
+    pow(a, exponent, output);
+    a = std::move(output);
+}
+
+template <class T, class O, class>
+void pow(const Matrix<T> &a, const size_type &exponent, Matrix<O> &output) {
+    assert(a.isSquare());
+    assert(a.shape() == output.shape());
+    size_type b = exponent;
+    Matrix<T> temp(a);
+    // make output an identity matrix
+    output = Matrix<O>(output.shape(), IdentityMatrix());
+    while (b > 0) {
+        if (b & 1) { output *= temp; }
+        if ((b >> 1) == 0) { break; }
+        temp *= temp;
+        b >>= 1;
+    }
+}
+
+template <class Number, class T, class O, class>
+void numberPow(const Number &number, Matrix<T> &a, Matrix<O> &output) {
+    assert(a.shape() == output.shape());
+    // single mode
+    if (threadNum() == 0 || limit() >= a.size()) {
+        numberPowSingleThread(number, a, output, 0, a.size());
+        return;
+    }
+
+    // threadCalculation and taskNum
+    auto res = threadCalculationTaskNum(a.size());
+
+    // the return value of every task, use this to make sure every task is finished
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+
+    // assign task for every sub-thread
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [&a, number, start = i * res.calculation, len = res.calculation, &output]() {
+                numberPowSingleThread(number, a, output, start, len);
+            });
+    }
+
+    // let main thread calculate took
+    numberPowSingleThread(number,
+                          a,
+                          output,
+                          (res.taskNum - 1) * res.calculation,
+                          (a.size() - (res.taskNum - 1) * res.calculation));
+
+    // make sure all the sub threads are finished
+    for (auto &item : returnValue) { item.get(); }
+}
+
+template <class Number, class T, class>
+void numberPow(const Number &number, Matrix<T> &a) {
+    Matrix<T> output(a.shape());
+    numberPow(number, a, output);
+    a = std::move(output);
+}
+
+template <class T, class Number, class O, class>
+void powNumber(const Matrix<T> &a, const Number &number, Matrix<O> &output) {
+    assert(a.shape() == output.shape());
+    // single mode
+    if (threadNum() == 0 || limit() >= a.size()) {
+        powNumberSingleThread(a, number, output, 0, a.size());
+        return;
+    }
+
+    // threadCalculation and taskNum
+    auto res = threadCalculationTaskNum(a.size());
+
+    // the return value of every task, use this to make sure every task is finished
+    std::vector<std::future<void>> returnValue(res.taskNum - 1);
+
+    // assign task for every sub-thread
+    for (size_type i = 0; i < res.taskNum - 1; i++) {
+        returnValue[i] = threadPool().addTask(
+            [&a, number, start = i * res.calculation, len = res.calculation, &output]() {
+                powNumberSingleThread(a, number, output, start, len);
+            });
+    }
+
+    // let main thread calculate took
+    powNumberSingleThread(a,
+                          number,
+                          output,
+                          (res.taskNum - 1) * res.calculation,
+                          (a.size() - (res.taskNum - 1) * res.calculation));
+
+    // make sure all the sub threads are finished
+    for (auto &item : returnValue) { item.get(); }
+}
+
+template <class T, class Number, class>
+void powNumber(Matrix<T> &a, const Number &number) {
+    Matrix<T> output(a.shape());
+    powNumber(a, number, output);
+    a = std::move(output);
 }
 }  // namespace mca
 #endif
