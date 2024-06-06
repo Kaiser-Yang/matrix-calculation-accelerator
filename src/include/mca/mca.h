@@ -306,7 +306,7 @@ template <class T>
 void transpose(Matrix<T> &a);
 
 /* Store the transposed matrix of a in output using multi-thread
- * NOTE: output must have the same shape with the current matrix after transposition
+ * NOTE: output must have the same shape with the matrix after transposition
  *       If O and T are not same, all the elements will first be cast to
  *       std::common_type<O, T>, after calculation they will be cast into O
  *       by using static_cast
@@ -321,33 +321,30 @@ void transpose(Matrix<T> &a);
 template <class T, class O>
 void transpose(const Matrix<T> &a, Matrix<O> &output);
 
-/* Calculate the exponentiation of a square matrix, and store the result in matrix a
+/* Calculate the exponentiation of a square matrix in place, which means a will be changed
  * This is different from powNumber or numberPow
  * This will calculate the exponentiation of matrix
- * This is only valid when the matrix a is a square matrix
  * NOTE: Matrix a must be a square matrix
- *       If O and value_type are not same, all the elements will first be cast to
- *       std::common_type<O, value_type>, after calculation they will be cast into O
- *       by using static_cast
- * for example:  a = [[1, 2],
- *                    [2, 3]]
- *              pow(2, a)
+ * for example: a = [[1, 2],
+ *                   [2, 3]]
+ *              pow(a, 1)
  *              a:  [[5, 8],
  *                   [8, 13]] */
 template <class T>
 void pow(Matrix<T> &a, const size_type &exponent);
 
 /* Calculate the exponentiation of a square matrix, and store the result in output
- * Most of the things to note about this function are the same as the previous one
+ * This is different from powNumber or numberPow
+ * This will calculate the exponentiation of matrix
  * NOTE: Matrix a must be a square matrix
- *       output must have the same shape as the current matrix a
+ *       output must have the same shape as the matrix a
  *       If O and T are not same, all the elements will first be cast to
  *       std::common_type<O, T>, after calculation they will be cast into O
  *       by using static_cast
  * for example: a = [[1, 2, 3],
  *                   [2, 3, 4],
  *                   [7, 8, 9]]
- *              pow(2, a, output)
+ *              pow(a, 2, output)
  *              a: [[1, 2, 3],
  *                  [2, 3, 4]
  *                  [7, 8, 9]]
@@ -359,7 +356,7 @@ void pow(const Matrix<T> &a, const size_type &exponent, Matrix<O> &output);
 
 /* Calculate number ^ elements of the matrix a, and store the result in output
  * The function whose parameters do not include output will change the matrix a
- * NOTE: Matrix a must have the same shape as output
+ * NOTE: output must have the same shape as matrix a
  *       If O and value_type are not same, all the elements will first be cast to
  *       std::common_type_t<O, value_type>, after calculation they will be cast into O
  *       by using static_cast
@@ -376,14 +373,14 @@ void numberPow(const Number &number, Matrix<T> &a, Matrix<O> &output);
 template <class Number, class T, class = std::enable_if_t<!is_matrix_v<Number>>>
 void numberPow(const Number &number, Matrix<T> &a);
 
-/* Calculate the elements of the matrix a ^ number, and store the result in output
+/* Calculate the elements of the matrix a to the number-th power, and store the result in output
  * The function whose parameters do not include output will change the matrix a
  * NOTE: Matrix a must have the same shape as output
  *       If O and value_type are not same, all the elements will first be cast to
  *       std::common_type_t<O, value_type>, after calculation they will be cast into O
  *       by using static_cast
  * for example:  a = [[1, 2, 3],
- *                   [2, 3, 4]]
+ *                    [2, 3, 4]]
  *              powNumber(a, 2, output)
  *               a:  [[1, 2, 3],
  *                    [2, 3, 4]]

@@ -158,11 +158,7 @@ public:
     void fill(const_reference value, const size_type &pos = 0);
 
     /* Calculate number ^ (*this), and return the result
-     * The function whose parameters do not include output will change (*this)
-     * NOTE: (*this) must have the same shape with output
-     *       If O and value_type are not same, all the elements will first be cast to
-     *       std::common_type_t<O, value_type>, after calculation they will be cast into O
-     *       by using static_cast
+     * This function do not change the (*this)
      * for example: a = [[1, 2, 3],
      *                   [2, 3, 4]]
      *              a.numberPow(2)
@@ -172,49 +168,41 @@ public:
      *                       [2^2, 2^3, 2^4]] */
     template <class Number, class = std::enable_if_t<!is_matrix_v<Number>>>
     inline Matrix numberPow(const Number &number) {
-        Matrix<value_type> output((*this).shape());
+        Matrix<value_type> output(shape());
         mca::numberPow(number, *this, output);
         return output;
     }
 
     /* Calculate (*this) ^ number, and return the result
-     * The function whose parameters do not include output will change (*this)
-     * NOTE: (*this) must have the same shape with output
-     *       If O and value_type are not same, all the elements will first be cast to
-     *       std::common_type_t<O, value_type>, after calculation they will be cast into O
-     *       by using static_cast
+     * This function do not change the (*this)
      * for example: a = [[1, 2, 3],
      *                   [2, 3, 4]]
      *              a.powNumber(2)
      *              a = [[1, 2, 3],
      *                   [2, 3, 4]]
-     *              output: [[1^2, 2^2, 3^2],
+     *              return: [[1^2, 2^2, 3^2],
      *                       [2^2, 3^2, 4^2]] */
     template <class Number, class = std::enable_if_t<!is_matrix_v<Number>>>
     inline Matrix powNumber(const Number &number) {
-        Matrix<value_type> output((*this).shape());
+        Matrix<value_type> output(shape());
         mca::powNumber(*this, number, output);
         return output;
     }
 
-    /* Calculate (*this) ^ exponent, and store the result in output
+    /* Calculate (*this) ^ exponent, and return the result
+     * This function do not change the (*this)
      * This is different with powNumber or numberPow
      * This will calculate the matrix exponentiation
      * This is only valid when (*this) is a square matrix
-     * The function whose parameters do not include output will change (*this)
-     * NOTE: (*this) must be a square matrix
-     *       (*this) must have the same shape with output
-     *       If O and value_type are not same, all the elements will first be cast to
-     *       std::common_type<O, value_type>, after calculation they will be cast into O
-     *       by using static_cast
      * for example: a = [[1, 2],
      *                   [2, 3]]
      *              a.pow(2)
-     *              output = [[5, 8],
+     *              return:  [[5, 8],
      *                        [8, 13]] */
     //     void pow(const size_type &exponent, Matrix<O> &output) const;
     inline Matrix pow(const size_type &exponent) const {
-        Matrix<value_type> output((*this).shape());
+        assert(isSquare());
+        Matrix<value_type> output(shape());
         mca::pow(*this, exponent, output);
         return output;
     }
