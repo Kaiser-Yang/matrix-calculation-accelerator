@@ -221,7 +221,7 @@ TEST_F(TestSingleThreadCalculation, addSubMatrix) {
     ASSERT_TRUE(equalSingleThread(output, result, 0, output.size()));
 }
 
-TEST_F(TestSingleThreadCalculation, sustractWholeMatrix) {
+TEST_F(TestSingleThreadCalculation, subtractWholeMatrix) {
     output = Matrix<double>(Shape{3, 3}, 0);
     subtractSingleThread(a, b, output, 0, a.size());
     Matrix<double> result({{-1, 0, 0}, {1, 0, 1}, {2, 2, 1}});
@@ -232,7 +232,7 @@ TEST_F(TestSingleThreadCalculation, sustractWholeMatrix) {
     ASSERT_TRUE(equalSingleThread(output, result, 0, output.size()));
 }
 
-TEST_F(TestSingleThreadCalculation, sustractSubMatrix) {
+TEST_F(TestSingleThreadCalculation, subtractSubMatrix) {
     output = Matrix<double>(Shape{3, 3}, -1);
     subtractSingleThread(a, b, output, 3, 6);
     Matrix<double> result({{-1, -1, -1}, {1, 0, 1}, {2, 2, 1}});

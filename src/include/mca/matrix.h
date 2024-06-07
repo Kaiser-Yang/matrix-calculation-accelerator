@@ -157,66 +157,55 @@ public:
      * pos should be less than or equal to size() */
     void fill(const_reference value, const size_type &pos = 0);
 
-    /* Calculate number ^ (*this), and store the result in output
-     * The function whose parameters do not include output will change (*this)
-     * NOTE: (*this) must have the same shape with output
-     *       If O and value_type are not same, all the elements will first be cast to
-     *       std::common_type_t<O, value_type>, after calculation they will be cast into O
-     *       by using static_cast
+    /* Calculate number ^ (*this), and return the result
+     * This function do not change the (*this)
      * for example: a = [[1, 2, 3],
      *                   [2, 3, 4]]
-     *              a.numberPow(2, output)
-     *              output: [[2^1, 2^2, 2^3],
-     *                       [2^2, 2^3, 2^4]]
      *              a.numberPow(2)
-     *              a: [[2^1, 2^2, 2^3],
-     *                  [2^2, 2^3, 2^4]] */
-    template <class Number, class O, class = std::enable_if_t<!is_matrix_v<Number>>>
-    void numberPow(const Number &number, Matrix<O> &output) const;
+     *              a: [[1, 2, 3],
+     *                  [2, 3, 4]]
+     *              return: [[2^1, 2^2, 2^3],
+     *                       [2^2, 2^3, 2^4]] */
     template <class Number, class = std::enable_if_t<!is_matrix_v<Number>>>
-    inline void numberPow(const Number &number) {
-        numberPow(number, *this);
+    inline Matrix numberPow(const Number &number) {
+        Matrix<value_type> output(shape());
+        mca::numberPow(number, *this, output);
+        return output;
     }
 
-    /* Calculate (*this) ^ number, and store the result in output
-     * The function whose parameters do not include output will change (*this)
-     * NOTE: (*this) must have the same shape with output
-     *       If O and value_type are not same, all the elements will first be cast to
-     *       std::common_type_t<O, value_type>, after calculation they will be cast into O
-     *       by using static_cast
+    /* Calculate (*this) ^ number, and return the result
+     * This function do not change the (*this)
      * for example: a = [[1, 2, 3],
      *                   [2, 3, 4]]
-     *              a.powNumber(2, output)
-     *              output: [[1^2, 2^2, 3^2],
-     *                       [2^2, 3^2, 4^2]]
-     *              a.numberPow(2)
-     *              a: [[1^2, 2^2, 3^2],
-     *                  [2^2, 3^2, 4^2]] */
-    template <class Number, class O, class = std::enable_if_t<!is_matrix_v<Number>>>
-    void powNumber(const Number &number, Matrix<O> &output) const;
+     *              a.powNumber(2)
+     *              a = [[1, 2, 3],
+     *                   [2, 3, 4]]
+     *              return: [[1^2, 2^2, 3^2],
+     *                       [2^2, 3^2, 4^2]] */
     template <class Number, class = std::enable_if_t<!is_matrix_v<Number>>>
-    inline void powNumber(const Number &number) {
-        powNumber(number, *this);
+    inline Matrix powNumber(const Number &number) {
+        Matrix<value_type> output(shape());
+        mca::powNumber(*this, number, output);
+        return output;
     }
 
-    /* Calculate (*this) ^ exponent, and store the result in output
+    /* Calculate (*this) ^ exponent, and return the result
+     * This function do not change the (*this)
      * This is different with powNumber or numberPow
      * This will calculate the matrix exponentiation
      * This is only valid when (*this) is a square matrix
-     * The function whose parameters do not include output will change (*this)
-     * NOTE: (*this) must be a square matrix
-     *       (*this) must have the same shape with output
-     *       If O and value_type are not same, all the elements will first be cast to
-     *       std::common_type<O, value_type>, after calculation they will be cast into O
-     *       by using static_cast
      * for example: a = [[1, 2],
      *                   [2, 3]]
-     *              a.pow(2, output)
-     *              output = [[5, 8],
+     *              a.pow(2)
+     *              return:  [[5, 8],
      *                        [8, 13]] */
-    template <class O>
-    void pow(const size_type &exponent, Matrix<O> &output) const;
-    inline void pow(const size_type &exponent) { pow(exponent, *this); }
+    //     void pow(const size_type &exponent, Matrix<O> &output) const;
+    inline Matrix pow(const size_type &exponent) const {
+        assert(isSquare());
+        Matrix<value_type> output(shape());
+        mca::pow(*this, exponent, output);
+        return output;
+    }
 
     /* Return the transposed matrix of (*this)
      * for example: a = [[1, 2, 3],
@@ -492,85 +481,6 @@ void Matrix<T>::fill(const_reference value, const size_type &pos) {
 }
 
 template <class T>
-template <class Number, class O, class>
-void Matrix<T>::numberPow(const Number &number, Matrix<O> &output) const {
-    // single mode
-    if (threadNum() == 0 || limit() >= size()) {
-        numberPowSingleThread(number, *this, output, 0, size());
-        return;
-    }
-    // threadCalculation and taskNum
-    auto res = threadCalculationTaskNum(size());
-
-    // the return value of every task, use this to make sure every task is finished
-    std::vector<std::future<void>> returnValue(res.taskNum - 1);
-    // assign task for every sub-thread
-    for (size_type i = 0; i < res.taskNum - 1; i++) {
-        returnValue[i] = threadPool().addTask(
-            [this, start = i * res.calculation, len = res.calculation, &output, &number]() {
-                numberPowSingleThread(number, *this, output, start, len);
-            });
-    }
-    // let main thread calculate took
-    numberPowSingleThread(number,
-                          *this,
-                          output,
-                          (res.taskNum - 1) * res.calculation,
-                          (size() - (res.taskNum - 1) * res.calculation));
-
-    // make sure all the sub threads are finished
-    for (auto &item : returnValue) { item.get(); }
-}
-
-template <class T>
-template <class Number, class O, class>
-void Matrix<T>::powNumber(const Number &number, Matrix<O> &output) const {
-    // single mode
-    if (threadNum() == 0 || limit() >= size()) {
-        powNumberSingleThread(*this, number, output, 0, size());
-        return;
-    }
-    // threadCalculation and taskNum
-    auto res = threadCalculationTaskNum(size());
-
-    // the return value of every task, use this to make sure every task is finished
-    std::vector<std::future<void>> returnValue(res.taskNum - 1);
-    // assign task for every sub-thread
-    for (size_type i = 0; i < res.taskNum - 1; i++) {
-        returnValue[i] = threadPool().addTask(
-            [this, start = i * res.calculation, len = res.calculation, &output, &number]() {
-                powNumberSingleThread(*this, number, output, start, len);
-            });
-    }
-    // let main thread calculate took
-    powNumberSingleThread(*this,
-                          number,
-                          output,
-                          (res.taskNum - 1) * res.calculation,
-                          (size() - (res.taskNum - 1) * res.calculation));
-
-    // make sure all the sub threads are finished
-    for (auto &item : returnValue) { item.get(); }
-}
-
-template <class T>
-template <class O>
-void Matrix<T>::pow(const size_type &exponent, Matrix<O> &output) const {
-    assert(isSquare());
-    assert(shape() == output.shape());
-    size_type b = exponent;
-    Matrix<value_type> a(*this);
-    // make output an identity matrix
-    output = Matrix<O>(output.shape(), IdentityMatrix());
-    while (b > 0) {
-        if (b & 1) { output *= a; }
-        if ((b >> 1) == 0) { break; }
-        a *= a;
-        b >>= 1;
-    }
-}
-
-template <class T>
 bool Matrix<T>::symmetric() const {
     if (!isSquare()) { return false; }
     // single mode
@@ -599,6 +509,7 @@ bool Matrix<T>::symmetric() const {
     for (auto &item : returnValue) { result &= item.get(); }
     return result;
 }
+
 template <class T>
 bool Matrix<T>::antisymmetric() const {
     if (!isSquare()) { return false; }
