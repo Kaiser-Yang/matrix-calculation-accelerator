@@ -10,7 +10,7 @@ void ThreadPool::resize(size_type newSize) {
     assert(taskQueue.size() == 0);
     taskQueue.reserve(newSize);
     while (taskQueue.size() < newSize) {
-        taskQueue.emplace_back(std::queue<std::function<void()>>());
+        taskQueue.emplace_back();
     }
     assert(size() == 0);
     for (size_type i = 0; i < newSize; i++) {
