@@ -7,6 +7,7 @@
 
 #include "mca/__mca_internal/single_thread_matrix_calculation.h"
 #include "mca/diag.h"
+#include "mca/mca.h"
 
 namespace mca {
 namespace test {
