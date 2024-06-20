@@ -12,8 +12,9 @@ if (WIN32)
 endif()
 
 option(mca_BUILD_SHARE_LIB "Build shared libraries rather than static libraries" on)
-option(mca_BUILD_TEST "Whether or not to build unit test" on)
+option(mca_BUILD_TEST "Whether or not to build unit test" off)
 option(mca_GENERATE_COVERAGE "Whether or not to generate codes coverage report" off)
+option(mca_BUILD_EXAMPLE "Whether or not to build examples" on)
 
 if (mca_GENERATE_COVERAGE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
@@ -27,6 +28,9 @@ if (mca_BUILD_SHARE_LIB)
 else()
     add_library(mca STATIC ${mca_SOURCE})
 endif()
+
+install(TARGETS mca DESTINATION lib)
+install(DIRECTORY src/include/mca DESTINATION include)
 
 find_package(Threads REQUIRED)
 target_link_libraries(mca PUBLIC Threads::Threads)
@@ -44,4 +48,30 @@ endif()
 
 if (mca_BUILD_TEST)
     add_subdirectory(test)
+endif()
+
+if (mca_BUILD_EXAMPLE)
+    aux_source_directory(example mca_EXAMPLE_SOURCE)
+    foreach(SINGLE_EXAMPLE_SRC ${mca_EXAMPLE_SOURCE})
+        get_filename_component(SINGLE_EXAMPLE_EXE ${SINGLE_EXAMPLE_SRC} NAME_WE)
+        add_executable(${SINGLE_EXAMPLE_EXE} ${SINGLE_EXAMPLE_SRC})
+        target_link_libraries(${SINGLE_EXAMPLE_EXE} PRIVATE mca)
+        target_include_directories(
+            ${SINGLE_EXAMPLE_EXE}
+            PRIVATE
+            ${PROJECT_SOURCE_DIR}/src/include
+            ${PROJECT_SOURCE_DIR}/example/include)
+        set_target_properties(
+            ${SINGLE_EXAMPLE_EXE}
+            PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY
+            "${CMAKE_BINARY_DIR}/example")
+        if (CLANG_TIDY_EXE)
+            set_target_properties(
+                ${SINGLE_EXAMPLE_EXE}
+                PROPERTIES
+                CXX_CLANG_TIDY
+                "${CLANG_TIDY_EXE}")
+        endif()
+    endforeach()
 endif()

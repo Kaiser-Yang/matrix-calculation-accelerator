@@ -44,9 +44,10 @@ if (mca_BUILD_SHARE_LIB AND WIN32 AND (CMAKE_GENERATOR MATCHES "Visual Studio"))
     gtest_discover_tests(
         ${PROJECT_NAME}_unit_test
         WORKING_DIRECTORY
-        ${CMAKE_BINARY_DIR}/${LIBRARY_OUTPUT_PATH}/${CMAKE_BUILD_TYPE})
+        ${CMAKE_BINARY_DIR}/${LIBRARY_OUTPUT_PATH}/${CMAKE_BUILD_TYPE}
+        XML_OUTPUT_DIR ${CMAKE_BINARY_DIR}/test)
 else()
-    gtest_discover_tests(${PROJECT_NAME}_unit_test)
+    gtest_discover_tests(${PROJECT_NAME}_unit_test XML_OUTPUT_DIR ${CMAKE_BINARY_DIR}/test)
 endif()
 
 find_program(CLANG_TIDY_EXE NAMES clang-tidy)
