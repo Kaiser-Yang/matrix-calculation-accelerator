@@ -1,22 +1,35 @@
-name: clang-format Check
-on: [pull_request]
+name: clang-format
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+
 jobs:
-  formatting-check:
-    name: Formatting Check
+
+  clang-format:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        path:
-          - 'src'
-          - 'src/include'
-          - 'test/src'
-          - 'example'
-          - 'example/include'
+    
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
+
     steps:
-    - uses: actions/checkout@v3
-    - name: Run clang-format style check for C/C++/Protobuf programs.
-      uses: jidicula/clang-format-action@v4.11.0
+    - name: Checkout Repo
+      uses: actions/checkout@v4
+    
+    - name: Install clang-format
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-format-14
+        sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-14 100
+        clang-format --version
+
+    - name: Run clang-format
+      run: |
+        find . -type f \( -name "*.h" -o -name "*.cpp" \) -print0 | xargs -0 clang-format -i
+
+    - name: Auto Commit
+      uses: stefanzweifel/git-auto-commit-action@v5
       with:
-        clang-format-version: '14'
-        check-path: ${{ matrix.path }}
-        fallback-style: 'Mozilla' # optional
+        commit_message: "Apply clang-format"
