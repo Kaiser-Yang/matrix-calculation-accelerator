@@ -3,8 +3,8 @@
 
 #include <type_traits>
 
-#include "matrix_declaration.h"
 #include "calculation_task_num.h"
+#include "matrix_declaration.h"
 #include "mca/mca_config.h"
 
 namespace mca {
