@@ -1,20 +1,31 @@
-name: clang-format Check
-on: [pull_request]
+name: "clang-format"
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
 jobs:
-  formatting-check:
-    name: Formatting Check
+  format:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        path:
-          - 'src'
-          - 'include'
-          - 'test/src'
     steps:
-    - uses: actions/checkout@v3
-    - name: Run clang-format style check for C/C++/Protobuf programs.
-      uses: jidicula/clang-format-action@v4.11.0
-      with:
-        clang-format-version: '14'
-        check-path: ${{ matrix.path }}
-        fallback-style: 'Mozilla' # optional
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 2
+  
+      - uses: jayllyz/clang-format-action@v1
+        # Default options
+        with:
+          check: false
+          style: file
+          extensions: cpp,h,hpp
+          clang-version: 14.0.0
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "clang-format ✅"
+          branch: ${{ github.head_ref }}
