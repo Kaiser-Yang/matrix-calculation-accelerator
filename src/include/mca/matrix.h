@@ -16,6 +16,7 @@
 #include "diag.h"
 #include "identity_matrix.h"
 #include "mca.h"
+#include "mca/mca_config.h"
 #include "shape.h"
 
 namespace mca {
