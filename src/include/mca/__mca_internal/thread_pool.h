@@ -18,8 +18,20 @@ namespace mca {
 class ThreadPool {
 public:
     using size_type = std::size_t;
-    /* size is the size of the thread pool */
-    inline ThreadPool(size_type size = 0) { resize(size); }
+
+    /* get the instance of the thread pool */
+    inline static ThreadPool& getInstance(size_type size = 0) {
+        static ThreadPool instance;
+        instance.resize(size);
+        return instance;
+    }
+
+    /* the copy constructor and assignment operator are deleted 
+     * to avoid multiple instances of the thread pool */
+    ThreadPool(const ThreadPool&) = delete;
+    ThreadPool(const ThreadPool&&) = delete;
+    ThreadPool& operator=(const ThreadPool&) = delete;
+    ThreadPool& operator=(const ThreadPool&&) = delete;
 
     /* set a new size, and this will clear the task queue
      * this will wait for all the running threads finish their current tasks, then stop them
@@ -46,6 +58,8 @@ public:
     inline ~ThreadPool() { clear(); }
 
 private:
+    inline ThreadPool() = default;
+    /* private constructor, use getInstance() to get the instance */
     std::vector<std::queue<std::function<void()>>> taskQueue;
     std::queue<std::thread> threadQueue;
     size_type i{0};
