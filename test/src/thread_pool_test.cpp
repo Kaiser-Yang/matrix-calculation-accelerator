@@ -5,21 +5,23 @@
 namespace mca {
 namespace test {
 TEST(TestThreadPool, defaultConstructor) {
-    ThreadPool tp;
+    ThreadPool& tp = ThreadPool::getInstance();
     ASSERT_EQ(tp.size(), (size_t)0);
+    tp.clear();
 }
 
 TEST(TestThreadPool, resize) {
-    ThreadPool tp(3);
+    ThreadPool& tp = ThreadPool::getInstance(3);
     ASSERT_EQ(tp.size(), (size_t)3);
     tp.resize(5);
     ASSERT_EQ(tp.size(), (size_t)5);
     tp.resize(2);
     ASSERT_EQ(tp.size(), (size_t)2);
+    tp.clear();
 }
 
 TEST(TestThreadPool, addTask) {
-    ThreadPool tp(1);
+    ThreadPool& tp = ThreadPool::getInstance(1);
     size_t taskNum = 10;
     std::vector<std::future<size_t>> resultVector;
     for (size_t i = 0; i < taskNum; i++) {
@@ -29,13 +31,14 @@ TEST(TestThreadPool, addTask) {
     for (size_t i = 0; i < taskNum; i++) {
         ASSERT_EQ(resultVector[i].get(), (size_t)2 + (size_t)3);
     }
+    tp.clear();
 }
 
 // this test will check if the running task will be executed normally
 // and if the other tasks are removed
 TEST(TestThreadPool, clear) {
     using namespace std::chrono_literals;
-    ThreadPool tp(1);
+    ThreadPool& tp = ThreadPool::getInstance(1);
     std::vector<std::future<size_t>> resultVector;
     size_t taskNum = 10;
     for (size_t i = 0; i < taskNum; i++) {
@@ -49,6 +52,7 @@ TEST(TestThreadPool, clear) {
     tp.clear();
     EXPECT_EQ(resultVector[0].get(), (size_t)233);
     ASSERT_EQ(tp.size(), size_t(0));
+    tp.clear();
 }
 
 }  // namespace test

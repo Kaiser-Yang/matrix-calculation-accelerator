@@ -4,7 +4,7 @@
 
 namespace mca {
 
-ThreadPool _threadPool;
+ThreadPool& _threadPool = ThreadPool::getInstance();
 
 size_t _limit = 623;
 

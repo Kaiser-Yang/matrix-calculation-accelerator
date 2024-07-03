@@ -40,7 +40,7 @@ public:
 
     /* Construct an identity matrix
      * NOTE: the diagonal elements will be constructed by value_type(1) */
-    explicit Matrix(const Shape &shape, const IdentityMatrix &);
+    explicit Matrix(const Shape &shape, const _IdentityMatrix &);
 
     /* Construct a matrix from a initializer_list
      * You can use this like Matrix<int>({{1, 2}, {3, 4}}) */
@@ -301,7 +301,7 @@ private:
 };
 
 template <class T>
-Matrix<T>::Matrix(const Shape &shape, const IdentityMatrix &) {
+Matrix<T>::Matrix(const Shape &shape, const _IdentityMatrix &) {
     allocateMemory(shape);
     fill(value_type());
     size_type totalCalculation = std::min(rows(), columns());

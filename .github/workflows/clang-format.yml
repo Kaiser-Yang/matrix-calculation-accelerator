@@ -3,6 +3,7 @@ name: clang-format
 on:
   pull_request:
     branches: [ main, develop ]
+    types: [ closed ]
 
 jobs:
 
@@ -29,7 +30,17 @@ jobs:
       run: |
         find . -type f \( -name "*.h" -o -name "*.cpp" \) -print0 | xargs -0 clang-format -i
 
+    - name: Check if PR was merged
+      id: check
+      run: |
+        if [[ "${{ github.event.pull_request.merged }}" == "true" ]]; then
+          echo "::set-output name=merged::true"
+        else
+          echo "::set-output name=merged::false"
+        fi
+
     - name: Auto Commit
       uses: stefanzweifel/git-auto-commit-action@v5
       with:
         commit_message: "Apply clang-format"
+      if: steps.check.outputs.merged == 'true'
