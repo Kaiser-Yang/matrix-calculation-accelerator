@@ -40,7 +40,7 @@ protected:
 
 TEST_F(TestMatrixMultiThread, fill) {
     singleOutput = multiOutput = Matrix<double>(squareShape);
-    auto value = generator() % MAX_VALUE;
+    auto value                 = generator() % MAX_VALUE;
     // first use fill before init(THREAD_NUM), this will run in single-thread mode
     auto startTime = high_resolution_clock::now();
     singleOutput.fill(value);

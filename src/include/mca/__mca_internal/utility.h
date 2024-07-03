@@ -71,8 +71,7 @@ void calculationHelper(const Operation &op,
                        const std::size_t &endPos,
                        const CalculationTaskNum &calculationTaskNum,
                        ReturnType &&returnValue,
-                       Function &&function
-                       ) {
+                       Function &&function) {
     // empty matrix
     if (calculationTaskNum.taskNum == 0) {
         if constexpr (!std::is_same_v<ReturnType, std::nullptr_t>) {
@@ -84,26 +83,21 @@ void calculationHelper(const Operation &op,
         }
         return;
     }
-    std::vector<std::future<std::invoke_result_t<Function, const size_t &, const size_t &>>> subThreadReturnValue(
-        calculationTaskNum.taskNum - 1);
+    std::vector<std::future<std::invoke_result_t<Function, const size_t &, const size_t &>>>
+        subThreadReturnValue(calculationTaskNum.taskNum - 1);
     for (size_type i = 0; i < subThreadReturnValue.size(); i++) {
-        subThreadReturnValue[i] = threadPool().addTask(
-            [start = i * calculationTaskNum.calculation,
-             len   = calculationTaskNum.calculation,
-             &function
-             ]() { return function(start, len);
-            });
+        subThreadReturnValue[i] =
+            threadPool().addTask([start = i * calculationTaskNum.calculation,
+                                  len   = calculationTaskNum.calculation,
+                                  &function]() { return function(start, len); });
     }
     if constexpr (std::is_same_v<ReturnType, std::nullptr_t>) {
-        function(
-                 (calculationTaskNum.taskNum - 1) * calculationTaskNum.calculation,
-                 endPos -
-                     (calculationTaskNum.taskNum - 1) * calculationTaskNum.calculation);
+        function((calculationTaskNum.taskNum - 1) * calculationTaskNum.calculation,
+                 endPos - (calculationTaskNum.taskNum - 1) * calculationTaskNum.calculation);
     } else {
-        returnValue = function(
-            (calculationTaskNum.taskNum - 1) * calculationTaskNum.calculation,
-            endPos - (calculationTaskNum.taskNum - 1) * calculationTaskNum.calculation
-            );
+        returnValue =
+            function((calculationTaskNum.taskNum - 1) * calculationTaskNum.calculation,
+                     endPos - (calculationTaskNum.taskNum - 1) * calculationTaskNum.calculation);
     }
     for (auto &item : subThreadReturnValue) {
         if constexpr (std::is_same_v<ReturnType, std::nullptr_t>) {

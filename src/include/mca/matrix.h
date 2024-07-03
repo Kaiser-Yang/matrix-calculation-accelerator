@@ -42,59 +42,67 @@ public:
     /* Construct an identity matrix
      * NOTE: the diagonal elements will be constructed by value_type(1) */
     explicit inline Matrix(const Shape &shape, const _IdentityMatrix &) {
-    allocateMemory(shape);
-    fill(value_type());
-    size_type totalCalculation = std::min(rows(), columns());
-    calculationHelper(Operation::MATRIX_CONSTRUCT_IDENTITY, totalCalculation,
-                       threadCalculationTaskNum(totalCalculation), nullptr,
-                       [this](const size_type &start, const size_type &len) {
-                           for (size_type i = start; i < start + len; i++) { get(i, i) = value_type(1); }
-                       });
-
+        allocateMemory(shape);
+        fill(value_type());
+        size_type totalCalculation = std::min(rows(), columns());
+        calculationHelper(Operation::MATRIX_CONSTRUCT_IDENTITY,
+                          totalCalculation,
+                          threadCalculationTaskNum(totalCalculation),
+                          nullptr,
+                          [this](const size_type &start, const size_type &len) {
+                              for (size_type i = start; i < start + len; i++) {
+                                  get(i, i) = value_type(1);
+                              }
+                          });
     }
 
     /* Construct a matrix from a initializer_list
      * You can use this like Matrix<int>({{1, 2}, {3, 4}}) */
     explicit inline Matrix(const std::initializer_list<std::initializer_list<value_type>> &init) {
-    allocateMemory(Shape(init.size(), init.size() == 0 ? 0 : init.begin()->size()));
-    calculationHelper(Operation::MATRIX_CONSTRUCT_FROM_INITIALIZER_LIST, size(),
-                       threadCalculationTaskNum(size()), nullptr,
-                       [this, &init](const size_type &start, const size_type &len) {
-                           for (size_type i = start; i < start + len; i++) {
-                               (*this)[i] = static_cast<value_type>(std::data(std::data(init)[i / columns()])[i % columns()]);
-                           }
-                       });
-
+        allocateMemory(Shape(init.size(), init.size() == 0 ? 0 : init.begin()->size()));
+        calculationHelper(Operation::MATRIX_CONSTRUCT_FROM_INITIALIZER_LIST,
+                          size(),
+                          threadCalculationTaskNum(size()),
+                          nullptr,
+                          [this, &init](const size_type &start, const size_type &len) {
+                              for (size_type i = start; i < start + len; i++) {
+                                  (*this)[i] = static_cast<value_type>(
+                                      std::data(std::data(init)[i / columns()])[i % columns()]);
+                              }
+                          });
     }
 
     /* Construct a matrix from a vector */
     explicit inline Matrix(const std::vector<std::vector<value_type>> &init) {
-    allocateMemory(Shape(init.size(), init.size() == 0 ? 0 : init.begin()->size()));
-    calculationHelper(Operation::MATRIX_CONSTRUCT_FROM_VECTOR, size(),
-                       threadCalculationTaskNum(size()), nullptr,
-                       [this, &init](const size_type &start, const size_type &len) {
-                           for (size_type i = start; i < start + len; i++) {
-                               (*this)[i] = static_cast<value_type>(init[i / columns()][i % columns()]);
-                           }
-                       });
-        
+        allocateMemory(Shape(init.size(), init.size() == 0 ? 0 : init.begin()->size()));
+        calculationHelper(Operation::MATRIX_CONSTRUCT_FROM_VECTOR,
+                          size(),
+                          threadCalculationTaskNum(size()),
+                          nullptr,
+                          [this, &init](const size_type &start, const size_type &len) {
+                              for (size_type i = start; i < start + len; i++) {
+                                  (*this)[i] =
+                                      static_cast<value_type>(init[i / columns()][i % columns()]);
+                              }
+                          });
     }
 
     /* Construct a matrix from a pointer
      * when len is less than shape.size(), the rest part will be filled with value_type() */
     explicit inline Matrix(const Shape &shape, const_pointer data, const size_type &len) {
-    allocateMemory(shape);
-    // the actual length of elements in data will be used
-    size_type actualLen = std::min(size(), len);
-    calculationHelper(Operation::MATRIX_CONSTRUCT_FROM_POINTER, actualLen,
-                       threadCalculationTaskNum(actualLen), nullptr,
-                       [this, &data, &actualLen](const size_type &start, const size_type &len) {
-                           for (size_type i = start; i < start + len; i++) {
-                               (*this)[i] = static_cast<value_type>(data[i]);
-                           }
-                       });
-    if (size() > actualLen) { fill(value_type(), actualLen); }
-
+        allocateMemory(shape);
+        // the actual length of elements in data will be used
+        size_type actualLen = std::min(size(), len);
+        calculationHelper(Operation::MATRIX_CONSTRUCT_FROM_POINTER,
+                          actualLen,
+                          threadCalculationTaskNum(actualLen),
+                          nullptr,
+                          [this, &data, &actualLen](const size_type &start, const size_type &len) {
+                              for (size_type i = start; i < start + len; i++) {
+                                  (*this)[i] = static_cast<value_type>(data[i]);
+                              }
+                          });
+        if (size() > actualLen) { fill(value_type(), actualLen); }
     }
 
     /* Construct a matrix from an array
@@ -121,13 +129,17 @@ public:
      * In this case, int() will be 0 */
     template <class Container>
     explicit inline Matrix(const _Diag<Container> &diag) {
-    allocateMemory(Shape(diag.size(), diag.size()));
-    fill(value_type());
-    calculationHelper(Operation::MATRIX_CONSTRUCT_DIAG, rows(), threadCalculationTaskNum(rows()), nullptr,
-                       [this, &diag](const size_type &start, const size_type &len) {
-                           for (size_type i = start; i < start + len; i++) { get(i, i) = diag[i]; }
-                       });
-
+        allocateMemory(Shape(diag.size(), diag.size()));
+        fill(value_type());
+        calculationHelper(Operation::MATRIX_CONSTRUCT_DIAG,
+                          rows(),
+                          threadCalculationTaskNum(rows()),
+                          nullptr,
+                          [this, &diag](const size_type &start, const size_type &len) {
+                              for (size_type i = start; i < start + len; i++) {
+                                  get(i, i) = diag[i];
+                              }
+                          });
     }
 
     /* Copy constructor
@@ -158,12 +170,15 @@ public:
     template <class T1>
     inline Matrix<value_type> &operator=(const Matrix<T1> &other) {
         allocateMemory(other.shape());
-        calculationHelper(Operation::MATRIX_COPY_ASSIGNMENT, size(), threadCalculationTaskNum(size()), nullptr,
-                           [this, &other](const size_type &start, const size_type &len) {
-                               for (size_type i = start; i < start + len; i++) {
-                                   (*this)[i] = static_cast<value_type>(other[i]);
-                               }
-                           });
+        calculationHelper(Operation::MATRIX_COPY_ASSIGNMENT,
+                          size(),
+                          threadCalculationTaskNum(size()),
+                          nullptr,
+                          [this, &other](const size_type &start, const size_type &len) {
+                              for (size_type i = start; i < start + len; i++) {
+                                  (*this)[i] = static_cast<value_type>(other[i]);
+                              }
+                          });
         return *this;
     }
     inline Matrix<value_type> &operator=(const Matrix &other) {
@@ -218,11 +233,13 @@ public:
      * Otherwise, the elements before pos will not changed
      * pos should be less than or equal to size() */
     inline void fill(const_reference value, const size_type &pos = 0) {
-        calculationHelper(Operation::MATRIX_FILL, size() - pos, threadCalculationTaskNum(size() - pos), nullptr,
-                           [this, &value, &pos](const size_type &start, const size_type &len) {
-                               std::fill(data() + pos + start, data() + pos + start + len, value);
-                           });
-
+        calculationHelper(Operation::MATRIX_FILL,
+                          size() - pos,
+                          threadCalculationTaskNum(size() - pos),
+                          nullptr,
+                          [this, &value, &pos](const size_type &start, const size_type &len) {
+                              std::fill(data() + pos + start, data() + pos + start + len, value);
+                          });
     }
 
     /* Calculate number ^ (*this), and return the result
@@ -295,26 +312,30 @@ public:
 
     /* Check if the matrix is symmetric with multi-thread */
     inline bool symmetric() const {
-    if (!isSquare()) { return false; }
-    bool result = false;
-    calculationHelper(Operation::MATRIX_SYMMETRIC, size(), threadCalculationTaskNum(size()), result,
-                       [this](const size_type &start, const size_type &len) {
-                           return symmetricSingleThread(*this, start, len);
-                       });
-    return result;
-
+        if (!isSquare()) { return false; }
+        bool result = false;
+        calculationHelper(Operation::MATRIX_SYMMETRIC,
+                          size(),
+                          threadCalculationTaskNum(size()),
+                          result,
+                          [this](const size_type &start, const size_type &len) {
+                              return symmetricSingleThread(*this, start, len);
+                          });
+        return result;
     }
 
     /* Check if the matrix is antisymmetric with multi-thread */
     inline bool antisymmetric() const {
-    if (!isSquare()) { return false; }
-    bool result = false;
-    calculationHelper(Operation::MATRIX_ANTISYMMETRIC, size(), threadCalculationTaskNum(size()), result,
-                       [this](const size_type &start, const size_type &len) {
-                           return antisymmetricSingleThread(*this, start, len);
-                       });
-    return result;
-
+        if (!isSquare()) { return false; }
+        bool result = false;
+        calculationHelper(Operation::MATRIX_ANTISYMMETRIC,
+                          size(),
+                          threadCalculationTaskNum(size()),
+                          result,
+                          [this](const size_type &start, const size_type &len) {
+                              return antisymmetricSingleThread(*this, start, len);
+                          });
+        return result;
     }
 
     /* Rreturn iterators */

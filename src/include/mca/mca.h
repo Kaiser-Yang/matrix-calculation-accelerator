@@ -363,9 +363,13 @@ template <class T1, class T2>
 inline bool operator==(const Matrix<T1> &a, const Matrix<T2> &b) {
     if (a.shape() != b.shape()) { return false; }
     bool result = false;
-    calculationHelper(Operation::MATRIX_EQUALITY, a.size(), threadCalculationTaskNum(a.size()),
-                      result, [&a, &b] (const size_t &start, const size_t &len) {
-                      return equalSingleThread(a, b, start, len); });
+    calculationHelper(Operation::MATRIX_EQUALITY,
+                      a.size(),
+                      threadCalculationTaskNum(a.size()),
+                      result,
+                      [&a, &b](const size_t &start, const size_t &len) {
+                          return equalSingleThread(a, b, start, len);
+                      });
     return result;
 }
 
@@ -373,9 +377,13 @@ template <class T1, class T2>
 inline bool operator!=(const Matrix<T1> &a, const Matrix<T2> &b) {
     if (a.shape() != b.shape()) { return true; }
     bool result = false;
-    calculationHelper(Operation::MATRIX_INEQUALITY, a.size(), threadCalculationTaskNum(a.size()),
-                      result, [&a, &b] (const size_t &start, const size_t &len) {
-                      return notEqualSingleThread(a, b, start, len); });
+    calculationHelper(Operation::MATRIX_INEQUALITY,
+                      a.size(),
+                      threadCalculationTaskNum(a.size()),
+                      result,
+                      [&a, &b](const size_t &start, const size_t &len) {
+                          return notEqualSingleThread(a, b, start, len);
+                      });
     return result;
 }
 
@@ -383,9 +391,13 @@ template <class T1, class T2>
 inline bool operator<(const Matrix<T1> &a, const Matrix<T2> &b) {
     if (a.shape() != b.shape()) { return false; }
     bool result = false;
-    calculationHelper(Operation::MATRIX_LESS, a.size(), threadCalculationTaskNum(a.size()),
-                      result, [&a, &b] (const size_t &start, const size_t &len) {
-                      return lessSingleThread(a, b, start, len); });
+    calculationHelper(Operation::MATRIX_LESS,
+                      a.size(),
+                      threadCalculationTaskNum(a.size()),
+                      result,
+                      [&a, &b](const size_t &start, const size_t &len) {
+                          return lessSingleThread(a, b, start, len);
+                      });
     return result;
 }
 
@@ -393,9 +405,13 @@ template <class T1, class T2>
 inline bool operator<=(const Matrix<T1> &a, const Matrix<T2> &b) {
     if (a.shape() != b.shape()) { return false; }
     bool result = false;
-    calculationHelper(Operation::MATRIX_LESS_EQUAL, a.size(), threadCalculationTaskNum(a.size()),
-                      result, [&a, &b] (const size_t &start, const size_t &len) {
-                      return lessEqualSingleThread(a, b, start, len); });
+    calculationHelper(Operation::MATRIX_LESS_EQUAL,
+                      a.size(),
+                      threadCalculationTaskNum(a.size()),
+                      result,
+                      [&a, &b](const size_t &start, const size_t &len) {
+                          return lessEqualSingleThread(a, b, start, len);
+                      });
     return result;
 }
 
@@ -403,9 +419,13 @@ template <class T1, class T2>
 inline bool operator>(const Matrix<T1> &a, const Matrix<T2> &b) {
     if (a.shape() != b.shape()) { return false; }
     bool result = false;
-    calculationHelper(Operation::MATRIX_GREATER, a.size(), threadCalculationTaskNum(a.size()),
-                      result, [&a, &b] (const size_t &start, const size_t &len) {
-                      return greaterSingleThread(a, b, start, len); });
+    calculationHelper(Operation::MATRIX_GREATER,
+                      a.size(),
+                      threadCalculationTaskNum(a.size()),
+                      result,
+                      [&a, &b](const size_t &start, const size_t &len) {
+                          return greaterSingleThread(a, b, start, len);
+                      });
     return result;
 }
 
@@ -413,9 +433,13 @@ template <class T1, class T2>
 inline bool operator>=(const Matrix<T1> &a, const Matrix<T2> &b) {
     if (a.shape() != b.shape()) { return false; }
     bool result = false;
-    calculationHelper(Operation::MATRIX_GREATER_EQUAL, a.size(), threadCalculationTaskNum(a.size()),
-                      result, [&a, &b] (const size_t &start, const size_t &len) {
-                      return greaterEqualSingleThread(a, b, start, len); });
+    calculationHelper(Operation::MATRIX_GREATER_EQUAL,
+                      a.size(),
+                      threadCalculationTaskNum(a.size()),
+                      result,
+                      [&a, &b](const size_t &start, const size_t &len) {
+                          return greaterEqualSingleThread(a, b, start, len);
+                      });
     return result;
 }
 
@@ -424,9 +448,13 @@ inline Matrix<std::common_type_t<T1, T2>> operator+(const Matrix<T1> &a, const M
     assert(a.shape() == b.shape());
     using CommonType = std::common_type_t<T1, T2>;
     Matrix<CommonType> result(a.shape());
-    calculationHelper(Operation::MATRIX_ADDITION, a.size(), threadCalculationTaskNum(a.size()),
-                      nullptr, [&a, &b, &result] (const size_t &start, const size_t &len) { 
-                      addSingleThread(a, b, result, start, len); });
+    calculationHelper(Operation::MATRIX_ADDITION,
+                      a.size(),
+                      threadCalculationTaskNum(a.size()),
+                      nullptr,
+                      [&a, &b, &result](const size_t &start, const size_t &len) {
+                          addSingleThread(a, b, result, start, len);
+                      });
     return result;
 }
 
@@ -435,9 +463,13 @@ inline Matrix<std::common_type_t<T1, T2>> operator-(const Matrix<T1> &a, const M
     assert(a.shape() == b.shape());
     using CommonType = std::common_type_t<T1, T2>;
     Matrix<CommonType> result(a.shape());
-    calculationHelper(Operation::MATRIX_SUBTRACTION, a.size(), threadCalculationTaskNum(a.size()),
-                      nullptr, [&a, &b, &result] (const size_t &start, const size_t &len) {
-                      subtractSingleThread(a, b, result, start, len); });
+    calculationHelper(Operation::MATRIX_SUBTRACTION,
+                      a.size(),
+                      threadCalculationTaskNum(a.size()),
+                      nullptr,
+                      [&a, &b, &result](const size_t &start, const size_t &len) {
+                          subtractSingleThread(a, b, result, start, len);
+                      });
     return result;
 }
 
@@ -446,11 +478,15 @@ inline Matrix<std::common_type_t<T1, T2>> operator*(const Matrix<T1> &a, const M
     assert(a.columns() == b.rows());
     using CommonType = std::common_type_t<T1, T2>;
     Matrix<CommonType> result(Shape{a.rows(), b.columns()});
-    auto res = threadCalculationTaskNum(a.size() * b.columns());
+    auto res        = threadCalculationTaskNum(a.size() * b.columns());
     res.calculation = result.size() / res.taskNum;
-    calculationHelper(Operation::MATRIX_MULTIPLICATION, result.size(), res, nullptr,
-                      [&a, &b, &result] (const size_t &start, const size_t &len) {
-                      multiplySingleThread(a, b, result, start, len); });
+    calculationHelper(Operation::MATRIX_MULTIPLICATION,
+                      result.size(),
+                      res,
+                      nullptr,
+                      [&a, &b, &result](const size_t &start, const size_t &len) {
+                          multiplySingleThread(a, b, result, start, len);
+                      });
     return result;
 }
 
@@ -458,9 +494,13 @@ template <class T, class Number, class>
 inline Matrix<std::common_type_t<T, Number>> operator+(const Matrix<T> &a, const Number &number) {
     using CommonType = std::common_type_t<T, Number>;
     Matrix<CommonType> result(a.shape());
-    calculationHelper(Operation::MATRIX_NUMBER_ADDITION, a.size(), threadCalculationTaskNum(a.size()),
-                      nullptr, [&a, &number, &result] (const size_t &start, const size_t &len) { 
-                      addSingleThread(number, a, result, start, len); });
+    calculationHelper(Operation::MATRIX_NUMBER_ADDITION,
+                      a.size(),
+                      threadCalculationTaskNum(a.size()),
+                      nullptr,
+                      [&a, &number, &result](const size_t &start, const size_t &len) {
+                          addSingleThread(number, a, result, start, len);
+                      });
     return result;
 }
 
@@ -473,9 +513,13 @@ template <class T, class Number, class>
 inline Matrix<std::common_type_t<T, Number>> operator-(const Matrix<T> &a, const Number &number) {
     using CommonType = std::common_type_t<T, Number>;
     Matrix<CommonType> result(a.shape());
-    calculationHelper(Operation::MATRIX_NUMBER_SUBTRACTION, a.size(), threadCalculationTaskNum(a.size()),
-                      nullptr, [&a, &number, &result] (const size_t &start, const size_t &len) {
-                      subtractSingleThread(a, number, result, start, len); });
+    calculationHelper(Operation::MATRIX_NUMBER_SUBTRACTION,
+                      a.size(),
+                      threadCalculationTaskNum(a.size()),
+                      nullptr,
+                      [&a, &number, &result](const size_t &start, const size_t &len) {
+                          subtractSingleThread(a, number, result, start, len);
+                      });
     return result;
 }
 
@@ -483,9 +527,13 @@ template <class Number, class T, class>
 inline Matrix<std::common_type_t<T, Number>> operator-(const Number &number, const Matrix<T> &a) {
     using CommonType = std::common_type_t<T, Number>;
     Matrix<CommonType> result(a.shape());
-    calculationHelper(Operation::NUMBER_MATRIX_SUBTRACTION, a.size(), threadCalculationTaskNum(a.size()),
-                      nullptr, [&number, &a, &result] (const size_t &start, const size_t &len) {
-                      subtractSingleThread(number, a, result, start, len); });
+    calculationHelper(Operation::NUMBER_MATRIX_SUBTRACTION,
+                      a.size(),
+                      threadCalculationTaskNum(a.size()),
+                      nullptr,
+                      [&number, &a, &result](const size_t &start, const size_t &len) {
+                          subtractSingleThread(number, a, result, start, len);
+                      });
     return result;
 }
 
@@ -498,9 +546,13 @@ template <class Number, class T, class>
 inline Matrix<std::common_type_t<T, Number>> operator*(const Number &number, const Matrix<T> &a) {
     using CommonType = std::common_type_t<T, Number>;
     Matrix<CommonType> result(a.shape());
-    calculationHelper(Operation::NUMBER_MATRIX_MULTIPLICATION, a.size(), threadCalculationTaskNum(a.size()),
-                      nullptr, [&number, &a, &result] (const size_t &start, const size_t &len) {
-                      multiplySingleThread(number, a, result, start, len); });
+    calculationHelper(Operation::NUMBER_MATRIX_MULTIPLICATION,
+                      a.size(),
+                      threadCalculationTaskNum(a.size()),
+                      nullptr,
+                      [&number, &a, &result](const size_t &start, const size_t &len) {
+                          multiplySingleThread(number, a, result, start, len);
+                      });
     return result;
 }
 
@@ -508,9 +560,13 @@ template <class T, class Number, class>
 inline Matrix<std::common_type_t<T, Number>> operator/(const Matrix<T> &a, const Number &number) {
     using CommonType = std::common_type_t<T, Number>;
     Matrix<CommonType> result(a.shape());
-    calculationHelper(Operation::MATRIX_NUMBER_DIVISION, a.size(), threadCalculationTaskNum(a.size()),
-                      nullptr, [&a, &number, &result] (const size_t &start, const size_t &len) {
-                      divideSingleThread(a, number, result, start, len); });
+    calculationHelper(Operation::MATRIX_NUMBER_DIVISION,
+                      a.size(),
+                      threadCalculationTaskNum(a.size()),
+                      nullptr,
+                      [&a, &number, &result](const size_t &start, const size_t &len) {
+                          divideSingleThread(a, number, result, start, len);
+                      });
     return result;
 }
 
@@ -518,9 +574,13 @@ template <class Number, class T, class>
 inline Matrix<std::common_type_t<T, Number>> operator/(const Number &number, const Matrix<T> &a) {
     using CommonType = std::common_type_t<T, Number>;
     Matrix<CommonType> result(a.shape());
-    calculationHelper(Operation::NUMBER_MATRIX_DIVISION, a.size(), threadCalculationTaskNum(a.size()),
-                      nullptr, [&number, &a, &result] (const size_t &start, const size_t &len) {
-                      divideSingleThread(number, a, result, start, len); });
+    calculationHelper(Operation::NUMBER_MATRIX_DIVISION,
+                      a.size(),
+                      threadCalculationTaskNum(a.size()),
+                      nullptr,
+                      [&number, &a, &result](const size_t &start, const size_t &len) {
+                          divideSingleThread(number, a, result, start, len);
+                      });
     return result;
 }
 
@@ -590,9 +650,13 @@ template <class T, class O>
 inline void transpose(const Matrix<T> &a, Matrix<O> &output) {
     assert(a.rows() == output.columns());
     assert(a.columns() == output.rows());
-    calculationHelper(Operation::MATRIX_TRANSPOSE, a.size(), threadCalculationTaskNum(a.size()),
-                      nullptr, [&a, &output] (const size_t &start, const size_t &len) {
-                      transposeSingleThread(a, output, start, len); });
+    calculationHelper(Operation::MATRIX_TRANSPOSE,
+                      a.size(),
+                      threadCalculationTaskNum(a.size()),
+                      nullptr,
+                      [&a, &output](const size_t &start, const size_t &len) {
+                          transposeSingleThread(a, output, start, len);
+                      });
 }
 
 template <class T>
@@ -622,9 +686,13 @@ void pow(const Matrix<T> &a, const size_type &exponent, Matrix<O> &output) {
 template <class Number, class T, class O, class>
 inline void numberPow(const Number &number, Matrix<T> &a, Matrix<O> &output) {
     assert(a.shape() == output.shape());
-    calculationHelper(Operation::NUMBER_MATRIX_POW, a.size(), threadCalculationTaskNum(a.size()),
-                      nullptr, [&number, &a, &output] (const size_t &start, const size_t &len) {
-                      numberPowSingleThread(number, a, output, start, len); });
+    calculationHelper(Operation::NUMBER_MATRIX_POW,
+                      a.size(),
+                      threadCalculationTaskNum(a.size()),
+                      nullptr,
+                      [&number, &a, &output](const size_t &start, const size_t &len) {
+                          numberPowSingleThread(number, a, output, start, len);
+                      });
 }
 
 template <class Number, class T, class>
@@ -637,9 +705,13 @@ inline void numberPow(const Number &number, Matrix<T> &a) {
 template <class T, class Number, class O, class>
 inline void powNumber(const Matrix<T> &a, const Number &number, Matrix<O> &output) {
     assert(a.shape() == output.shape());
-    calculationHelper(Operation::MATRIX_NUMBER_POW, a.size(), threadCalculationTaskNum(a.size()),
-                      nullptr, [&a, &number, &output] (const size_t &start, const size_t &len) {
-                      powNumberSingleThread(a, number, output, start, len); });
+    calculationHelper(Operation::MATRIX_NUMBER_POW,
+                      a.size(),
+                      threadCalculationTaskNum(a.size()),
+                      nullptr,
+                      [&a, &number, &output](const size_t &start, const size_t &len) {
+                          powNumberSingleThread(a, number, output, start, len);
+                      });
 }
 
 template <class T, class Number, class>

@@ -58,8 +58,7 @@ template <class T1, class T2>
 bool lessSingleThread(const Matrix<T1> &a,
                       const Matrix<T2> &b,
                       const std::size_t &pos,
-                      const std::size_t &len
-                      );
+                      const std::size_t &len);
 
 /* Check if the elements of the sub-matrix of a are all equal to the sub-matrix of b's
  * This will only check the a[pos:pos+len] with b[pos:pos+len] */
@@ -67,8 +66,7 @@ template <class T1, class T2>
 bool equalSingleThread(const Matrix<T1> &a,
                        const Matrix<T2> &b,
                        const std::size_t &pos,
-                       const std::size_t &len
-                       );
+                       const std::size_t &len);
 
 /* Check if the elements of the sub-matrix of a are all less than or equal to the sub-matrix of
  * This will only check the a[pos:pos+len] with b[pos:pos+len]
@@ -78,8 +76,7 @@ template <class T1, class T2>
 bool lessEqualSingleThread(const Matrix<T1> &a,
                            const Matrix<T2> &b,
                            const std::size_t &pos,
-                           const std::size_t &len
-                           );
+                           const std::size_t &len);
 
 /* Check if the elements of the sub-matrix of a are all greater than the sub-matrix of b's
  * This will only check the a[pos:pos+len] with b[pos:pos+len]
@@ -89,8 +86,7 @@ template <class T1, class T2>
 bool greaterSingleThread(const Matrix<T1> &a,
                          const Matrix<T2> &b,
                          const std::size_t &pos,
-                         const std::size_t &len
-                         );
+                         const std::size_t &len);
 
 /* Check if the elements of the sub-matrix of a are all greater than or equal to the sub-matrix of
  * b's This will only check the a[pos:pos+len] with
@@ -99,8 +95,7 @@ template <class T1, class T2>
 bool greaterEqualSingleThread(const Matrix<T1> &a,
                               const Matrix<T2> &b,
                               const std::size_t &pos,
-                              const std::size_t &len
-                              );
+                              const std::size_t &len);
 
 /* Check if any element of the sub-matrix of a is not equal to the sub-matrix of b's
  * This will only check the a[pos:pos+len] with
@@ -109,8 +104,7 @@ template <class T1, class T2>
 bool notEqualSingleThread(const Matrix<T1> &a,
                           const Matrix<T2> &b,
                           const std::size_t &pos,
-                          const std::size_t &len
-                          );
+                          const std::size_t &len);
 
 /* Calculate a + b, and store the result in output
  * This will only calculate the a+b[pos:pos+len]
@@ -315,10 +309,7 @@ void transposeSingleThread(const Matrix<T> &a,
  *              len = 2
  *              return: true */
 template <class T>
-bool symmetricSingleThread(const Matrix<T> &a,
-                           const std::size_t &pos,
-                           const std::size_t &len
-                           );
+bool symmetricSingleThread(const Matrix<T> &a, const std::size_t &pos, const std::size_t &len);
 
 /* Check whether or not a is antisymmetric
  * This will only check the a[pos:pos+len]
@@ -331,10 +322,7 @@ bool symmetricSingleThread(const Matrix<T> &a,
  *              len = 1
  *              return: true */
 template <class T>
-bool antisymmetricSingleThread(const Matrix<T> &a,
-                               const std::size_t &pos,
-                               const std::size_t &len
-                               );
+bool antisymmetricSingleThread(const Matrix<T> &a, const std::size_t &pos, const std::size_t &len);
 
 // Those below are the implementations
 template <class Number, class T, class O, class>
@@ -371,8 +359,7 @@ template <class T1, class T2>
 bool lessSingleThread(const Matrix<T1> &a,
                       const Matrix<T2> &b,
                       const std::size_t &pos,
-                      const std::size_t &len
-                      ) {
+                      const std::size_t &len) {
     assert(a.shape() == b.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<T1, T2>;
@@ -393,8 +380,7 @@ template <class T1, class T2>
 bool equalSingleThread(const Matrix<T1> &a,
                        const Matrix<T2> &b,
                        const std::size_t &pos,
-                       const std::size_t &len
-                       ) {
+                       const std::size_t &len) {
     assert(a.shape() == b.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<T1, T2>;
@@ -415,8 +401,7 @@ template <class T1, class T2>
 bool lessEqualSingleThread(const Matrix<T1> &a,
                            const Matrix<T2> &b,
                            const std::size_t &pos,
-                           const std::size_t &len
-                           ) {
+                           const std::size_t &len) {
     assert(a.shape() == b.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<T1, T2>;
@@ -437,8 +422,7 @@ template <class T1, class T2>
 bool greaterSingleThread(const Matrix<T1> &a,
                          const Matrix<T2> &b,
                          const std::size_t &pos,
-                         const std::size_t &len
-                         ) {
+                         const std::size_t &len) {
     assert(a.shape() == b.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<T1, T2>;
@@ -460,8 +444,7 @@ template <class T1, class T2>
 bool greaterEqualSingleThread(const Matrix<T1> &a,
                               const Matrix<T2> &b,
                               const std::size_t &pos,
-                              const std::size_t &len
-                              ) {
+                              const std::size_t &len) {
     assert(a.shape() == b.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<T1, T2>;
@@ -482,8 +465,7 @@ template <class T1, class T2>
 bool notEqualSingleThread(const Matrix<T1> &a,
                           const Matrix<T2> &b,
                           const std::size_t &pos,
-                          const std::size_t &len
-                          ) {
+                          const std::size_t &len) {
     assert(a.shape() == b.shape());
     assert(pos + len <= a.size());
     using CommonType = std::common_type_t<T1, T2>;
@@ -653,10 +635,7 @@ void transposeSingleThread(const Matrix<T> &a,
 }
 
 template <class T>
-bool symmetricSingleThread(const Matrix<T> &a,
-                           const std::size_t &pos,
-                           const std::size_t &len
-                           ) {
+bool symmetricSingleThread(const Matrix<T> &a, const std::size_t &pos, const std::size_t &len) {
     assert(a.rows() == a.columns());
     assert(pos + len <= a.size());
     std::size_t i = 0, j = 0;
@@ -675,10 +654,7 @@ bool symmetricSingleThread(const Matrix<T> &a,
 }
 
 template <class T>
-bool antisymmetricSingleThread(const Matrix<T> &a,
-                               const std::size_t &pos,
-                               const std::size_t &len
-                               ) {
+bool antisymmetricSingleThread(const Matrix<T> &a, const std::size_t &pos, const std::size_t &len) {
     assert(a.rows() == a.columns());
     assert(pos + len <= a.size());
     std::size_t i = 0, j = 0;
