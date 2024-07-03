@@ -34,5 +34,6 @@ void ThreadPool::clear() {
         threadQueue.pop();
     }
     std::vector<std::queue<std::function<void()>>>().swap(taskQueue);
+    i = 0;
 }
 }  // namespace mca

@@ -7,6 +7,7 @@ namespace test {
 TEST(TestThreadPool, defaultConstructor) {
     ThreadPool& tp = ThreadPool::getInstance();
     ASSERT_EQ(tp.size(), (size_t)0);
+    tp.clear();
 }
 
 TEST(TestThreadPool, resize) {
@@ -16,6 +17,7 @@ TEST(TestThreadPool, resize) {
     ASSERT_EQ(tp.size(), (size_t)5);
     tp.resize(2);
     ASSERT_EQ(tp.size(), (size_t)2);
+    tp.clear();
 }
 
 TEST(TestThreadPool, addTask) {
@@ -29,6 +31,7 @@ TEST(TestThreadPool, addTask) {
     for (size_t i = 0; i < taskNum; i++) {
         ASSERT_EQ(resultVector[i].get(), (size_t)2 + (size_t)3);
     }
+    tp.clear();
 }
 
 // this test will check if the running task will be executed normally
@@ -49,6 +52,7 @@ TEST(TestThreadPool, clear) {
     tp.clear();
     EXPECT_EQ(resultVector[0].get(), (size_t)233);
     ASSERT_EQ(tp.size(), size_t(0));
+    tp.clear();
 }
 
 }  // namespace test
