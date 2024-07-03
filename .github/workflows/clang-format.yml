@@ -18,6 +18,9 @@ jobs:
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.pull_request.head.ref }}  # assign the branch should be checked
+        token: ${{ secrets.PAT }}  # use your PAT
     
     - name: Install clang-format
       run: |
@@ -41,6 +44,8 @@ jobs:
 
     - name: Auto Commit
       uses: stefanzweifel/git-auto-commit-action@v5
+      if: steps.check.outputs.merged == 'true'
       with:
         commit_message: "Apply clang-format"
-      if: steps.check.outputs.merged == 'true'
+        branch: ${{ github.event.pull_request.base.ref }}
+        token: ${{ secrets.PAT }}  # use your PAT
