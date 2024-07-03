@@ -5,13 +5,13 @@
 namespace mca {
 namespace test {
 TEST(TestThreadPool, defaultConstructor) {
-    ThreadPool& tp = ThreadPool::getInstance();
+    ThreadPool &tp = ThreadPool::getInstance();
     ASSERT_EQ(tp.size(), (size_t)0);
     tp.clear();
 }
 
 TEST(TestThreadPool, resize) {
-    ThreadPool& tp = ThreadPool::getInstance(3);
+    ThreadPool &tp = ThreadPool::getInstance(3);
     ASSERT_EQ(tp.size(), (size_t)3);
     tp.resize(5);
     ASSERT_EQ(tp.size(), (size_t)5);
@@ -21,7 +21,7 @@ TEST(TestThreadPool, resize) {
 }
 
 TEST(TestThreadPool, addTask) {
-    ThreadPool& tp = ThreadPool::getInstance(1);
+    ThreadPool &tp = ThreadPool::getInstance(1);
     size_t taskNum = 10;
     std::vector<std::future<size_t>> resultVector;
     for (size_t i = 0; i < taskNum; i++) {
@@ -38,7 +38,7 @@ TEST(TestThreadPool, addTask) {
 // and if the other tasks are removed
 TEST(TestThreadPool, clear) {
     using namespace std::chrono_literals;
-    ThreadPool& tp = ThreadPool::getInstance(1);
+    ThreadPool &tp = ThreadPool::getInstance(1);
     std::vector<std::future<size_t>> resultVector;
     size_t taskNum = 10;
     for (size_t i = 0; i < taskNum; i++) {
