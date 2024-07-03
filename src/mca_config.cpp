@@ -1,5 +1,6 @@
 #include <algorithm>
 
+#include "mca/mca_config.h"
 #include "mca/__mca_internal/thread_pool.h"
 
 namespace mca {
