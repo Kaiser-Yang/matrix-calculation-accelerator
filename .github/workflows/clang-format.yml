@@ -46,4 +46,5 @@ jobs:
       uses: stefanzweifel/git-auto-commit-action@v5
       with:
         commit_message: "Apply clang-format"
+        branch: ${{ github.event.pull_request.base.ref }}
       if: steps.check.outputs.merged == 'true'
