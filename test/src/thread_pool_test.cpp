@@ -30,7 +30,7 @@ TEST(TestThreadPool, addTask) {
     }
     for (size_t i = 0; i < taskNum; i++) {
         ASSERT_EQ(resultVector[i].get(), (size_t)2 + (size_t)3);
-    }   
+    }
     tp.clear();
 }
 
