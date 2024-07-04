@@ -661,7 +661,7 @@ inline void transpose(const Matrix<T> &a, Matrix<O> &output) {
 
 template <class T>
 inline void pow(Matrix<T> &a, const size_type &exponent) {
-    assert(a.isSquare());
+    assert(a.square());
     Matrix<T> output(a.shape());
     pow(a, exponent, output);
     a = std::move(output);
@@ -669,7 +669,7 @@ inline void pow(Matrix<T> &a, const size_type &exponent) {
 
 template <class T, class O, class>
 void pow(const Matrix<T> &a, const size_type &exponent, Matrix<O> &output) {
-    assert(a.isSquare());
+    assert(a.square());
     assert(a.shape() == output.shape());
     size_type b = exponent;
     Matrix<T> temp(a);

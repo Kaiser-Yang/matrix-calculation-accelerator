@@ -43,3 +43,6 @@
 
 # compile commands
 compile_commands.json
+
+# root directory signature
+.root

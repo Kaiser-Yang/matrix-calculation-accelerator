@@ -154,9 +154,9 @@ TEST(TestMatrix, reshape) {
 
 TEST(TestMatrix, isSquare) {
     Matrix<int> m(Shape{3, 3});
-    ASSERT_TRUE(m.isSquare());
+    ASSERT_TRUE(m.square());
     m.reshape(Shape{1, 9});
-    ASSERT_FALSE(m.isSquare());
+    ASSERT_FALSE(m.square());
 }
 
 TEST(TestMatrix, iterators) {
