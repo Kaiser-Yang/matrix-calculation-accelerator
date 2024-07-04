@@ -168,7 +168,7 @@ public:
      * If other's value_type is not same with current matrix's,
      * the other's elements will be cast to the current matrix's value_type with static_cast<> */
     template <class T1>
-    inline Matrix<value_type> &operator=(const Matrix<T1> &other) {
+    inline Matrix &operator=(const Matrix<T1> &other) {
         allocateMemory(other.shape());
         calculationHelper(Operation::MATRIX_COPY_ASSIGNMENT,
                           size(),
@@ -181,9 +181,7 @@ public:
                           });
         return *this;
     }
-    inline Matrix<value_type> &operator=(const Matrix &other) {
-        return operator=<value_type>(other);
-    }
+    inline Matrix &operator=(const Matrix &other) { return operator=<value_type>(other); }
 
     /* Get the reference to the element of i-th row, j-th column */
     inline reference get(const size_type &i, const size_type &j) {
@@ -284,9 +282,8 @@ public:
      *              a.pow(2)
      *              return:  [[5, 8],
      *                        [8, 13]] */
-    //     void pow(const size_type &exponent, Matrix<O> &output) const;
     inline Matrix pow(const size_type &exponent) const {
-        assert(isSquare());
+        assert(square());
         Matrix<value_type> output(shape());
         mca::pow(*this, exponent, output);
         return output;
@@ -308,11 +305,11 @@ public:
     }
 
     /* Check if the matrix is a square matrix */
-    inline bool isSquare() const noexcept { return rows() == columns(); }
+    inline bool square() const noexcept { return rows() == columns(); }
 
     /* Check if the matrix is symmetric with multi-thread */
     inline bool symmetric() const {
-        if (!isSquare()) { return false; }
+        if (!square()) { return false; }
         bool result = false;
         calculationHelper(Operation::MATRIX_SYMMETRIC,
                           size(),
@@ -326,7 +323,7 @@ public:
 
     /* Check if the matrix is antisymmetric with multi-thread */
     inline bool antisymmetric() const {
-        if (!isSquare()) { return false; }
+        if (!square()) { return false; }
         bool result = false;
         calculationHelper(Operation::MATRIX_ANTISYMMETRIC,
                           size(),

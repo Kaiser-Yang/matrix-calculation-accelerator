@@ -1,6 +1,7 @@
 #ifndef MCA_SHAPE_H
 #define MCA_SHAPE_H
 
+#include <algorithm>
 #include <cstddef>
 
 namespace mca {
@@ -11,8 +12,20 @@ struct Shape {
 
     inline Shape() = default;
 
+    inline Shape(const Shape &) = default;
+
+    inline Shape(Shape &&other) noexcept { *this = std::move(other); }
+
     inline explicit Shape(const size_type &rows, const size_type &columns)
         : rows(rows), columns(columns) {}
+
+    inline Shape &operator=(const Shape &other) = default;
+
+    inline void operator=(Shape &&other) noexcept {
+        rows       = other.rows;
+        columns    = other.columns;
+        other.rows = other.columns = 0;
+    }
 
     inline bool operator==(const Shape &other) const noexcept {
         return rows == other.rows && columns == other.columns;
