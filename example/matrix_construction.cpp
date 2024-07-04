@@ -1,15 +1,16 @@
 #include <example_utility.h>  // for operator<<
+#include <mca/diag.h>
 #include <mca/identity_matrix.h>
 #include <mca/matrix.h>
-#include <mca/diag.h>
 
+#include <array>
 #include <iostream>
 #include <memory>
 #include <vector>
-#include <array>
 
 int main() {
-    using mca::Matrix, mca::Shape, mca::IdentityMatrix, std::cout, std::vector, std::unique_ptr, std::make_unique, std::array, mca::Diag;
+    using mca::Matrix, mca::Shape, mca::IdentityMatrix, std::cout, std::vector, std::unique_ptr,
+        std::make_unique, std::array, mca::Diag;
 
     Matrix<int> m1;
     cout << "Construct an empty matrix:\n";
@@ -35,11 +36,9 @@ int main() {
     cout << "Construct an matrix from a std::vector:\n";
     cout << m6 << "\n";
 
-    constexpr size_t len = 6;
+    constexpr size_t len   = 6;
     unique_ptr<int[]> data = make_unique<int[]>(len);
-    for (int i = 0; i < len; i++) {
-        data[i] = i + 1;
-    }
+    for (int i = 0; i < len; i++) { data[i] = i + 1; }
     Matrix<int> m7(Shape(3, 3), data.get(), len);
     cout << "Construct an matrix from a raw pointer (the last three elements will be 0):\n";
     cout << m7 << "\n";

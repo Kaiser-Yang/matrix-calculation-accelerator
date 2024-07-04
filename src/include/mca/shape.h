@@ -14,18 +14,16 @@ struct Shape {
 
     inline Shape(const Shape &) = default;
 
-    inline Shape(Shape &&other) noexcept {
-        *this = std::move(other);
-    }
+    inline Shape(Shape &&other) noexcept { *this = std::move(other); }
 
     inline explicit Shape(const size_type &rows, const size_type &columns)
         : rows(rows), columns(columns) {}
 
     inline Shape &operator=(const Shape &other) = default;
- 
-    inline void operator = (Shape &&other) noexcept {
-        rows    = other.rows;
-        columns = other.columns;
+
+    inline void operator=(Shape &&other) noexcept {
+        rows       = other.rows;
+        columns    = other.columns;
         other.rows = other.columns = 0;
     }
 

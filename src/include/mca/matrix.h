@@ -181,9 +181,7 @@ public:
                           });
         return *this;
     }
-    inline Matrix &operator=(const Matrix &other) {
-        return operator=<value_type>(other);
-    }
+    inline Matrix &operator=(const Matrix &other) { return operator=<value_type>(other); }
 
     /* Get the reference to the element of i-th row, j-th column */
     inline reference get(const size_type &i, const size_type &j) {
