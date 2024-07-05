@@ -46,4 +46,6 @@ This part has not been finished yet: add some examples.
 
 [Back to the `mca::_IdentityMatrix`](identityMatrix.md)
 
+[Next: `mca configurations`](mcaConfig.md)
+
 [Back to the index](index.md)

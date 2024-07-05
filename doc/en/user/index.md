@@ -9,3 +9,5 @@
 [`mca::_IdentityMatrix`](identityMatrix.md)
 
 [`mca`](mca.md)
+
+[`mca configurations`](mcaConfig.md)
