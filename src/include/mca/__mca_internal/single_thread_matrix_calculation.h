@@ -428,8 +428,7 @@ bool greaterSingleThread(const Matrix<T1> &a,
     using CommonType = std::common_type_t<T1, T2>;
     for (std::size_t i = pos; i < pos + len; i++) {
         if (std::is_floating_point_v<CommonType> &&
-            (static_cast<CommonType>(a[i]) - static_cast<CommonType>(b[i]) < epsilon() ||
-             fabs(static_cast<CommonType>(a[i]) - static_cast<CommonType>(b[i])) <= epsilon())) {
+            static_cast<CommonType>(a[i]) - static_cast<CommonType>(b[i]) <= epsilon()) {
             return false;
         }
         if (!std::is_floating_point_v<CommonType> &&
