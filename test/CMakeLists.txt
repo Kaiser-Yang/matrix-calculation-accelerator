@@ -40,7 +40,7 @@ target_link_libraries(
 # you may need copy the libraries manually
 # or update the environment PATH to find where the shared lib is
 # if you build a static lib, this can be ignored
-if (mca_BUILD_SHARE_LIB AND WIN32 AND (CMAKE_GENERATOR MATCHES "Visual Studio"))
+if (mca_BUILD_SHARED_LIB AND WIN32 AND (CMAKE_GENERATOR MATCHES "Visual Studio"))
     gtest_discover_tests(
         ${PROJECT_NAME}_unit_test
         WORKING_DIRECTORY
