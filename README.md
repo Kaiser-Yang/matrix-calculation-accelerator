@@ -4,7 +4,7 @@
 
 ## Brief Introduction
 Matrix calculation implemented by C++ with multi-thread.  This will implement some basic
-calculations of matrices, such `+`, `-`, `*`, `/`, etc.
+calculations of matrices, such as `+`, `-`, `*`, `/`, etc.
 
 ## What Can You Learn From This
 Those below are what you can learn:

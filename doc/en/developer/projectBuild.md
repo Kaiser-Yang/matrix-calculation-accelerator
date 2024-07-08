@@ -1,6 +1,6 @@
 # How to build the project
-Once you finish your codes on your new branch, you may need to compile the codes to make sure the
-codes can be compiled. Let me introduce you how to compile the project:
+Once you finish your code on your new branch, you may need to compile the code to make sure the
+code can be compiled. Let me introduce you how to compile the project:
 
 1. Make sure you are in the root directory of the repository.
 2. Run
@@ -13,10 +13,10 @@ specify how many threads you want to use when building the project (You'd better
 exceed the number of your `cpu` cores or `cpu` super-threads). If there is no any error, your code
 can be compiled successfully.
 
-If you want the build process same with `git actions`, you need make sure `clang-tidy` is available
+If you want the build process same with `git action`s, you need make sure `clang-tidy` is available
 on your computer. If you use `UNIX-like` system, you can use `sudo apt-get install clang-tidy` to
-install `clang-tidy`. If you don't install `clang-tidy` the codes you write may be compiled
-successfully locally, but may not pass the `git actions`.
+install `clang-tidy`. If you don't install `clang-tidy` the code you write may be compiled
+successfully locally, but may not pass the `git action`s.
 
 # All the options for cmake
 |                                      |   |
@@ -27,21 +27,21 @@ successfully locally, but may not pass the `git actions`.
 | <nobr>`mca_BUILD_EXAMPLE`</nobr>     | Whether or not to build examples. Default value `on` |
 
 # Write and run the unit test
-Although you compile your codes successfully, you should be aware of that the codes which is
+Although you compile your code successfully, you should be aware of that the code which is
 compiled successfully may not work properly. So you need write unit tests for the every function you
-write. So you need create a file which is related with your new codes. The filename usually is the
+write. So you need create a file which is related with your new code. The filename is usually the
 origin base filename followed by `_test.cpp`. If there have been already one, you just need append
-your unit tests codes. If you finish writing unit tests, you can re-build the project through step
-`1-3` above. And change you directory to `build/test` (after building successfully), then run
-`ctest --output-on-failure`, this will start run all the test units. If all the tests pass, your
-code may be OK. If there are some tests failed, you need check the codes you write (both test code
+your unit tests code. If you finish writing unit tests, you can re-build the project through step
+`1-3` above. And change your directory to `build/test` (after building successfully), then run
+`ctest --output-on-failure`, this will start running all the test units. If all the tests pass, your
+code may be OK. If there are some tests failed, you need check the code you write (both test code
 and the source code), and update them to pass all the tests.
 
 # Write examples and documents for public API
 All the public (used by users) functions or methods you add for the project should be documented.
 You should update the document `doc/en/user/index.md` to add a new index, and then add a new file
 related to the new index. If there already is a file for file containing the new API, you just need
-update the existed file. All the examples will be built and compiled to an executable in the
+update the existed file. Every example will be built and compiled to an executable in the
 `example` directory of your build directory, and you can execute them to check the output.
 
 # How to generate code coverage report locally
@@ -53,11 +53,11 @@ for code coverage report after building and compiling (make sure `mca_BUILD_TEST
 2. Run `./mca_unit_test`.
 3. Change your directory to `build`.
 4. Run `lcov --capture --directory . --output-file coverage.info` to generate report.
-5. Run `genhtml --output-directory coverage_report coverage.info` to generate html files.
+5. Run `genhtml --output-directory coverage_report coverage.info` to generate `html` files.
 6. Open the `index.html` in the `build/coverage_report` directory to see the code coverage report.
 
 [Back to `How to write my code`](codeWrite.md)
 
-[Next: `How to submit my code`](codeSubmit.md)
+[Next: `How to submit my code`](codeubmit.md)
 
 [Back to the index](index.md)
