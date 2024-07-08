@@ -1,3 +1,6 @@
+NOTE: All the examples will be run in single thread mode. If you want to run in multi-thread mode,
+you just need use `mca::init` to initialize the multi-thread mode.
+
 [Get started](buildAndInstall.md)
 
 [`mca::Matrix`](matrix.md)
