@@ -29,28 +29,28 @@ int main() {
     cout << m4 << "\n";
 
     Matrix<int> m5({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
-    cout << "Construct an matrix from a std::initializer_list:\n";
+    cout << "Construct a matrix from a std::initializer_list:\n";
     cout << m5 << "\n";
 
     Matrix<int> m6(vector<vector<int>>{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
-    cout << "Construct an matrix from a std::vector:\n";
+    cout << "Construct a matrix from a std::vector:\n";
     cout << m6 << "\n";
 
     constexpr size_t len   = 6;
     unique_ptr<int[]> data = make_unique<int[]>(len);
     for (int i = 0; i < len; i++) { data[i] = i + 1; }
     Matrix<int> m7(Shape(3, 3), data.get(), len);
-    cout << "Construct an matrix from a raw pointer (the last three elements will be 0):\n";
+    cout << "Construct a matrix from a raw pointer (the last three elements will be 0):\n";
     cout << m7 << "\n";
 
     int arr[len] = {1, 2, 3, 4, 5, 6};
     Matrix<int> m8(Shape(3, 3), arr);
-    cout << "Construct an matrix from a raw array (the last three elements will be 0):\n";
+    cout << "Construct a matrix from a raw array (the last three elements will be 0):\n";
     cout << m8 << "\n";
 
     array<int, len> stdArr = {1, 2, 3, 4, 5, 6};
     Matrix<int> m9(Shape(3, 3), stdArr);
-    cout << "Construct an matrix from a std::array (the last three elements will be 0):\n";
+    cout << "Construct a matrix from a std::array (the last three elements will be 0):\n";
     cout << m9 << "\n";
 
     Matrix<int> m10(Shape(3, 3));
