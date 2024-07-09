@@ -1,6 +1,7 @@
 #include <example_utility.h>  // for operator<<
 #include <mca/matrix.h>
 #include <mca/mca.h>
+
 #include <iostream>
 
 int main() {
@@ -33,13 +34,13 @@ int main() {
 
     cout << "a > b:\n";
     cout << boolalpha << (a > b) << "\n\n";
-  
+
     cout << "a >= b:\n";
     cout << boolalpha << (a >= b) << "\n\n";
 
     cout << "a + b:\n";
     cout << a + b << "\n";
-    
+
     cout << "a - b:\n";
     cout << a - b << "\n";
 
@@ -137,7 +138,7 @@ int main() {
     cout << "Transpose a matrix:\n";
     transpose(m12);
     cout << m12 << "\n";
-    
+
     Matrix<int> output = tmp1;
     cout << "Transpose a matrix but store the result into matrix output:\n";
     transpose(tmp1, output);
@@ -159,7 +160,8 @@ int main() {
     cout << output << "\n";
 
     output = tmp1;
-    cout << "Calculate the numberPow of a matrix, the number set to be number, but store the result into another matrix:\n";
+    cout << "Calculate the numberPow of a matrix, the number set to be number, but store the "
+            "result into another matrix:\n";
     numberPow(number, tmp1, output);
     cout << output << "\n";
 
@@ -169,9 +171,10 @@ int main() {
     cout << output << "\n";
 
     output = tmp1;
-    cout << "Calculate the powNumber of a matrix, the number set to be number, but store the result into another matrix:\n";
+    cout << "Calculate the powNumber of a matrix, the number set to be number, but store the "
+            "result into another matrix:\n";
     powNumber(tmp1, number, output);
     cout << output << "\n";
-    
+
     return 0;
 }
