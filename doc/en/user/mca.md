@@ -40,7 +40,7 @@ All the methods are defined in `mca.h`.
 | <nobr>`void powNumber(Matrix<T> &a, const Number &number)`</nobr>                          | `a`'s elements will be the original to the `number`-th power. |
 | <nobr>`void powNumber(const Matrix<T> &a, const Number &number, Matrix<O> &output)`</nobr> | `output`'s elements will be the `a`'s elements to the `nubmer`-th power. |
 
-This part has not been finished yet: add some examples.
+[The examples of `mca`.](../../../example/mca_examples.cpp)
 
 [Back to the `mca::Matrix`](matrix.md)
 
