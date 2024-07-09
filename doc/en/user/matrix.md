@@ -43,7 +43,7 @@ template <class T> class Matrix;
 | <nobr>`Matrix &operator=(const Matrix<T1> &other)`</nobr>                     | Copy assignment operator. When `T1` is not the same as `T`, the elements will be converted to `T` by using `static_cast`. |
 | <nobr>`[const_]reference operator[](const size_type &pos) [const]`</nobr>     | Get the element at pos, the elements are numbered sequentially from left to right and top to bottom. |
 
-This part has not been finished yet. Add some examples.
+[The examples of matrix operations.](../../../example/matrix_operation.cpp)
 
 ### Iterators
 |                                                                   |   |
@@ -57,7 +57,7 @@ This part has not been finished yet. Add some examples.
 | <nobr>`const_reverse_iterator crbegin() const noexcept`</nobr>    | Return a const reverse iterator to the beginning. |
 | <nobr>`const_reverse_iterator crend() const noexcept`</nobr>      | Return a const reverse iterator to the end. |
 
-This part has not been finished yet. Add some examples.
+[The examples of matrix iterators.](../../../example/matrix_operation.cpp)
 
 ### Other
 |                                                                                      |   |
@@ -82,7 +82,7 @@ This part has not been finished yet. Add some examples.
 | <nobr>`bool empty() const noexcept`</nobr>                                           | Check if the matrix is empty. |
 | <nobr>`void swap(Matrix &other) noexcept`</nobr>                                     | Swap the matrix with another matrix. Only the matrices with same `value_type` can be swapped. |
 
-This part has not been finished yet. Add some examples.
+[The examples of matrix other operations.](../../../example/matrix_other.cpp)
 
 ## Non-member functions
 See [`mca`](mca.md) for more information.
