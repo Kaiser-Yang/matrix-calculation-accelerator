@@ -2,6 +2,7 @@
 #define MCA_EXAMPLE_UTILITY
 
 #include <mca/matrix.h>
+#include <mca/shape.h>
 
 #include <iostream>
 
@@ -14,6 +15,11 @@ std::ostream &operator<<(std::ostream &os, mca::Matrix<T> m) {
             std::cout << std::left << m.get(i, j) << (j == m.columns() - 1 ? "\n" : " ");
         }
     }
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const mca::Shape &shape) {
+    os << "(" << shape.rows << ", " << shape.columns << ")";
     return os;
 }
 
