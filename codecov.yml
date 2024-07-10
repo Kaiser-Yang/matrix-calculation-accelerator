@@ -17,6 +17,10 @@ component_management:
         - src/*.cpp
 codecov:
   branch: develop
+# ignore the code coverage for examples
+ignore:
+  - "example/*"
+  - "example/include/*"
 coverage:
   status:
     patch:

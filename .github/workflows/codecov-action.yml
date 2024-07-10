@@ -14,7 +14,7 @@ jobs:
       - name: build
         shell: bash
         run: |
-          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -Dmca_GENERATE_COVERAGE=on
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -Dmca_GENERATE_COVERAGE=on -Dmca_BUILD_TEST=on
           cmake --build build
 
       - name: Install LCOV
