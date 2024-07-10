@@ -74,7 +74,7 @@ int main() {
     cout << "Move a matrix:\n";
     cout << m14;
     cout << "After move, the moved matrix will be empty:\n";
-    cout << m13 << "\n";
+    cout << m13;
 
     return 0;
 }
