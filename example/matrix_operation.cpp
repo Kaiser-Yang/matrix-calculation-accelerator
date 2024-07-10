@@ -4,7 +4,6 @@
 #include <iostream>
 
 int main() {
-
     using mca::Matrix, std::cout, mca::Shape;
 
     Matrix<int> m1(Shape(2, 2), 1);

@@ -18,7 +18,7 @@ std::ostream &operator<<(std::ostream &os, mca::Matrix<T> m) {
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const mca::Shape& shape) {
+std::ostream &operator<<(std::ostream &os, const mca::Shape &shape) {
     os << "(" << shape.rows << ", " << shape.columns << ")";
     return os;
 }
