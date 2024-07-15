@@ -1,4 +1,8 @@
 # Release Log
+`v0.2.1`:
+* Fix a git action workflow bug: remove an unused argument
+* Fix the link of the documents for developers
+
 `v0.2.0`:
 * All basic multi-thread operations of matrix are supported.
 * Rich documents are finished.
