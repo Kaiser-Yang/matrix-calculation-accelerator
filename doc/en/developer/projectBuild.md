@@ -58,6 +58,6 @@ for code coverage report after building and compiling (make sure `mca_BUILD_TEST
 
 [Back to `How to write my code`](codeWrite.md)
 
-[Next: `How to submit my code`](codeubmit.md)
+[Next: `How to submit my code`](codeSubmit.md)
 
 [Back to the index](index.md)
